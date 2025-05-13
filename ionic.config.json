@@ -1,0 +1,8 @@
+{
+  "name": "gronodense",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite",
+  "id": "67084f98"
+}
