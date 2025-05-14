@@ -39,7 +39,7 @@ import {
   IonLabel,
   IonIcon,
   IonPage,
-  IonRouterOutlet
+  IonRouterOutlet,
 } from '@ionic/vue';
 
 // import the filled & outline versions of each desired icon

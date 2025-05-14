@@ -6,7 +6,6 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
-      <!-- Your challenges/tasks list goes here -->
       <p>Udforsk og fuldfør dagens udfordringer!</p>
     </ion-content>
   </ion-page>
