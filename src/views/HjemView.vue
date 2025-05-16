@@ -1,23 +1,27 @@
 <template>
-  <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Hjem</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content class="ion-padding">
-      <!-- Make sure this is here! -->
-    </ion-content>
-  </ion-page>
+  <IonPage>
+    <IonHeader>
+      <IonToolbar>
+        <IonTitle>Hjem</IonTitle>
+      </IonToolbar>
+    </IonHeader>
+    <IonContent class="ion-padding">
+      <p>Velkommen til Hjem‑fanen!</p>
+    </IonContent>
+  </IonPage>
 </template>
 
-<script setup>
-import { useRouter } from 'vue-router'
+<script>
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent
+} from '@ionic/vue';
 
-const router = useRouter()
-function onDetailsClick() {
-  // example navigation
-  router.push('/tabs/udfordringer')
-}
+export default {
+  name: 'HjemView',
+  components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent }
+};
 </script>

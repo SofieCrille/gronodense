@@ -1,16 +1,27 @@
 <template>
-  <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Udfordringer</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="ion-padding">
-      <p>Udforsk og fuldfør dagens udfordringer!</p>
-    </ion-content>
-  </ion-page>
+  <IonPage>
+    <IonHeader>
+      <IonToolbar>
+        <IonTitle>Udfordringer</IonTitle>
+      </IonToolbar>
+    </IonHeader>
+    <IonContent class="ion-padding">
+      <p>Velkommen til Udfordringer‑fanen!</p>
+    </IonContent>
+  </IonPage>
 </template>
 
-<script setup>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+<script>
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent
+} from '@ionic/vue';
+
+export default {
+  name: 'HjemView',
+  components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent }
+};
 </script>

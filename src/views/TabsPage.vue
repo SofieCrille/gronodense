@@ -1,31 +1,31 @@
 <template>
-  <ion-page>
-    <ion-tabs>
-      <ion-router-outlet />
+  <IonPage>
+    <IonTabs>
+      <IonRouterOutlet />
 
-      <ion-tab-bar slot="bottom">
-        <ion-tab-button tab="hjem" href="/tabs/hjem">
-          <ion-icon :icon="hjemIcon" aria-hidden="true" />
-          <ion-label>Hjem</ion-label>
-        </ion-tab-button>
+      <IonTabBar slot="bottom">
+        <IonTabButton tab="hjem" href="/tabs/hjem">
+          <IonIcon :icon="hjemIcon" aria-hidden="true" />
+          <IonLabel>Hjem</IonLabel>
+        </IonTabButton>
 
-        <ion-tab-button tab="shop" href="/tabs/shop">
-          <ion-icon :icon="shopIcon" aria-hidden="true" />
-          <ion-label>Pointshop</ion-label>
-        </ion-tab-button>
+        <IonTabButton tab="shop" href="/tabs/shop">
+          <IonIcon :icon="shopIcon" aria-hidden="true" />
+          <IonLabel>Pointshop</IonLabel>
+        </IonTabButton>
 
-        <ion-tab-button tab="udfordringer" href="/tabs/udfordringer">
-          <ion-icon :icon="udfIcon" aria-hidden="true" />
-          <ion-label>Udfordringer</ion-label>
-        </ion-tab-button>
+        <IonTabButton tab="udfordringer" href="/tabs/udfordringer">
+          <IonIcon :icon="udfIcon" aria-hidden="true" />
+          <IonLabel>Udfordringer</IonLabel>
+        </IonTabButton>
 
-        <ion-tab-button tab="profil" href="/tabs/profil">
-          <ion-icon :icon="profilIcon" aria-hidden="true" />
-          <ion-label>Profil</ion-label>
-        </ion-tab-button>
-      </ion-tab-bar>
-    </ion-tabs>
-  </ion-page>
+        <IonTabButton tab="profil" href="/tabs/profil">
+          <IonIcon :icon="profilIcon" aria-hidden="true" />
+          <IonLabel>Profil</IonLabel>
+        </IonTabButton>
+      </IonTabBar>
+    </IonTabs>
+  </IonPage>
 </template>
 
 <script setup>
@@ -33,30 +33,24 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 import {
+  IonPage,
+  IonTabs,
+  IonRouterOutlet,
   IonTabBar,
   IonTabButton,
-  IonTabs,
-  IonLabel,
   IonIcon,
-  IonPage,
-  IonRouterOutlet,
+  IonLabel
 } from '@ionic/vue';
 
-// import the filled & outline versions of each desired icon
 import {
-  home,
-  homeOutline,
-  gift,
-  giftOutline,
-  podium,
-  podiumOutline,
-  person,
-  personOutline
+  home, homeOutline,
+  gift, giftOutline,
+  podium, podiumOutline,
+  person, personOutline
 } from 'ionicons/icons';
 
 const route = useRoute();
 
-// choose filled vs outline based on the current path
 const hjemIcon = computed(() =>
   route.path === '/tabs/hjem' ? home : homeOutline
 );
