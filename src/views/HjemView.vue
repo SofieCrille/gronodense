@@ -7,6 +7,7 @@
     </ion-header>
 
     <ion-content class="ion-padding">
+      <h3 class="section-title">Opgaver</h3>
       <div class="card-grid">
         <ChallengeCard
           title="Bæredygtig transport"

@@ -21,11 +21,14 @@ const props = defineProps({
 </script>
 
 <template>
-  <ion-card :style="{ backgroundColor: bgColor, color: textColor }">
+  <ion-card
+    class="challenge-card"
+    :style="{ backgroundColor: bgColor, color: textColor }"
+  >
     <ion-card-header>
       <div class="icons-row">
-        <ion-icon :icon="leftIcon" size="large" />
-        <ion-icon :icon="rightIcon" size="large" />
+        <ion-icon :icon="leftIcon" size="large" :style="{ color: textColor }" />
+        <ion-icon :icon="rightIcon" size="large" :style="{ color: textColor }" />
       </div>
       <ion-card-title>{{ title }}</ion-card-title>
     </ion-card-header>
@@ -72,7 +75,7 @@ const props = defineProps({
 }
 
 .card-button:hover {
-  background-color: rgba(0, 0, 0, 0.05); /* let grå */
+  background-color: rgba(0, 0, 0, 0.05);
   filter: brightness(0.95);
 }
 </style>
