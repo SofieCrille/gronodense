@@ -12,4 +12,7 @@
     --color-selected: #02382C
   }
 
+  .ion-page-hidden[inert] {
+    pointer-events: none;
+  }
   

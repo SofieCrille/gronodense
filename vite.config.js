@@ -1,23 +1,16 @@
-/// <reference types="vitest" />
-
-import legacy from '@vitejs/plugin-legacy'
-import vue from '@vitejs/plugin-vue'
-import path from 'path'
+// vite.config.js
 import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import { fileURLToPath, URL } from 'node:url'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
-    legacy()
+    vue()
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
+      // so you can import `@/` to mean `/src/`
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
   },
-  test: {
-    globals: true,
-    environment: 'jsdom'
-  }
 })

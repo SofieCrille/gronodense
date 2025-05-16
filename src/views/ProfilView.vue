@@ -1,17 +1,27 @@
 <template>
-  <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Profil</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="ion-padding">
-      <!-- User profile info goes here -->
-      <p>Her er din profil – rediger oplysninger eller se statistikker.</p>
-    </ion-content>
-  </ion-page>
+  <IonPage>
+    <IonHeader>
+      <IonToolbar>
+        <IonTitle>Profil</IonTitle>
+      </IonToolbar>
+    </IonHeader>
+    <IonContent class="ion-padding">
+      <p>Velkommen til Profil‑fanen!</p>
+    </IonContent>
+  </IonPage>
 </template>
 
-<script setup>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+<script>
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent
+} from '@ionic/vue';
+
+export default {
+  name: 'HjemView',
+  components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent }
+};
 </script>
