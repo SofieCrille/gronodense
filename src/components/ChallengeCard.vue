@@ -8,12 +8,27 @@ import {
   IonIcon
 } from '@ionic/vue';
 
-const props = defineProps({
+const {
+  title,
+  description,
+  buttonText,
+  leftIcon,
+  rightIcon,
+  onActionClick,
+  bgColor,
+  textColor
+} = defineProps({
   title: String,
   description: String,
   buttonText: String,
-  leftIcon: Object,
-  rightIcon: Object,
+  leftIcon: {
+    type: [String, Object],
+    required: true
+  },
+  rightIcon: {
+    type: [String, Object],
+    required: true
+  },
   onActionClick: Function,
   bgColor: { type: String, default: '#ffffff' },
   textColor: { type: String, default: '#000000' }
@@ -21,22 +36,21 @@ const props = defineProps({
 </script>
 
 <template>
-  <ion-card
+  <IonCard
     class="challenge-card"
     :style="{ backgroundColor: bgColor, color: textColor }"
   >
-    <ion-card-header>
+    <IonCardHeader>
       <div class="icons-row">
-        <ion-icon :icon="leftIcon" size="large" :style="{ color: textColor }" />
-        <ion-icon :icon="rightIcon" size="large" :style="{ color: textColor }" />
+        <IonIcon :icon="leftIcon" size="large" :style="{ color: textColor }" />
+        <IonIcon :icon="rightIcon" size="large" :style="{ color: textColor }" />
       </div>
-      <ion-card-title>{{ title }}</ion-card-title>
-    </ion-card-header>
+      <IonCardTitle>{{ title }}</IonCardTitle>
+    </IonCardHeader>
 
-    <ion-card-content>
+    <IonCardContent>
       <p>{{ description }}</p>
-
-      <ion-button
+      <IonButton
         class="card-button"
         fill="outline"
         @click="onActionClick"
@@ -48,12 +62,38 @@ const props = defineProps({
         }"
       >
         {{ buttonText }}
-      </ion-button>
-    </ion-card-content>
-  </ion-card>
+      </IonButton>
+    </IonCardContent>
+  </IonCard>
 </template>
 
 <style scoped>
+.challenge-card {
+  flex: 0 0 48%;
+  max-width: 48%;
+  min-width: 150px;
+  box-sizing: border-box;
+}
+.icons-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.challenge-card {
+  flex: 0 0 48%;
+  max-width: 48%;
+  min-width: 150px;
+  box-sizing: border-box;
+}
+
+.icons-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
 .challenge-card {
   width: 48%;
   margin: 1%;
