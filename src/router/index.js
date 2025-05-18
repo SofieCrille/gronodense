@@ -41,9 +41,20 @@ const routes = [
         props: true
       },
       { path: 'udfordringer', component: UdfordringerView },
-      { path: 'notifications', name: 'Notifications', component: NotificationsView },
-      { path: 'settings',      name: 'Settings',      component: SettingsView },
-      { path: 'profil',       component: ProfilView }
+
+      // moved inside tabs so header back button works correctly
+      {
+        path: 'notifications',
+        name: 'Notifications',
+        component: NotificationsView
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: SettingsView
+      },
+
+      { path: 'profil', component: ProfilView }
     ]
   }
 ];
