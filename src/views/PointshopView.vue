@@ -2,72 +2,70 @@
   <IonPage>
     <IonHeader>
       <IonToolbar>
-        <IonTitle>Point Shop</IonTitle>
+        <IonTitle>Pointshop</IonTitle>
       </IonToolbar>
     </IonHeader>
 
     <IonContent fullscreen class="ion-padding">
-      <!-- Category chips -->
-      <div class="chip-bar">
-        <IonChip
-          :outline="!selectedCategory"
-          :color="!selectedCategory ? 'primary' : 'light'"
-          @click="selectedCategory = ''"
-        >
-          Alle
-        </IonChip>
-
+      <!-- 1) Chips bar -->
+      <div class="chips-bar">
         <IonChip
           v-for="cat in categories"
           :key="cat"
-          :outline="selectedCategory !== cat"
-          :color="selectedCategory === cat ? 'primary' : 'light'"
-          @click="selectedCategory = cat"
+          outline
+          @click="goToCategory(cat)"
         >
-          {{ categoryNames[cat] || cat }}
+          {{ categoryNames[cat] }}
         </IonChip>
       </div>
 
-      <IonGrid>
-        <IonRow>
-          <IonCol
-            v-for="item in filteredRewards"
+      <!-- 2) All categories sections -->
+      <div 
+        v-for="group in groupedRewards" 
+        :key="group.category" 
+        class="category-section"
+      >
+        <div class="section-header">
+          <h3>{{ categoryNames[group.category] }}</h3>
+          <IonButton fill="clear" size="small" @click="goToCategory(group.category)">
+            Se alle &rsaquo;
+          </IonButton>
+        </div>
+        <div class="cards-scroll">
+          <IonCard
+            v-for="item in group.items"
             :key="item.id"
-            size="12" size-sm="6" size-md="4"
+            :routerLink="{ name: 'CategoryList', params: { category: group.category } }"
+            routerDirection="forward"
+            class="category-card"
           >
-            <IonCard button @click="openDetail(item.id)">
-              <div class="placeholder-box" />
-
-              <IonCardHeader class="card-header">
-                <IonCardTitle>{{ item.title }}</IonCardTitle>
-                <IonCardSubtitle>{{ item.vendor }}</IonCardSubtitle>
-
-                <IonIcon
-                  :icon="favorites.includes(item.id) ? star : starOutline"
-                  class="favorite-icon"
-                  @click.stop="toggleFavorite(item.id)"
-                />
-              </IonCardHeader>
-
-              <IonCardContent>
-                <strong>{{ item.points }} pts</strong>
-              </IonCardContent>
-            </IonCard>
-          </IonCol>
-        </IonRow>
-      </IonGrid>
+            <div class="placeholder-box" />
+            <IonCardHeader class="card-header">
+              <IonCardTitle>{{ item.title }}</IonCardTitle>
+              <IonCardSubtitle>{{ item.vendor }}</IonCardSubtitle>
+              <IonIcon
+                :icon="favorites.includes(item.id) ? star : starOutline"
+                class="favorite-icon"
+                @click.stop="toggleFavorite(item.id)"
+              />
+            </IonCardHeader>
+            <IonCardContent>
+              <strong>{{ item.points }} pts</strong>
+            </IonCardContent>
+          </IonCard>
+        </div>
+      </div>
     </IonContent>
   </IonPage>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonGrid, IonRow, IonCol, IonCard,
-  IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent,
-  IonIcon, IonChip
+  IonChip, IonButton, IonCard, IonCardHeader, IonCardTitle,
+  IonCardSubtitle, IonCardContent, IonIcon
 } from '@ionic/vue';
 import { star, starOutline } from 'ionicons/icons';
 import { getFavorites, setFavorites } from '@/firebaseRest';
@@ -76,91 +74,92 @@ import { useAuth } from '@/composables/useAuth';
 const router = useRouter();
 const { uid } = useAuth();
 
-// Example rewards with categories
+//  -- your rewards data, each with a category key:
 const rewards = [
-  { id: 1, title: '100 kr gavekort', vendor: 'Odense Velvære', points: 300, category: 'skønhed' },
-  { id: 2, title: '50 kr café-bon',   vendor: 'Café Aroma',    points: 150, category: 'mad' },
-  { id: 3, title: 'Biograftur',       vendor: 'Cinema City',  points: 200, category: 'oplevelser' },
-  { id: 4, title: 'Konkurrence-entry',vendor: 'GivDigChancen', points: 100, category: 'konkurrencer' },
-  // …etc
+  { id: 1, title: '50 kr rabat',           vendor: 'Butik Cirkel',     points: 200, category: 'trending' },
+  { id: 2, title: '100 kr gavekort',       vendor: 'Odense Velvære',   points: 300, category: 'skonhed' },
+  { id: 3, title: '30% mode & accessoirer',vendor: 'Modehuset',       points: 250, category: 'skonhed' },
+  { id: 4, title: '20 kr café-bon',        vendor: 'Café Aroma',       points: 150, category: 'mad' },
+  { id: 5, title: 'Biografbillet',         vendor: 'Cinema City',      points: 220, category: 'oplevelser' },
+  // …etc.
 ];
 
-// friendly labels
+// which categories to show & labels
+const categories = ['trending','skonhed','mad','oplevelser'];
 const categoryNames = {
-  skønhed:      'Skønhed',
-  mad:          'Mad',
-  oplevelser:   'Oplevelser',
-  konkurrencer: 'Konkurrencer'
+  trending:    'Trending',
+  skonhed:     'Skønhed & mode',
+  mad:         'Mad & drikke',
+  oplevelser:  'Oplevelser'
 };
 
-// derive unique categories
-const categories = Array.from(new Set(rewards.map(r => r.category)));
-// reactive selection
-const selectedCategory = ref('');
-
-// filtered rewards
-const filteredRewards = computed(() => {
-  if (!selectedCategory.value) return rewards;
-  return rewards.filter(r => r.category === selectedCategory.value);
-});
+// group the items by category
+const groupedRewards = computed(() =>
+  categories.map(cat => ({
+    category: cat,
+    items: rewards.filter(r => r.category === cat)
+  }))
+);
 
 // favorites
 const favorites = ref([]);
 onMounted(async () => {
-  try {
-    favorites.value = await getFavorites(uid.value);
-  } catch (e) {
-    console.error('Failed to load favorites', e);
-  }
+  try { favorites.value = await getFavorites(uid.value) }
+  catch { favorites.value = [] }
 });
-
-// toggle favorite
 async function toggleFavorite(id) {
   const idx = favorites.value.indexOf(id);
-  if (idx >= 0) favorites.value.splice(idx, 1);
+  if (idx >= 0) favorites.value.splice(idx,1);
   else favorites.value.push(id);
-  try {
-    await setFavorites(uid.value, favorites.value);
-  } catch (e) {
-    console.error('Failed to save favorites', e);
-    alert('Kunne ikke gemme favoritter');
-  }
+  await setFavorites(uid.value, favorites.value);
 }
 
-// navigate to detail
-function openDetail(id) {
-  router.push({ name: 'ProductDetail', params: { id } });
+// navigation
+function goToCategory(cat) {
+  router.push({ name: 'CategoryList', params: { category: cat } });
 }
 </script>
 
 <style scoped>
-.chip-bar {
+.chips-bar {
   display: flex;
-  gap: 0.5rem;
   overflow-x: auto;
-  padding: 0.5rem 0;
+  gap: 0.5rem;
+  padding-bottom: 1rem;
 }
-.chip-bar::-webkit-scrollbar {
-  height: 6px;
+.category-section {
+  margin-bottom: 2rem;
 }
-.chip-bar::-webkit-scrollbar-thumb {
-  background: var(--ion-color-medium);
-  border-radius: 3px;
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.cards-scroll {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+.category-card {
+  flex: 0 0 260px;
+  min-width: 260px;
+  border-radius: 12px;
+  box-sizing: border-box;
 }
 .placeholder-box {
   width: 100%;
-  height: 150px;
+  height: 120px;
   background-color: #ccc;
-  border-radius: 4px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
   margin-bottom: 8px;
 }
-.card-header {
-  position: relative;
-}
+.card-header { position: relative; }
 .favorite-icon {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 8px; right: 8px;
   font-size: 1.4rem;
   color: var(--ion-color-primary);
   cursor: pointer;

@@ -1,51 +1,59 @@
 <template>
   <IonPage>
-    <!-- Global Header with Balance or Back Button -->
+    <!-- Global Header -->
     <IonHeader>
       <IonToolbar>
-        <!-- Left side: balance on main tabs, back on sub-pages -->
         <IonButtons slot="start">
           <template v-if="isMainTab">
-            <IonButton>
-              <IonIcon :icon="starOutline" aria-hidden="true" />
+            <!-- show balance on main tabs -->
+            <IonButton fill="clear" class="header-balance">
+              <IonIcon :icon="starOutline" />
               <span>{{ balance }}</span>
             </IonButton>
           </template>
           <template v-else>
-            <IonBackButton default-href="/tabs/hjem" />
+            <!-- show back button on sub-pages -->
+            <IonBackButton defaultHref="/tabs/hjem" />
           </template>
         </IonButtons>
 
         <IonTitle>GronOdense</IonTitle>
 
-        <!-- Right side: empty on main, optional slot for actions -->
         <IonButtons slot="end">
-          <!-- no balance here anymore -->
+          <template v-if="isMainTab && currentTab !== 'profil'">
+            <!-- notifications on main tabs except Profile -->
+            <IonButton fill="clear" @click="goToNotifications">
+              <IonIcon :icon="notificationsOutline" />
+            </IonButton>
+          </template>
+          <template v-if="isMainTab && currentTab === 'profil'">
+            <!-- settings only on Profile tab -->
+            <IonButton fill="clear" @click="goToSettings">
+              <IonIcon :icon="settingsOutline" />
+            </IonButton>
+          </template>
         </IonButtons>
       </IonToolbar>
     </IonHeader>
 
+    <!-- Tabs & Routes -->
     <IonTabs>
       <IonRouterOutlet />
-
       <IonTabBar slot="bottom">
         <IonTabButton tab="hjem" href="/tabs/hjem">
-          <IonIcon :icon="hjemIcon" aria-hidden="true" />
+          <IonIcon :icon="homeIcon" />
           <IonLabel>Hjem</IonLabel>
         </IonTabButton>
-
         <IonTabButton tab="shop" href="/tabs/shop">
-          <IonIcon :icon="shopIcon" aria-hidden="true" />
+          <IonIcon :icon="shopIcon" />
           <IonLabel>Pointshop</IonLabel>
         </IonTabButton>
-
         <IonTabButton tab="udfordringer" href="/tabs/udfordringer">
-          <IonIcon :icon="udfIcon" aria-hidden="true" />
+          <IonIcon :icon="udfIcon" />
           <IonLabel>Udfordringer</IonLabel>
         </IonTabButton>
-
         <IonTabButton tab="profil" href="/tabs/profil">
-          <IonIcon :icon="profilIcon" aria-hidden="true" />
+          <IonIcon :icon="profilIcon" />
           <IonLabel>Profil</IonLabel>
         </IonTabButton>
       </IonTabBar>
@@ -55,68 +63,64 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
-  IonButton,
-  IonIcon,
-  IonTabs,
-  IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
-  IonLabel,
-  IonBackButton
+  IonPage, IonHeader, IonToolbar, IonTitle,
+  IonButtons, IonButton, IonIcon, IonBackButton,
+  IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonLabel
 } from '@ionic/vue';
 import {
-  home, homeOutline,
-  gift, giftOutline,
-  podium, podiumOutline,
-  person, personOutline,
-  starOutline
+  homeOutline, home,
+  giftOutline, gift,
+  podiumOutline, podium,
+  personOutline, person,
+  starOutline, notificationsOutline, settingsOutline
 } from 'ionicons/icons';
 import { getBalance } from '@/firebaseRest.js';
 import { useAuth } from '@/composables/useAuth';
 
-const route = useRoute();
-
-// Determine active icons
-const hjemIcon = computed(() =>
-  route.path === '/tabs/hjem' ? home : homeOutline
-);
-const shopIcon = computed(() =>
-  route.path === '/tabs/shop' ? gift : giftOutline
-);
-const udfIcon = computed(() =>
-  route.path === '/tabs/udfordringer' ? podium : podiumOutline
-);
-const profilIcon = computed(() =>
-  route.path === '/tabs/profil' ? person : personOutline
-);
-
-// Define main tab paths
-const mainPaths = ['/tabs/hjem', '/tabs/shop', '/tabs/udfordringer', '/tabs/profil'];
-
-// Computed to check if current route is one of the main tabs
-const isMainTab = computed(() => mainPaths.includes(route.path));
-
-// Balance state
-const balance = ref(0);
+const router = useRouter();
+const route  = useRoute();
 const { uid } = useAuth();
 
-// Fetch balance on mount
+// define which paths are your four root tabs
+const mainPaths = ['/tabs/hjem', '/tabs/shop', '/tabs/udfordringer', '/tabs/profil'];
+
+// current “tab” segment
+const currentTab = computed(() => route.path.split('/')[2] || 'hjem');
+// whether we’re on one of those root tabs
+const isMainTab  = computed(() => mainPaths.includes(route.path));
+
+// pick filled vs outline icons
+const homeIcon    = computed(() => currentTab.value === 'hjem' ? home    : homeOutline);
+const shopIcon    = computed(() => currentTab.value === 'shop' ? gift    : giftOutline);
+const udfIcon     = computed(() => currentTab.value === 'udfordringer' ? podium : podiumOutline);
+const profilIcon  = computed(() => currentTab.value === 'profil' ? person : personOutline);
+
+// balance state
+const balance = ref(0);
 onMounted(async () => {
   try {
     balance.value = await getBalance(uid.value);
-  } catch (e) {
-    console.error('Failed to load balance', e);
+  } catch {
+    balance.value = 0;
   }
 });
+
+// navigation actions
+function goToNotifications() {
+  router.push({ name: 'Notifications' });
+}
+function goToSettings() {
+  router.push({ name: 'Settings' });
+}
 </script>
 
 <style scoped>
-/* Add any header-specific styling here */
+.header-balance {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ion-color-primary);
+}
 </style>
