@@ -17,7 +17,8 @@
           </template>
         </IonButtons>
 
-        <IonTitle>GronOdense</IonTitle>
+        <!-- dynamic title based on route -->
+        <IonTitle>{{ pageTitle }}</IonTitle>
 
         <IonButtons slot="end">
           <template v-if="isMainTab && currentTab !== 'profil'">
@@ -74,7 +75,8 @@ import {
   giftOutline, gift,
   podiumOutline, podium,
   personOutline, person,
-  starOutline, notificationsOutline, settingsOutline
+  starOutline, notificationsOutline, settingsOutline,
+  arrowBackOutline
 } from 'ionicons/icons';
 import { getBalance } from '@/firebaseRest.js';
 import { useAuth } from '@/composables/useAuth';
@@ -91,11 +93,24 @@ const currentTab = computed(() => route.path.split('/')[2] || 'hjem');
 // whether we’re on one of those root tabs
 const isMainTab  = computed(() => mainPaths.includes(route.path));
 
+// dynamic page title
+const pageTitle = computed(() => {
+  if (route.name === 'Notifications') return 'Notifikationer';
+  if (route.name === 'Settings')      return 'Indstillinger';
+  switch (currentTab.value) {
+    case 'hjem':         return 'Hjem';
+    case 'shop':         return 'Pointshop';
+    case 'udfordringer': return 'Udfordringer';
+    case 'profil':       return 'Profil';
+    default:             return 'GronOdense';
+  }
+});
+
 // pick filled vs outline icons
-const homeIcon    = computed(() => currentTab.value === 'hjem' ? home    : homeOutline);
-const shopIcon    = computed(() => currentTab.value === 'shop' ? gift    : giftOutline);
-const udfIcon     = computed(() => currentTab.value === 'udfordringer' ? podium : podiumOutline);
-const profilIcon  = computed(() => currentTab.value === 'profil' ? person : personOutline);
+const homeIcon   = computed(() => currentTab.value === 'hjem'         ? home    : homeOutline);
+const shopIcon   = computed(() => currentTab.value === 'shop'         ? gift    : giftOutline);
+const udfIcon    = computed(() => currentTab.value === 'udfordringer' ? podium  : podiumOutline);
+const profilIcon = computed(() => currentTab.value === 'profil'       ? person  : personOutline);
 
 // balance state
 const balance = ref(0);
@@ -113,6 +128,9 @@ function goToNotifications() {
 }
 function goToSettings() {
   router.push({ name: 'Settings' });
+}
+function goBack() {
+  router.back();
 }
 </script>
 
