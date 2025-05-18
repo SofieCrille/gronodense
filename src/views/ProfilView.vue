@@ -6,7 +6,7 @@
       </IonToolbar>
     </IonHeader>
     <IonContent class="ion-padding">
-      <p>Velkommen til Profil‑fanen!</p>
+      <p>Velkommen til Hjem‑fanen!</p>
     </IonContent>
   </IonPage>
 </template>

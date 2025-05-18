@@ -25,10 +25,6 @@ const {
     type: [String, Object],
     required: true
   },
-  rightIcon: {
-    type: [String, Object],
-    required: true
-  },
   onActionClick: Function,
   bgColor: { type: String, default: '#ffffff' },
   textColor: { type: String, default: '#000000' }
@@ -43,7 +39,6 @@ const {
     <IonCardHeader>
       <div class="icons-row">
         <IonIcon :icon="leftIcon" size="large" :style="{ color: textColor }" />
-        <IonIcon :icon="rightIcon" size="large" :style="{ color: textColor }" />
       </div>
       <IonCardTitle>{{ title }}</IonCardTitle>
     </IonCardHeader>
@@ -71,7 +66,7 @@ const {
 .challenge-card {
   flex: 0 0 48%;
   max-width: 48%;
-  min-width: 150px;
+  min-width: 255px;
   box-sizing: border-box;
 }
 .icons-row {
@@ -84,7 +79,8 @@ const {
 .challenge-card {
   flex: 0 0 48%;
   max-width: 48%;
-  min-width: 150px;
+  min-width: 255px;
+  min-height: 280px;
   box-sizing: border-box;
 }
 
