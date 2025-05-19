@@ -15,4 +15,23 @@
   .ion-page-hidden[inert] {
     pointer-events: none;
   }
+
+  ion-toolbar {
+    --min-height: 70px;
+    --border-width: 0 !important;
+  }
+
+  /* --- Edge-to-edge global overrides --- */
+ion-app,
+ion-page,
+ion-content {
+  /* kill Ionic’s built-in content padding */
+  --padding-start:       0px !important;
+  --padding-end:         0px !important;
+
+  /* kill the safe-area inset on left/right (notch zones) */
+  --ion-safe-area-left:  0px !important;
+  --ion-safe-area-right: 0px !important;
+}
+
   
