@@ -11,6 +11,8 @@
     --ion-tab-button: #02382C!;
 
     --ion-font-family: 'Montserrat', sans-serif;
+
+    --ion-color-primary:    #02382C;
   }
 
   ion-tab-bar {
@@ -34,5 +36,7 @@ ion-content {
   --ion-safe-area-left:  0px !important;
   --ion-safe-area-right: 0px !important;
 }
+
+
 
   

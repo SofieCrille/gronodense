@@ -129,8 +129,8 @@ function startTask(id) {
 
 // 2) Favorites
 const rewards = [
-  { id: 1, title: '100 kr gavekort', vendor: 'Odense Velvære', points: 300, image: 'public/img/odensevelvaere.jpg' },
-  { id: 2, title: '50 kr café-bon', vendor: 'Café Aroma', points: 150, image: 'public/img/cafearoma.jpg' }
+  { id: 1, title: '100 kr gavekort', vendor: 'Odense Velvære', points: 300, image: 'img/odensevelvaere.jpg' },
+  { id: 2, title: '50 kr café-bon', vendor: 'Café Aroma', points: 150, image: 'img/cafearoma.jpg' }
 ];
 const favorites = ref([]);
 onMounted(async () => {
