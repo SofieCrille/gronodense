@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+
 :root {
     --ion-background-color: #F6F3ED;
   
@@ -6,6 +9,8 @@
     --ion-tab-bar-background: #F6F3ED;
 
     --ion-tab-button: #02382C!;
+
+    --ion-font-family: 'Montserrat', sans-serif;
   }
 
   ion-tab-bar {
@@ -21,15 +26,11 @@
     --border-width: 0 !important;
   }
 
-  /* --- Edge-to-edge global overrides --- */
 ion-app,
 ion-page,
 ion-content {
-  /* kill Ionic’s built-in content padding */
   --padding-start:       0px !important;
   --padding-end:         0px !important;
-
-  /* kill the safe-area inset on left/right (notch zones) */
   --ion-safe-area-left:  0px !important;
   --ion-safe-area-right: 0px !important;
 }
