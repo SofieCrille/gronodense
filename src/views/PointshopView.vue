@@ -27,7 +27,11 @@
       >
         <div class="section-header">
           <h3>{{ categoryNames[group.category] }}</h3>
-          <IonButton fill="clear" size="small" @click="goToCategory(group.category)">
+          <IonButton 
+            fill="clear" 
+            size="small" 
+            @click="goToCategory(group.category)"
+          >
             Se alle &rsaquo;
           </IonButton>
         </div>
@@ -35,11 +39,15 @@
           <IonCard
             v-for="item in group.items"
             :key="item.id"
-            :routerLink="{ name: 'CategoryList', params: { category: group.category } }"
-            routerDirection="forward"
+            button
+            @click="openItem(item.id)"
             class="category-card"
           >
-          <img :src="item.image" alt="" class="card-image" />
+            <img 
+              :src="item.image" 
+              alt="" 
+              class="card-image" 
+            />
             <IonCardHeader class="card-header">
               <IonCardTitle>{{ item.title }}</IonCardTitle>
               <IonCardSubtitle>{{ item.vendor }}</IonCardSubtitle>
@@ -67,7 +75,7 @@ import {
   IonChip, IonButton, IonCard, IonCardHeader, IonCardTitle,
   IonCardSubtitle, IonCardContent, IonIcon
 } from '@ionic/vue';
-import { image, star, starOutline } from 'ionicons/icons';
+import { star, starOutline } from 'ionicons/icons';
 import { getFavorites, setFavorites } from '@/firebaseRest';
 import { useAuth } from '@/composables/useAuth';
 
@@ -76,11 +84,11 @@ const { uid } = useAuth();
 
 //  -- your rewards data, each with a category key:
 const rewards = [
-  { id: 1, title: '50 kr rabat',           vendor: 'Butik Cirkel',     points: 200, category: 'trending', image: 'public/img/zirkel.webp' },
-  { id: 2, title: '100 kr gavekort',       vendor: 'Odense Velvære',   points: 300, category: 'skonhed', image: 'public/img/odensevelvaere.jpg' },
-  { id: 3, title: '30% mode & accessoirer',vendor: 'Modehuset',       points: 250, category: 'skonhed', image: 'public/img/modehuset.jpg' },
-  { id: 4, title: '20 kr café-bon',        vendor: 'Café Aroma',       points: 150, category: 'mad', image: 'public/img/cafearoma.jpg' },
-  { id: 5, title: 'Biografbillet',         vendor: 'Cinema City',      points: 220, category: 'oplevelser', image: 'public/img/cinemacity.jpg' },
+  { id: 1, title: '50 kr rabat',            vendor: 'Butik Cirkel',   points: 200, category: 'trending',    image: '/img/zirkel.webp' },
+  { id: 2, title: '100 kr gavekort',        vendor: 'Odense Velvære', points: 300, category: 'skonhed',     image: '/img/odensevelvaere.jpg' },
+  { id: 3, title: '30% mode & accessories', vendor: 'Modehuset',      points: 250, category: 'skonhed',     image: '/img/modehuset.jpg' },
+  { id: 4, title: '20 kr café-bon',         vendor: 'Café Aroma',     points: 150, category: 'mad',         image: '/img/cafearoma.jpg' },
+  { id: 5, title: 'Biografbillet',          vendor: 'Cinema City',    points: 220, category: 'oplevelser',  image: '/img/cinemacity.jpg' },
   // …etc.
 ];
 
@@ -104,8 +112,11 @@ const groupedRewards = computed(() =>
 // favorites
 const favorites = ref([]);
 onMounted(async () => {
-  try { favorites.value = await getFavorites(uid.value) }
-  catch { favorites.value = [] }
+  try { 
+    favorites.value = await getFavorites(uid.value);
+  } catch {
+    favorites.value = [];
+  }
 });
 async function toggleFavorite(id) {
   const idx = favorites.value.indexOf(id);
@@ -117,6 +128,9 @@ async function toggleFavorite(id) {
 // navigation
 function goToCategory(cat) {
   router.push({ name: 'CategoryList', params: { category: cat } });
+}
+function openItem(id) {
+  router.push({ name: 'ProductDetail', params: { id } });
 }
 </script>
 
@@ -156,10 +170,13 @@ function goToCategory(cat) {
   border-top-right-radius: 12px;
   margin-bottom: 8px;
 }
-.card-header { position: relative; }
+.card-header {
+  position: relative;
+}
 .favorite-icon {
   position: absolute;
-  top: 8px; right: 8px;
+  top: 8px;
+  right: 8px;
   font-size: 1.4rem;
   color: var(--ion-color-primary);
   cursor: pointer;
