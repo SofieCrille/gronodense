@@ -39,7 +39,7 @@
             routerDirection="forward"
             class="category-card"
           >
-            <div class="placeholder-box" />
+          <img :src="item.image" alt="" class="card-image" />
             <IonCardHeader class="card-header">
               <IonCardTitle>{{ item.title }}</IonCardTitle>
               <IonCardSubtitle>{{ item.vendor }}</IonCardSubtitle>
@@ -67,7 +67,7 @@ import {
   IonChip, IonButton, IonCard, IonCardHeader, IonCardTitle,
   IonCardSubtitle, IonCardContent, IonIcon
 } from '@ionic/vue';
-import { star, starOutline } from 'ionicons/icons';
+import { image, star, starOutline } from 'ionicons/icons';
 import { getFavorites, setFavorites } from '@/firebaseRest';
 import { useAuth } from '@/composables/useAuth';
 
@@ -76,11 +76,11 @@ const { uid } = useAuth();
 
 //  -- your rewards data, each with a category key:
 const rewards = [
-  { id: 1, title: '50 kr rabat',           vendor: 'Butik Cirkel',     points: 200, category: 'trending' },
-  { id: 2, title: '100 kr gavekort',       vendor: 'Odense Velvære',   points: 300, category: 'skonhed' },
-  { id: 3, title: '30% mode & accessoirer',vendor: 'Modehuset',       points: 250, category: 'skonhed' },
-  { id: 4, title: '20 kr café-bon',        vendor: 'Café Aroma',       points: 150, category: 'mad' },
-  { id: 5, title: 'Biografbillet',         vendor: 'Cinema City',      points: 220, category: 'oplevelser' },
+  { id: 1, title: '50 kr rabat',           vendor: 'Butik Cirkel',     points: 200, category: 'trending', image: 'public/img/zirkel.webp' },
+  { id: 2, title: '100 kr gavekort',       vendor: 'Odense Velvære',   points: 300, category: 'skonhed', image: 'public/img/odensevelvaere.jpg' },
+  { id: 3, title: '30% mode & accessoirer',vendor: 'Modehuset',       points: 250, category: 'skonhed', image: 'public/img/modehuset.jpg' },
+  { id: 4, title: '20 kr café-bon',        vendor: 'Café Aroma',       points: 150, category: 'mad', image: 'public/img/cafearoma.jpg' },
+  { id: 5, title: 'Biografbillet',         vendor: 'Cinema City',      points: 220, category: 'oplevelser', image: 'public/img/cinemacity.jpg' },
   // …etc.
 ];
 
@@ -148,10 +148,10 @@ function goToCategory(cat) {
   border-radius: 12px;
   box-sizing: border-box;
 }
-.placeholder-box {
+.card-image {
   width: 100%;
   height: 120px;
-  background-color: #ccc;
+  object-fit: cover;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
   margin-bottom: 8px;

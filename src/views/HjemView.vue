@@ -51,7 +51,7 @@
             @click="openDetail(item.id)"
             class="favorite-card"
           >
-            <div class="placeholder-img" />
+          <img :src="item.image" alt="" class="card-image" />
             <IonCardHeader>
               <IonCardTitle>{{ item.title }}</IonCardTitle>
               <IonCardSubtitle>{{ item.vendor }}</IonCardSubtitle>
@@ -129,8 +129,8 @@ function startTask(id) {
 
 // 2) Favorites
 const rewards = [
-  { id: 1, title: '100 kr gavekort', vendor: 'Odense Velvære', points: 300 },
-  { id: 2, title: '50 kr café-bon', vendor: 'Café Aroma', points: 150 }
+  { id: 1, title: '100 kr gavekort', vendor: 'Odense Velvære', points: 300, image: 'public/img/odensevelvaere.jpg' },
+  { id: 2, title: '50 kr café-bon', vendor: 'Café Aroma', points: 150, image: 'public/img/cafearoma.jpg' }
 ];
 const favorites = ref([]);
 onMounted(async () => {
@@ -166,7 +166,14 @@ function viewDetails(id) {
 .favorites-section { margin: 2rem 0; }
 .favorites-bar { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem; }
 .favorite-card { flex: 0 0 260px; min-width: 260px; border-radius: 12px; }
-.placeholder-img { width: 100%; height: 120px; background-color: #ccc; border-top-left-radius: 12px; border-top-right-radius: 12px; }
+.card-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  margin-bottom: 8px;
+}
 .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; }
 .favorite-icon { font-size: 1.4rem; cursor: pointer; color: var(--ion-color-primary); }
 .header-balance { display: flex; align-items: center; gap: 0.25rem; color: var(--ion-color-primary); font-weight: bold; }
