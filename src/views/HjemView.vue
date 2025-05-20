@@ -29,11 +29,11 @@
       <div class="card-grid">
         <ChallengeCard
           v-for="task in tasks"
+          :leftIcon="task.icon"
           :key="task.id"
           :title="task.title"
           :description="task.description"
           :buttonText="task.buttonText"
-          :leftIcon="task.icon"
           :bgColor="task.bgColor"
           :textColor="task.textColor"
           :onActionClick="() => startTask(task.id)"
@@ -120,8 +120,8 @@ function goToNotifications() {
 
 // 1) Tasks
 const tasks = ref([
-  { id: 'c1', title: 'Bæredygtig transport', description: 'Tag cyklen eller offentlig transport...', buttonText: '+20 pts', icon: bicycleOutline, bgColor: '#C9E0DD', textColor: '#02382C' },
-  { id: 'c2', title: 'Affaldssortering', description: 'Lær hvordan du skralder korrekt...', buttonText: '+30 pts', icon: trashOutline, bgColor: '#D2E3BC', textColor: '#02382C' }
+  { id: 'c1', title: 'Bæredygtig transport', description: 'Tag cyklen eller offentlig transport, fx. til eller fra uddanelse/arbejde. ', buttonText: 'Begynd nu', icon: bicycleOutline, bgColor: '#C9E0DD', textColor: '#02382C' },
+  { id: 'c2', title: 'Affalds sortering', description: 'Lær hvordan du skralder korrekt med vores søgemaskine og scanner', buttonText: 'Begynd nu', icon: trashOutline, bgColor: '#D2E3BC', textColor: '#02382C' }
 ]);
 function startTask(id) {
   router.push({ name: 'ChallengeDetails', params: { id } });
@@ -161,8 +161,7 @@ function viewDetails(id) {
 </script>
 
 <style scoped>
-.section-title { margin: 1rem 0 0.5rem; }
-.card-grid { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; }
+.card-grid { display: flex; overflow-x: auto; padding-bottom: 1rem; }
 .favorites-section { margin: 2rem 0; }
 .favorites-bar { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem; }
 .favorite-card { flex: 0 0 260px; min-width: 260px; border-radius: 12px; }

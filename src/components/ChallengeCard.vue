@@ -36,12 +36,15 @@ const {
     class="challenge-card"
     :style="{ backgroundColor: bgColor, color: textColor }"
   >
-    <IonCardHeader>
-      <div class="icons-row">
-        <IonIcon :icon="leftIcon" size="large" :style="{ color: textColor }" />
-      </div>
-      <IonCardTitle>{{ title }}</IonCardTitle>
-    </IonCardHeader>
+  <IonCardHeader class="card-header">
+  <IonIcon
+    class="main-icon"
+    :icon="leftIcon"
+    size="large"
+    :style="{ color: textColor }"
+  />
+  <IonCardTitle>{{ title }}</IonCardTitle>
+</IonCardHeader>
 
     <IonCardContent>
       <p>{{ description }}</p>
@@ -49,12 +52,6 @@ const {
         class="card-button"
         fill="outline"
         @click="onActionClick"
-        :style="{
-          '--color': textColor,
-          '--border-color': textColor,
-          '--border-radius': '12px',
-          'box-shadow': 'none'
-        }"
       >
         {{ buttonText }}
       </IonButton>
@@ -63,55 +60,58 @@ const {
 </template>
 
 <style scoped>
-.challenge-card {
-  flex: 0 0 48%;
-  max-width: 48%;
-  min-width: 255px;
-  box-sizing: border-box;
-}
-.icons-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
 
 .challenge-card {
-  flex: 0 0 48%;
-  max-width: 48%;
-  min-width: 255px;
+  min-width: 270px;
   min-height: 280px;
   box-sizing: border-box;
+
+  /* theme color */
+  color: #02382C;
 }
 
-.icons-row {
+.card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-.challenge-card {
-  width: 48%;
-  margin: 1%;
-  box-sizing: border-box;
+  flex-direction: column;
 }
 
-.icons-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
+.main-icon {
+
+  width: 3rem;
+  height: 3rem;
 }
 
+.card-header ion-card-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  color: #02382C;
+}
+
+/* ensure IonIcons inherit properly */
+.challenge-card ion-icon {
+  color: #02382C !important;
+}
+
+/* action button */
 .card-button {
-  width: 80%;
+  width: 130px;
+  margin: 12px auto 0;
   font-weight: bold;
-  margin-top: 12px;
   transition: all 0.3s ease;
-  text-transform: none !important;
+  --color: #02382C;
+  --border-color: #02382C;
+  --border-radius: 50px;
+  box-shadow: none;
 }
 
 .card-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  filter: brightness(0.95);
+  background-color: rgba(2, 56, 44, 0.1);
 }
+
+.card-description {
+  font-size: 20px;
+}
+
+
 </style>
+
