@@ -82,6 +82,10 @@ const {
   color: #02382C;
   border-radius: 15px;
   margin: 8px 0;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 6px rgba(0, 0, 0, 0.06),
+    0 8px 12px rgba(0, 0, 0, 0.03);
 }
 
 .card-title {
@@ -121,13 +125,13 @@ const {
   position: absolute;
   bottom: 16px;
   margin-left: 16px;
-
+  text-transform: none !important;
   font-weight: 600;
   font-size: 16px;
   box-shadow: none;
 
   --color: #02382C;
-  --border-color: #02382C;
+  --border: #02382C 1px;
   --border-radius: 50px;
 }
 

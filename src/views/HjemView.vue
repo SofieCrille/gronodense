@@ -20,7 +20,10 @@
 
     <!-- remove Ionic’s default horizontal padding -->
     <IonContent class="no-pad" style="background-color: #C9E0DD;">
+      <div class="section-header">
       <h3 class="section-title">Opgaver</h3>
+      <span class="challenge-count">{{ challengeCount }} udfordringer</span>
+    </div>
 
       <!-- scrollable snapping card row -->
       <div class="card-grid" ref="grid" @scroll="onScroll">
@@ -46,6 +49,10 @@
           :class="{ active: i === currentIndex }"
         ></li>
       </ul>
+
+
+  <!-- divider under Opgaver -->
+ <div class="section-divider"></div>
 
       <!-- FAVORITTER & IGANGVÆRENDE (unchanged) -->
       <div v-if="favoriteItems.length" class="favorites-section">
@@ -105,28 +112,14 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonButtons,
-  IonButton,
-  IonIcon,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCardContent,
-  IonBadge,
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
+  IonButtons, IonButton, IonIcon, IonCard, IonCardHeader,
+  IonCardTitle, IonCardSubtitle, IonCardContent, IonBadge
 } from '@ionic/vue';
 import {
-  star,
-  notificationsOutline,
-  bicycleOutline,
-  trashOutline,
-  bagOutline,
-  radioOutline,
+  star, notificationsOutline,
+  bicycleOutline, trashOutline,
+  bagOutline, radioOutline
 } from 'ionicons/icons';
 import ChallengeCard from '@/components/ChallengeCard.vue';
 import UdfordringerCard from '@/components/UdfordringerCard.vue';
@@ -145,21 +138,32 @@ function goToNotifications() {
   router.push({ name: 'Notifications' });
 }
 
-// tasks
+// tasks (declare this **before** the computed)
 const tasks = ref([
-  { id: 'c1', title: 'Bæredygtig transport', description: 'Tag cyklen...', buttonText: 'Begynd nu', icon: bicycleOutline, bgColor: '#C9E0DD', textColor: '#02382C', points: 20 },
-  { id: 'c2', title: 'Affalds sortering', description: 'Lær hvordan...', buttonText: 'Begynd nu', icon: trashOutline, bgColor: '#D2E3BC', textColor: '#02382C', points: 20 },
-  { id: 'c3', title: 'Besøg butik', description: 'Besøg butik...', buttonText: 'Begynd nu', icon: bagOutline, bgColor: '#E8CDC6', textColor: '#02382C', points: 20 },
-  { id: 'c4', title: 'Podcast', description: 'Lyt til podcasten…', buttonText: 'Begynd nu', icon: radioOutline, bgColor: '#FFE0C6', textColor: '#02382C', points: 20 },
+  { id:'c1', title:'Bæredygtig transport', description:'Tag cyklen…',  buttonText:'Begynd nu', icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C', points:20 },
+  { id:'c2', title:'Affalds sortering',    description:'Lær hvordan…', buttonText:'Begynd nu', icon:trashOutline,   bgColor:'#D2E3BC', textColor:'#02382C', points:20 },
+  { id:'c3', title:'Besøg butik',          description:'Besøg butik…',buttonText:'Begynd nu', icon:bagOutline,     bgColor:'#E8CDC6', textColor:'#02382C', points:20 },
+  { id:'c4', title:'Podcast',              description:'Lyt til podcast…',buttonText:'Begynd nu', icon:radioOutline,   bgColor:'#FFE0C6', textColor:'#02382C', points:20 },
 ]);
-function startTask(id) {
-  router.push({ name: 'ChallengeDetails', params: { id } });
+
+// now this computed will see tasks.value correctly
+const challengeCount = computed(() => tasks.value.length);
+
+// scroll-dots for tasks
+const grid = ref(null), currentIndex = ref(0);
+function onScroll() {
+  const el = grid.value;
+  if (!el || !el.children.length) return;
+  const card = el.children[0];
+  const gap = parseInt(getComputedStyle(el).gap) || 0;
+  currentIndex.value = Math.round(el.scrollLeft / (card.offsetWidth + gap));
 }
+onMounted(onScroll);
 
 // favorites
 const rewards = [
-  { id: 1, title: '100 kr gavekort', vendor: 'Odense Velvære', points: 300, image: 'img/odensevelvaere.jpg' },
-  { id: 2, title: '50 kr café-bon', vendor: 'Café Aroma', points: 150, image: 'img/cafearoma.jpg' }
+  { id:1, title:'100 kr gavekort', vendor:'Odense Velvære', points:300, image:'img/odensevelvaere.jpg' },
+  { id:2, title:'50 kr café-bon',    vendor:'Café Aroma',      points:150, image:'img/cafearoma.jpg' }
 ];
 const favorites = ref([]);
 onMounted(async () => {
@@ -174,36 +178,28 @@ async function toggleFavorite(id) {
   await setFavorites(uid.value, favorites.value);
 }
 function openDetail(id) {
-  router.push({ name: 'ProductDetail', params: { id } });
+  router.push({ name:'ProductDetail', params:{id} });
 }
 
-// ongoing
+// ongoing challenges
 const ongoing = ref([
-  { id: 'u1', title: 'Juni cykel udfordring', daysLeft: 8, points: 50, icon: bicycleOutline, bgColor: '#C9E0DD', textColor: '#02382C' }
+  { id:'u1', title:'Juni cykel udfordring', daysLeft:8, points:50, icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C' }
 ]);
 function viewDetails(id) {
-  router.push({ name: 'ChallengeDetails', params: { id } });
+  router.push({ name:'ChallengeDetails', params:{id} });
 }
 
-// scroll‐dots logic for tasks
-const grid = ref(null), currentIndex = ref(0);
-function onScroll() {
-  const el = grid.value; if (!el) return;
-  const card = el.children[0], gap = parseInt(getComputedStyle(el).gap) || 0;
-  const w = card.offsetWidth + gap;
-  currentIndex.value = Math.round(el.scrollLeft / w);
-}
-onMounted(onScroll);
-
-// scroll‐dots logic for ongoing
+// scroll-dots for ongoing
 const grid2 = ref(null), ongoingIndex = ref(0);
 function onScroll2() {
-  const el = grid2.value; if (!el) return;
-  const card = el.children[0], gap = parseInt(getComputedStyle(el).gap) || 0;
-  const w = card.offsetWidth + gap;
-  ongoingIndex.value = Math.round(el.scrollLeft / w);
+  const el = grid2.value;
+  if (!el || !el.children.length) return;
+  const card = el.children[0];
+  const gap = parseInt(getComputedStyle(el).gap) || 0;
+  ongoingIndex.value = Math.round(el.scrollLeft / (card.offsetWidth + gap));
 }
 onMounted(onScroll2);
+
 </script>
 
 <style scoped>
@@ -234,6 +230,7 @@ onMounted(onScroll2);
 .card-grid > * {
   flex-shrink: 0;
   scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 /* 3) Pagination dots (optional) */
@@ -259,6 +256,31 @@ onMounted(onScroll2);
   background: #02382C;
 }
 
-/* …rest of your styles… */
+.section-divider {
+  width: calc(100% - 40px); /* account for your 20px insets */
+  height: 1px;
+  background: #DDDBD7;
+  margin: 30px 20px;        /* vertical space + horizontal inset */
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0 20px;
+  margin: 16px 0 16px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.challenge-count {
+  font-size: 12px;
+  font-weight: 400;
+}
+
 </style>
 
