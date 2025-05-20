@@ -5,18 +5,20 @@ import {
   IonCardTitle,
   IonCardContent,
   IonButton,
-  IonIcon
+  IonIcon,
 } from '@ionic/vue';
+
+import { starOutline } from 'ionicons/icons';
 
 const {
   title,
   description,
   buttonText,
   leftIcon,
-  rightIcon,
   onActionClick,
   bgColor,
-  textColor
+  textColor,
+  points
 } = defineProps({
   title: String,
   description: String,
@@ -27,7 +29,8 @@ const {
   },
   onActionClick: Function,
   bgColor: { type: String, default: '#ffffff' },
-  textColor: { type: String, default: '#000000' }
+  textColor: { type: String, default: '#000000' },
+  points: { type: Number, required: true } 
 });
 </script>
 
@@ -36,82 +39,122 @@ const {
     class="challenge-card"
     :style="{ backgroundColor: bgColor, color: textColor }"
   >
-  <IonCardHeader class="card-header">
-  <IonIcon
-    class="main-icon"
-    :icon="leftIcon"
-    size="large"
-    :style="{ color: textColor }"
-  />
-  <IonCardTitle>{{ title }}</IonCardTitle>
-</IonCardHeader>
+    <!-- Points bubble -->
+    <div class="points-bubble">
+      <IonIcon :icon="starOutline" />
+      <span>+{{ points }}</span>
+    </div>
 
-    <IonCardContent>
-      <p>{{ description }}</p>
-      <IonButton
-        class="card-button"
-        fill="outline"
-        @click="onActionClick"
-      >
-        {{ buttonText }}
-      </IonButton>
+    <!-- Header -->
+    <IonCardHeader class="card-header">
+      <IonIcon class="main-icon" :icon="leftIcon" :style="{ color: textColor }" />
+      <IonCardTitle class="card-title">{{ title }}</IonCardTitle>
+    </IonCardHeader>
+
+    <!-- Description -->
+    <IonCardContent class="card-content">
+      <p class="card-description">{{ description }}</p>
     </IonCardContent>
+
+    <!-- Action button -->
+    <IonButton
+      class="card-button"
+      fill="outline"
+      @click="onActionClick"
+      :style="{
+        '--color': textColor,
+        '--border-color': textColor,
+        '--border-radius': '50px',
+      }"
+    >
+      {{ buttonText }}
+    </IonButton>
   </IonCard>
 </template>
 
 <style scoped>
-
 .challenge-card {
+  position: relative;
   min-width: 270px;
-  min-height: 280px;
+  height: 310px;
+  padding: 0 10px;
   box-sizing: border-box;
-
-  /* theme color */
   color: #02382C;
+  border-radius: 15px;
+  margin: 8px 0;
+}
+
+.card-title {
+  width: 10ch;
 }
 
 .card-header {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
 }
 
 .main-icon {
-
   width: 3rem;
   height: 3rem;
+  margin-bottom: 16px;
 }
 
-.card-header ion-card-title {
+.card-title {
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
+  font-size: 24px;
+  margin: 0;
   color: #02382C;
 }
 
-/* ensure IonIcons inherit properly */
-.challenge-card ion-icon {
-  color: #02382C !important;
+.card-description {
+  font-size: 14px;
+  margin: 0;
+  color: #02382C;
+  width: 12rem;
 }
 
-/* action button */
+/* Position the button */
 .card-button {
-  width: 130px;
-  margin: 12px auto 0;
-  font-weight: bold;
-  transition: all 0.3s ease;
+  position: absolute;
+  bottom: 16px;
+  margin-left: 16px;
+
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: none;
+
   --color: #02382C;
   --border-color: #02382C;
   --border-radius: 50px;
-  box-shadow: none;
 }
 
 .card-button:hover {
   background-color: rgba(2, 56, 44, 0.1);
 }
 
-.card-description {
-  font-size: 20px;
+/* Top-right points bubble */
+.points-bubble {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  background: #ffffff;
+  color: #02382C;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 16px;
 }
 
+.points-bubble ion-icon {
+  font-size: 1rem;
+}
 
 </style>
-
