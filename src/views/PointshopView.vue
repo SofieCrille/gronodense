@@ -135,33 +135,49 @@ function openItem(id) {
 </script>
 
 <style scoped>
+/* Chips at top (unchanged) */
 .chips-bar {
   display: flex;
   overflow-x: auto;
   gap: 0.5rem;
   padding-bottom: 1rem;
 }
+
+/* Whole category section spacing */
 .category-section {
   margin-bottom: 2rem;
 }
+
+/* Section header (title + “se alle”) */
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
 }
+
+/* Scroll container: inset 20px on each side, hide native scrollbars */
 .cards-scroll {
   display: flex;
-  gap: 1rem;
   overflow-x: auto;
-  padding-bottom: 0.5rem;
+  padding-inline-start: 20px;
+  padding-inline-end:   20px;
+  padding-bottom:      0.5rem;
+  scrollbar-width: none;            /* FF */
 }
+.cards-scroll::-webkit-scrollbar {
+  display: none;                    /* WebKit */
+}
+
+/* Each card exactly viewport width minus 40px (20px × 2) */
 .category-card {
-  flex: 0 0 260px;
-  min-width: 260px;
+  flex: 0 0 calc(100vw - 40px);
+  max-width: calc(100vw - 40px);
   border-radius: 12px;
   box-sizing: border-box;
 }
+
+/* Image at top of card */
 .card-image {
   width: 100%;
   height: 120px;
@@ -170,9 +186,13 @@ function openItem(id) {
   border-top-right-radius: 12px;
   margin-bottom: 8px;
 }
+
+/* Position icon in header */
 .card-header {
   position: relative;
 }
+
+/* Favorite icon styling */
 .favorite-icon {
   position: absolute;
   top: 8px;
@@ -181,4 +201,5 @@ function openItem(id) {
   color: var(--ion-color-primary);
   cursor: pointer;
 }
+
 </style>

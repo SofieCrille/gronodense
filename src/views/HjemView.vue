@@ -22,7 +22,7 @@
     <IonContent class="no-pad" style="background-color: #C9E0DD;">
       <div class="section-header">
       <h3 class="section-title">Opgaver</h3>
-      <span class="challenge-count">{{ challengeCount }} udfordringer</span>
+      <span class="challenge-count">{{ challengeCount }} opgaver</span>
     </div>
 
       <!-- scrollable snapping card row -->
