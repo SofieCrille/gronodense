@@ -35,19 +35,20 @@
           :bgColor="task.bgColor"
           :textColor="task.textColor"
           :points="task.points"
-          :onActionClick="() => startTask(task.id)" :circleColor="i === 0 ? '#858489' : '#ffffff'"
+          :onActionClick="() => startTask(task.id)"
         />
       </div>
+      <!-- Dots for tasks -->
       <ul class="dots">
         <li v-for="(_, i) in tasks" :key="i" :class="{ active: i === currentIndex }"></li>
       </ul>
 
       <div class="section-divider"></div>
 
-      <!-- Favoritter -->
+      <!-- FAVORITTER carousel (no dots) -->
       <div v-if="favoriteItems.length" class="favorites-section">
         <h3 class="section-title">Favoritter</h3>
-        <div class="cards-scroll">
+        <div class="cards-scroll" ref="favGrid" @scroll="onFavScroll">
           <BelønningerCard
             v-for="item in favoriteItems"
             :key="item.id"
@@ -62,7 +63,7 @@
         </div>
       </div>
 
-      <!-- Igangværende udfordringer -->
+      <!-- IGANGVÆRENDE UDFORDRINGER -->
       <h3 class="section-title">Igangværende udfordringer</h3>
       <div class="card-grid" ref="grid2" @scroll="onScroll2">
         <UdfordringerCard
@@ -78,9 +79,6 @@
           @action="() => viewDetails(u.id)"
         />
       </div>
-      <ul class="dots">
-        <li v-for="(_, i) in ongoing" :key="i" :class="{ active: i === ongoingIndex }"></li>
-      </ul>
     </IonContent>
   </IonPage>
 </template>
@@ -108,21 +106,25 @@ import { useAuth } from '@/composables/useAuth';
 const router = useRouter();
 const { uid } = useAuth();
 
-// Balance
+// -- Balance & Notifications --
 const balance = ref(0);
-onMounted(async () => { balance.value = await getBalance(uid.value); });
-function goToNotifications() { router.push({ name: 'Notifications' }); }
+onMounted(async () => {
+  balance.value = await getBalance(uid.value);
+});
+function goToNotifications() {
+  router.push({ name: 'Notifications' });
+}
 
-// Tasks
+// -- Opgaver (Tasks) --
 const tasks = ref([
   { id:'c1', title:'Bæredygtig transport', description:'Tag cyklen…', buttonText:'Begynd nu', icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C', points:20 },
-  { id:'c2', title:'Affaldssortering', description:'Lær hvordan…', buttonText:'Begynd nu', icon:trashOutline,   bgColor:'#D2E3BC', textColor:'#02382C', points:20 },
-  { id:'c3', title:'Besøg butik', description:'Besøg butik…', buttonText:'Begynd nu', icon:bagOutline,     bgColor:'#E8CDC6', textColor:'#02382C', points:20 },
-  { id:'c4', title:'Podcast', description:'Lyt til podcast…', buttonText:'Begynd nu', icon:radioOutline,   bgColor:'#FFE0C6', textColor:'#02382C', points:20 },
+  { id:'c2', title:'Affaldssortering', description:'Lær hvordan…', buttonText:'Begynd nu', icon:trashOutline, bgColor:'#D2E3BC', textColor:'#02382C', points:20 },
+  { id:'c3', title:'Besøg butik', description:'Besøg butik…', buttonText:'Begynd nu', icon:bagOutline, bgColor:'#E8CDC6', textColor:'#02382C', points:20 },
+  { id:'c4', title:'Podcast', description:'Lyt til podcast…', buttonText:'Begynd nu', icon:radioOutline, bgColor:'#FFE0C6', textColor:'#02382C', points:20 },
 ]);
 const challengeCount = computed(() => tasks.value.length);
 
-// Scroll
+// Scroll-snapping for tasks
 const grid = ref(null), currentIndex = ref(0);
 function onScroll() {
   const el = grid.value;
@@ -133,47 +135,68 @@ function onScroll() {
 }
 onMounted(onScroll);
 
-// Favorites
+// -- Favorites --
 const rewards = [
-  { id:1, title:'100 kr gavekort', vendor:'Odense Velvære', points:300, image:'/img/odensevelvaere.jpg' },
-  { id:2, title:'50 kr café-bon',   vendor:'Café Aroma',      points:150, image:'/img/cafearoma.jpg' }
+  { id:1, title:'100 kr gavekort', vendor:'Odense Velvære', points:300, image:'img/odensevelvaere.jpg' },
+  { id:2, title:'50 kr café-bon', vendor:'Café Aroma', points:150, image:'img/cafearoma.jpg' }
 ];
 const favorites = ref([]);
-onMounted(async () => { favorites.value = (await getFavorites(uid.value)) || []; });
+onMounted(async () => {
+  favorites.value = await getFavorites(uid.value) || [];
+});
 const favoriteItems = computed(() => rewards.filter(r => favorites.value.includes(r.id)));
+
 async function toggleFavorite(id) {
   const idx = favorites.value.indexOf(id);
   if (idx >= 0) favorites.value.splice(idx, 1);
   else favorites.value.push(id);
   await setFavorites(uid.value, favorites.value);
 }
-function openDetail(id) { router.push({ name:'ProductDetail', params:{ id } }); }
 
-// Ongoing challenges
-const ongoing = ref([
-  { id:'u1', title:'Juni cykel udfordring', daysLeft:8, points:50, icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C' }
-]);
-const grid2 = ref(null), ongoingIndex = ref(0);
-function onScroll2() {
-  const el = grid2.value;
+// Favorites scroll: behavior identical to card-grid
+const favGrid = ref(null);
+function onFavScroll() {
+  const el = favGrid.value;
   if (!el || !el.children.length) return;
   const card = el.children[0];
   const gap = parseInt(getComputedStyle(el).gap) || 0;
-  ongoingIndex.value = Math.round(el.scrollLeft / (card.offsetWidth + gap));
+  // compute index or just allow full visibility
+}
+onMounted(onFavScroll);
+
+function openDetail(id) {
+  router.push({ name: 'ProductDetail', params: { id } });
+}
+
+// -- Ongoing Challenges --
+const ongoing = ref([
+  { id:'u1', title:'Juni cykel udfordring', daysLeft:8, points:50, icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C' }
+]);
+const grid2 = ref(null);
+function onScroll2() {
+  const el = grid2.value;
+  if (!el || !el.children.length) return;
 }
 onMounted(onScroll2);
-function viewDetails(id) { router.push({ name:'ChallengeDetails', params:{ id } }); }
+function viewDetails(id) {
+  router.push({ name: 'ChallengeDetails', params: { id } });
+}
+
+function startTask(id) {
+  // your existing start logic
+}
 </script>
 
 <style scoped>
 .no-pad {
   --padding-start: 0 !important;
-  --padding-end:   0 !important;
+  --padding-end: 0 !important;
   overflow-y: visible;
 }
 
-/* Scroll-snap container for Opgaver & udfordringer */
-.card-grid {
+/* Scroll-snap container for Opgaver & Favorites & Ongoing */
+.card-grid,
+.cards-scroll {
   display: flex;
   overflow-x: auto;
   overflow-y: visible;
@@ -181,12 +204,31 @@ function viewDetails(id) { router.push({ name:'ChallengeDetails', params:{ id } 
   padding-bottom: 16px;
   scroll-padding-inline: 20px;
   scroll-snap-type: x mandatory;
-  gap: 20px;
+  gap: 10px;
   scrollbar-width: none;
 }
-.card-grid::-webkit-scrollbar { display: none; }
-.card-grid > * { flex-shrink: 0; scroll-snap-align: start; scroll-snap-stop: always; }
+.card-grid::-webkit-scrollbar,
+.cards-scroll::-webkit-scrollbar {
+  display: none;
+}
+.card-grid > *,
+.cards-scroll > * {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.card-grid::-webkit-scrollbar,
+.cards-scroll::-webkit-scrollbar {
+  display: none;
+}
+.card-grid > *,
+.cards-scroll > * {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
 
+/* Pagination dots (tasks only) */
 .dots {
   display: flex;
   justify-content: center;
@@ -195,9 +237,20 @@ function viewDetails(id) { router.push({ name:'ChallengeDetails', params:{ id } 
   padding: 0;
   list-style: none;
 }
-.dots li { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,0.15); transition: background 0.2s, width 0.2s; }
-.dots li.active { width: 16px; border-radius: 4px; background: #02382C; }
+.dots li {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.15);
+  transition: background 0.2s, width 0.2s;
+}
+.dots li.active {
+  width: 16px;
+  border-radius: 4px;
+  background: #02382C;
+}
 
+/* Section divider */
 .section-divider {
   width: calc(100% - 40px);
   height: 1px;
@@ -205,28 +258,29 @@ function viewDetails(id) { router.push({ name:'ChallengeDetails', params:{ id } 
   margin: 30px 20px;
 }
 
+/* Section headers */
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 0 20px;
-  margin: 16px 0;
+  margin: 16px 0 0;
 }
-.section-title { margin: 0; font-size: 20px; font-weight: 600; }
-.challenge-count { font-size: 12px; font-weight: 400; }
-
-.cards-scroll {
-  display: flex;
-  overflow-x: auto;
-  padding: 20px 20px 30px;
-  gap: 1rem;
-  scrollbar-width: none;
+.section-title {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 600;
+  margin-left: 20px;
 }
-.cards-scroll::-webkit-scrollbar { display: none; }
+.challenge-count {
+  font-size: 12px;
+  font-weight: 400;
+}
 
+/* Header balance */
 .header-balance {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 </style>
+

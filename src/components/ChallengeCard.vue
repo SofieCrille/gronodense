@@ -11,11 +11,7 @@
 
     <!-- Header -->
     <IonCardHeader class="card-header">
-      <!-- wrap icon with circle background -->
-      <div class="main-icon-wrapper">
-        <div class="icon-circle" :style="{ background: bgColor }"></div>
-        <IonIcon class="main-icon" :icon="leftIcon" :style="{ color: textColor }" />
-      </div>
+      <IonIcon class="main-icon" :icon="leftIcon" :style="{ color: textColor }" />
       <IonCardTitle class="card-title">{{ title }}</IonCardTitle>
     </IonCardHeader>
 
@@ -86,30 +82,6 @@ const {
     0 1px 2px rgba(0, 0, 0, 0.04),
     0 4px 6px rgba(0, 0, 0, 0.06),
     0 8px 12px rgba(0, 0, 0, 0.03);
-  overflow: visible;
-}
-
-.points-bubble {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  background: #ffffff;
-  color: #02382C;
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.coin-icon {
-  width: 15px;
-  height: 15px;
-  object-fit: contain;
 }
 
 .card-header {
@@ -117,31 +89,9 @@ const {
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  overflow: visible;
-}
-
-.main-icon-wrapper {
-  position: relative;
-  width: 3rem;
-  height: 3rem;
-  margin-bottom: 16px; /* restore spacing below icon */
-  overflow: visible;
-}
-
-.icon-circle {
-  position: absolute;
-  top: 0;
-  left: 12px;      /* moved further right */
-  width: 3.5rem;   /* slightly larger circle */
-  height: 3.5rem;
-  border-radius: 50%;
-  background: #ffffff;
-  z-index: 0;
 }
 
 .main-icon {
-  position: relative;
-  z-index: 1;
   width: 3rem;
   height: 3rem;
   margin-bottom: 16px;
@@ -178,5 +128,34 @@ const {
 
 .card-button:hover {
   background-color: rgba(2, 56, 44, 0.1);
+}
+
+.points-bubble {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  background: #ffffff;
+  color: #02382C;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.points-bubble ion-icon {
+  font-size: 1rem;
+}
+
+
+/* Coin icon sizing */
+.coin-icon {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
 }
 </style>

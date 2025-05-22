@@ -94,11 +94,6 @@ function handleToggleFavorite() { emit('toggle-favorite'); }
   color: #02382C;
 }
 
-.points-badge IonIcon {
-  font-size: 1rem;
-}
-
-/* custom coin icon size */
 .coin-icon {
   width: 15px;
   height: 15px;
@@ -118,7 +113,7 @@ function handleToggleFavorite() { emit('toggle-favorite'); }
 .header-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline; /* align star with title */
   width: 100%;
 }
 
@@ -157,5 +152,6 @@ function handleToggleFavorite() { emit('toggle-favorite'); }
   --padding-bottom: 0;
   --padding-start: 0;
   --padding-end: 0;
+  margin-top: -6px; /* lift star to align with title */
 }
 </style>
