@@ -6,7 +6,8 @@
         <IonButtons slot="start">
           <template v-if="isMainTab">
             <div class="header-balance-pill">
-              <IonIcon :icon="starOutline" />
+              <!-- Replace star with coin icon -->
+              <img src="/icons/coins.png" class="coin-icon" alt="balance" />
               <span>{{ balance }}</span>
             </div>
           </template>
@@ -66,15 +67,16 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle,
-  IonButtons, IonButton, IonIcon, IonBackButton,
-  IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonLabel
+  IonButtons, IonButton, IonIcon, IonTabs,
+  IonRouterOutlet, IonTabBar, IonTabButton, IonLabel
 } from '@ionic/vue';
 import {
   homeOutline, home,
   giftOutline, gift,
   podiumOutline, podium,
   personOutline, person,
-  starOutline, notificationsOutline, settingsOutline, arrowBackOutline
+  starOutline, notificationsOutline,
+  settingsOutline, arrowBackOutline
 } from 'ionicons/icons';
 import { getBalance } from '@/firebaseRest.js';
 import { useAuth } from '@/composables/useAuth';
@@ -89,12 +91,7 @@ const currentTab = computed(() => route.path.split('/')[2] || 'hjem');
 const isMainTab  = computed(() => mainPaths.includes(route.path));
 
 // dynamic header title
-const titles = {
-  hjem: 'Hjem',
-  shop: 'Pointshop',
-  udfordringer: 'Udfordringer',
-  profil: 'Profil'
-};
+const titles = { hjem: 'Hjem', shop: 'Pointshop', udfordringer: 'Udfordringer', profil: 'Profil' };
 const pageTitle = computed(() => titles[currentTab.value] || 'GronOdense');
 
 // icons
@@ -104,10 +101,7 @@ const udfIcon    = computed(() => currentTab.value==='udfordringer'?podium:podiu
 const profilIcon = computed(() => currentTab.value==='profil'?person:personOutline);
 
 const balance = ref(0);
-onMounted(async()=>{
-  try { balance.value = await getBalance(uid.value); } 
-  catch { balance.value = 0; }
-});
+onMounted(async()=>{ try { balance.value = await getBalance(uid.value); } catch { balance.value = 0; }});
 
 function goToNotifications(){ router.push({ name:'Notifications' }); }
 function goToSettings()     { router.push({ name:'Settings' }); }
@@ -125,6 +119,13 @@ function goBack()           { router.back(); }
   font-weight: bold;
   color: var(--ion-color-primary);
   height:2.5rem;
+}
+
+/* coin icon sizing */
+.coin-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 
 .header-notification-btn {
@@ -148,13 +149,7 @@ function goBack()           { router.back(); }
   border-radius: 50%;
 }
 
-ion-buttons[slot="start"] {
-  margin-left: 1rem
+ion-buttons[slot="start"] { margin-left: 1rem }
+ion-buttons[slot="end"]   { margin-right: 1rem;
 }
-
-/* push the end-slot 17px from the right edge */
-ion-buttons[slot="end"] {
-  margin-right: 1rem;
-}
-
 </style>

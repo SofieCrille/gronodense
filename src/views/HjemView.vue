@@ -18,14 +18,12 @@
       </IonToolbar>
     </IonHeader>
 
-    <!-- remove Ionic’s default horizontal padding -->
     <IonContent class="no-pad" style="background-color: #C9E0DD;">
+      <!-- Opgaver header & cards -->
       <div class="section-header">
-      <h3 class="section-title">Opgaver</h3>
-      <span class="challenge-count">{{ challengeCount }} opgaver</span>
-    </div>
-
-      <!-- scrollable snapping card row -->
+        <h3 class="section-title">Opgaver</h3>
+        <span class="challenge-count">{{ challengeCount }} opgaver</span>
+      </div>
       <div class="card-grid" ref="grid" @scroll="onScroll">
         <ChallengeCard
           v-for="(task, i) in tasks"
@@ -37,51 +35,34 @@
           :bgColor="task.bgColor"
           :textColor="task.textColor"
           :points="task.points"
-          :onActionClick="() => startTask(task.id)"
+          :onActionClick="() => startTask(task.id)" :circleColor="i === 0 ? '#858489' : '#ffffff'"
         />
       </div>
-
-      <!-- pagination dots -->
       <ul class="dots">
-        <li
-          v-for="(_, i) in tasks"
-          :key="i"
-          :class="{ active: i === currentIndex }"
-        ></li>
+        <li v-for="(_, i) in tasks" :key="i" :class="{ active: i === currentIndex }"></li>
       </ul>
 
+      <div class="section-divider"></div>
 
-  <!-- divider under Opgaver -->
- <div class="section-divider"></div>
-
-      <!-- FAVORITTER & IGANGVÆRENDE (unchanged) -->
+      <!-- Favoritter -->
       <div v-if="favoriteItems.length" class="favorites-section">
-        <h3>Favoritter</h3>
-        <div class="favorites-bar">
-          <IonCard
+        <h3 class="section-title">Favoritter</h3>
+        <div class="cards-scroll">
+          <BelønningerCard
             v-for="item in favoriteItems"
             :key="item.id"
-            button
-            @click="openDetail(item.id)"
-            class="favorite-card"
-          >
-            <img :src="item.image" alt="" class="card-image" />
-            <IonCardHeader>
-              <IonCardTitle>{{ item.title }}</IonCardTitle>
-              <IonCardSubtitle>{{ item.vendor }}</IonCardSubtitle>
-            </IonCardHeader>
-            <IonCardContent class="card-footer">
-              <IonBadge color="primary">{{ item.points }} pts</IonBadge>
-              <IonIcon
-                :icon="star"
-                class="favorite-icon"
-                @click.stop="toggleFavorite(item.id)"
-              />
-            </IonCardContent>
-          </IonCard>
+            :title="item.title"
+            :vendor="item.vendor"
+            :points="item.points"
+            :image="item.image"
+            :isFavorite="true"
+            @select="openDetail(item.id)"
+            @toggle-favorite="toggleFavorite(item.id)"
+          />
         </div>
       </div>
 
+      <!-- Igangværende udfordringer -->
       <h3 class="section-title">Igangværende udfordringer</h3>
       <div class="card-grid" ref="grid2" @scroll="onScroll2">
         <UdfordringerCard
@@ -98,11 +79,7 @@
         />
       </div>
       <ul class="dots">
-        <li
-          v-for="(_, i) in ongoing"
-          :key="i"
-          :class="{ active: i === ongoingIndex }"
-        ></li>
+        <li v-for="(_, i) in ongoing" :key="i" :class="{ active: i === ongoingIndex }"></li>
       </ul>
     </IonContent>
   </IonPage>
@@ -113,43 +90,39 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonButtons, IonButton, IonIcon, IonCard, IonCardHeader,
-  IonCardTitle, IonCardSubtitle, IonCardContent, IonBadge
+  IonButtons, IonButton, IonIcon
 } from '@ionic/vue';
 import {
   star, notificationsOutline,
   bicycleOutline, trashOutline,
   bagOutline, radioOutline
 } from 'ionicons/icons';
+
 import ChallengeCard from '@/components/ChallengeCard.vue';
 import UdfordringerCard from '@/components/UdfordringerCard.vue';
+import BelønningerCard from '@/components/BelønningerCard.vue';
+
 import { getFavorites, setFavorites, getBalance } from '@/firebaseRest.js';
 import { useAuth } from '@/composables/useAuth';
 
 const router = useRouter();
 const { uid } = useAuth();
 
-// balance
+// Balance
 const balance = ref(0);
-onMounted(async () => {
-  balance.value = await getBalance(uid.value);
-});
-function goToNotifications() {
-  router.push({ name: 'Notifications' });
-}
+onMounted(async () => { balance.value = await getBalance(uid.value); });
+function goToNotifications() { router.push({ name: 'Notifications' }); }
 
-// tasks (declare this **before** the computed)
+// Tasks
 const tasks = ref([
-  { id:'c1', title:'Bæredygtig transport', description:'Tag cyklen…',  buttonText:'Begynd nu', icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C', points:20 },
-  { id:'c2', title:'Affalds sortering',    description:'Lær hvordan…', buttonText:'Begynd nu', icon:trashOutline,   bgColor:'#D2E3BC', textColor:'#02382C', points:20 },
-  { id:'c3', title:'Besøg butik',          description:'Besøg butik…',buttonText:'Begynd nu', icon:bagOutline,     bgColor:'#E8CDC6', textColor:'#02382C', points:20 },
-  { id:'c4', title:'Podcast',              description:'Lyt til podcast…',buttonText:'Begynd nu', icon:radioOutline,   bgColor:'#FFE0C6', textColor:'#02382C', points:20 },
+  { id:'c1', title:'Bæredygtig transport', description:'Tag cyklen…', buttonText:'Begynd nu', icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C', points:20 },
+  { id:'c2', title:'Affaldssortering', description:'Lær hvordan…', buttonText:'Begynd nu', icon:trashOutline,   bgColor:'#D2E3BC', textColor:'#02382C', points:20 },
+  { id:'c3', title:'Besøg butik', description:'Besøg butik…', buttonText:'Begynd nu', icon:bagOutline,     bgColor:'#E8CDC6', textColor:'#02382C', points:20 },
+  { id:'c4', title:'Podcast', description:'Lyt til podcast…', buttonText:'Begynd nu', icon:radioOutline,   bgColor:'#FFE0C6', textColor:'#02382C', points:20 },
 ]);
-
-// now this computed will see tasks.value correctly
 const challengeCount = computed(() => tasks.value.length);
 
-// scroll-dots for tasks
+// Scroll
 const grid = ref(null), currentIndex = ref(0);
 function onScroll() {
   const el = grid.value;
@@ -160,16 +133,13 @@ function onScroll() {
 }
 onMounted(onScroll);
 
-// favorites
+// Favorites
 const rewards = [
-  { id:1, title:'100 kr gavekort', vendor:'Odense Velvære', points:300, image:'img/odensevelvaere.jpg' },
-  { id:2, title:'50 kr café-bon',    vendor:'Café Aroma',      points:150, image:'img/cafearoma.jpg' }
+  { id:1, title:'100 kr gavekort', vendor:'Odense Velvære', points:300, image:'/img/odensevelvaere.jpg' },
+  { id:2, title:'50 kr café-bon',   vendor:'Café Aroma',      points:150, image:'/img/cafearoma.jpg' }
 ];
 const favorites = ref([]);
-onMounted(async () => {
-  try { favorites.value = await getFavorites(uid.value); }
-  catch { favorites.value = []; }
-});
+onMounted(async () => { favorites.value = (await getFavorites(uid.value)) || []; });
 const favoriteItems = computed(() => rewards.filter(r => favorites.value.includes(r.id)));
 async function toggleFavorite(id) {
   const idx = favorites.value.indexOf(id);
@@ -177,19 +147,12 @@ async function toggleFavorite(id) {
   else favorites.value.push(id);
   await setFavorites(uid.value, favorites.value);
 }
-function openDetail(id) {
-  router.push({ name:'ProductDetail', params:{id} });
-}
+function openDetail(id) { router.push({ name:'ProductDetail', params:{ id } }); }
 
-// ongoing challenges
+// Ongoing challenges
 const ongoing = ref([
   { id:'u1', title:'Juni cykel udfordring', daysLeft:8, points:50, icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C' }
 ]);
-function viewDetails(id) {
-  router.push({ name:'ChallengeDetails', params:{id} });
-}
-
-// scroll-dots for ongoing
 const grid2 = ref(null), ongoingIndex = ref(0);
 function onScroll2() {
   const el = grid2.value;
@@ -199,41 +162,31 @@ function onScroll2() {
   ongoingIndex.value = Math.round(el.scrollLeft / (card.offsetWidth + gap));
 }
 onMounted(onScroll2);
-
+function viewDetails(id) { router.push({ name:'ChallengeDetails', params:{ id } }); }
 </script>
 
 <style scoped>
-/* 1) Remove Ionic’s default horizontal gutter and allow vertical overflow */
 .no-pad {
   --padding-start: 0 !important;
   --padding-end:   0 !important;
   overflow-y: visible;
 }
 
-/* 2) Scroll-snap container with inset & hidden scrollbars */
+/* Scroll-snap container for Opgaver & udfordringer */
 .card-grid {
   display: flex;
   overflow-x: auto;
-  overflow-y: visible;            /* let shadows show below */
-  padding-inline-start: 20px;
-  padding-inline-end:   20px;
-  padding-bottom:      16px;      /* room for drop-shadow */
-  scroll-padding-inline-start: 20px;
-  scroll-padding-inline-end:   20px;
+  overflow-y: visible;
+  padding-inline: 20px;
+  padding-bottom: 16px;
+  scroll-padding-inline: 20px;
   scroll-snap-type: x mandatory;
   gap: 20px;
-  scrollbar-width: none;          /* Firefox */
+  scrollbar-width: none;
 }
-.card-grid::-webkit-scrollbar {
-  display: none;                  /* WebKit */
-}
-.card-grid > * {
-  flex-shrink: 0;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-}
+.card-grid::-webkit-scrollbar { display: none; }
+.card-grid > * { flex-shrink: 0; scroll-snap-align: start; scroll-snap-stop: always; }
 
-/* 3) Pagination dots (optional) */
 .dots {
   display: flex;
   justify-content: center;
@@ -242,25 +195,14 @@ onMounted(onScroll2);
   padding: 0;
   list-style: none;
 }
-.dots li {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.15);
-  transition: background 0.2s, width 0.2s;
-}
-
-.dots li.active {
-  width: 16px;               /* make it twice as wide */
-  border-radius: 4px;        /* pill shape */
-  background: #02382C;
-}
+.dots li { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,0.15); transition: background 0.2s, width 0.2s; }
+.dots li.active { width: 16px; border-radius: 4px; background: #02382C; }
 
 .section-divider {
-  width: calc(100% - 40px); /* account for your 20px insets */
+  width: calc(100% - 40px);
   height: 1px;
   background: #DDDBD7;
-  margin: 30px 20px;        /* vertical space + horizontal inset */
+  margin: 30px 20px;
 }
 
 .section-header {
@@ -268,19 +210,23 @@ onMounted(onScroll2);
   justify-content: space-between;
   align-items: baseline;
   padding: 0 20px;
-  margin: 16px 0 16px;
+  margin: 16px 0;
 }
+.section-title { margin: 0; font-size: 20px; font-weight: 600; }
+.challenge-count { font-size: 12px; font-weight: 400; }
 
-.section-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
+.cards-scroll {
+  display: flex;
+  overflow-x: auto;
+  padding: 20px 20px 30px;
+  gap: 1rem;
+  scrollbar-width: none;
 }
+.cards-scroll::-webkit-scrollbar { display: none; }
 
-.challenge-count {
-  font-size: 12px;
-  font-weight: 400;
+.header-balance {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
-
 </style>
-

@@ -6,7 +6,7 @@
       </IonToolbar>
     </IonHeader>
 
-    <IonContent fullscreen class="ion-padding">
+    <IonContent fullscreen class="ion-padding no-pad">
       <!-- 1) Chips bar -->
       <div class="chips-bar">
         <IonChip
@@ -36,31 +36,17 @@
           </IonButton>
         </div>
         <div class="cards-scroll">
-          <IonCard
+          <BelønningerCard
             v-for="item in group.items"
             :key="item.id"
-            button
-            @click="openItem(item.id)"
-            class="category-card"
-          >
-            <img 
-              :src="item.image" 
-              alt="" 
-              class="card-image" 
-            />
-            <IonCardHeader class="card-header">
-              <IonCardTitle>{{ item.title }}</IonCardTitle>
-              <IonCardSubtitle>{{ item.vendor }}</IonCardSubtitle>
-              <IonIcon
-                :icon="favorites.includes(item.id) ? star : starOutline"
-                class="favorite-icon"
-                @click.stop="toggleFavorite(item.id)"
-              />
-            </IonCardHeader>
-            <IonCardContent>
-              <strong>{{ item.points }} pts</strong>
-            </IonCardContent>
-          </IonCard>
+            :title="item.title"
+            :vendor="item.vendor"
+            :points="item.points"
+            :image="item.image"
+            :isFavorite="favorites.includes(item.id)"
+            @select="openItem(item.id)"
+            @toggle-favorite="toggleFavorite(item.id)"
+          />
         </div>
       </div>
     </IonContent>
@@ -72,27 +58,19 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonChip, IonButton, IonCard, IonCardHeader, IonCardTitle,
-  IonCardSubtitle, IonCardContent, IonIcon
+  IonChip, IonButton
 } from '@ionic/vue';
-import { star, starOutline } from 'ionicons/icons';
 import { getFavorites, setFavorites } from '@/firebaseRest';
 import { useAuth } from '@/composables/useAuth';
+import BelønningerCard from '@/components/BelønningerCard.vue';
 
-const router = useRouter();
-const { uid } = useAuth();
-
-//  -- your rewards data, each with a category key:
+// sample data
 const rewards = [
-  { id: 1, title: '50 kr rabat',            vendor: 'Butik Cirkel',   points: 200, category: 'trending',    image: '/img/zirkel.webp' },
-  { id: 2, title: '100 kr gavekort',        vendor: 'Odense Velvære', points: 300, category: 'skonhed',     image: '/img/odensevelvaere.jpg' },
-  { id: 3, title: '30% mode & accessories', vendor: 'Modehuset',      points: 250, category: 'skonhed',     image: '/img/modehuset.jpg' },
-  { id: 4, title: '20 kr café-bon',         vendor: 'Café Aroma',     points: 150, category: 'mad',         image: '/img/cafearoma.jpg' },
-  { id: 5, title: 'Biografbillet',          vendor: 'Cinema City',    points: 220, category: 'oplevelser',  image: '/img/cinemacity.jpg' },
-  // …etc.
+  { id: 1, title: '50 kr rabat', vendor: 'Butik Cirkel',   points: 200, category: 'trending',   image: '/img/zirkel.webp' },
+  { id: 2, title: '100 kr gavekort', vendor: 'Odense Velvære', points: 300, category: 'skonhed',    image: '/img/odensevelvaere.jpg' },
+  // …
 ];
 
-// which categories to show & labels
 const categories = ['trending','skonhed','mad','oplevelser'];
 const categoryNames = {
   trending:    'Trending',
@@ -101,7 +79,6 @@ const categoryNames = {
   oplevelser:  'Oplevelser'
 };
 
-// group the items by category
 const groupedRewards = computed(() =>
   categories.map(cat => ({
     category: cat,
@@ -109,15 +86,15 @@ const groupedRewards = computed(() =>
   }))
 );
 
-// favorites
+const router = useRouter();
+const { uid } = useAuth();
 const favorites = ref([]);
+
 onMounted(async () => {
-  try { 
-    favorites.value = await getFavorites(uid.value);
-  } catch {
-    favorites.value = [];
-  }
+  try { favorites.value = await getFavorites(uid.value); }
+  catch { favorites.value = []; }
 });
+
 async function toggleFavorite(id) {
   const idx = favorites.value.indexOf(id);
   if (idx >= 0) favorites.value.splice(idx,1);
@@ -125,7 +102,6 @@ async function toggleFavorite(id) {
   await setFavorites(uid.value, favorites.value);
 }
 
-// navigation
 function goToCategory(cat) {
   router.push({ name: 'CategoryList', params: { category: cat } });
 }
@@ -135,7 +111,11 @@ function openItem(id) {
 </script>
 
 <style scoped>
-/* Chips at top (unchanged) */
+.no-pad {
+  --padding-start: 0;
+  --padding-end:   0;
+}
+
 .chips-bar {
   display: flex;
   overflow-x: auto;
@@ -143,12 +123,10 @@ function openItem(id) {
   padding-bottom: 1rem;
 }
 
-/* Whole category section spacing */
 .category-section {
   margin-bottom: 2rem;
 }
 
-/* Section header (title + “se alle”) */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -156,50 +134,15 @@ function openItem(id) {
   margin-bottom: 0.5rem;
 }
 
-/* Scroll container: inset 20px on each side, hide native scrollbars */
 .cards-scroll {
   display: flex;
   overflow-x: auto;
-  padding-inline-start: 20px;
-  padding-inline-end:   20px;
-  padding-bottom:      0.5rem;
-  scrollbar-width: none;            /* FF */
+  gap: 1rem;
+  scrollbar-width: none;
+  overflow-y: visible;
+  padding: 20px 20px 30px;
 }
 .cards-scroll::-webkit-scrollbar {
-  display: none;                    /* WebKit */
+  display: none;
 }
-
-/* Each card exactly viewport width minus 40px (20px × 2) */
-.category-card {
-  flex: 0 0 calc(100vw - 40px);
-  max-width: calc(100vw - 40px);
-  border-radius: 12px;
-  box-sizing: border-box;
-}
-
-/* Image at top of card */
-.card-image {
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  margin-bottom: 8px;
-}
-
-/* Position icon in header */
-.card-header {
-  position: relative;
-}
-
-/* Favorite icon styling */
-.favorite-icon {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  font-size: 1.4rem;
-  color: var(--ion-color-primary);
-  cursor: pointer;
-}
-
 </style>
