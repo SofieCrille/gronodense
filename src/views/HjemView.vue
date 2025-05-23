@@ -47,7 +47,10 @@
 
       <!-- FAVORITTER carousel (no dots) -->
       <div v-if="favoriteItems.length" class="favorites-section">
-        <h3 class="section-title">Favoritter</h3>
+        <div class="section-header">
+          <h3 class="section-title">Favoritter</h3>
+          <IonButton class="see-all" fill="clear" size="small" @click="goToFavoritesList">Se alle &rsaquo;</IonButton>
+        </div>
         <div class="cards-scroll" ref="favGrid" @scroll="onFavScroll">
           <BelønningerCard
             v-for="item in favoriteItems"
@@ -63,21 +66,14 @@
         </div>
       </div>
 
+      <div class="section-divider"></div>
+
       <!-- IGANGVÆRENDE UDFORDRINGER -->
-      <h3 class="section-title">Igangværende udfordringer</h3>
+      <div class="section-header">
+        <h3 class="section-title">Udfordringer</h3>
+        <IonButton class="see-all" fill="clear" size="small" @click="goToChallengesList">Se alle &rsaquo;</IonButton>
+      </div>
       <div class="card-grid" ref="grid2" @scroll="onScroll2">
-        <UdfordringerCard
-          v-for="(u, i) in ongoing"
-          :key="u.id"
-          :title="u.title"
-          :daysLeft="u.daysLeft"
-          :points="u.points"
-          :icon="u.icon"
-          :buttonText="`+${u.points} pts`"
-          :bgColor="u.bgColor"
-          :textColor="u.textColor"
-          @action="() => viewDetails(u.id)"
-        />
       </div>
     </IonContent>
   </IonPage>
@@ -120,7 +116,7 @@ const tasks = ref([
   { id:'c1', title:'Bæredygtig transport', description:'Tag cyklen…', buttonText:'Begynd nu', icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C', points:20 },
   { id:'c2', title:'Affaldssortering', description:'Lær hvordan…', buttonText:'Begynd nu', icon:trashOutline, bgColor:'#D2E3BC', textColor:'#02382C', points:20 },
   { id:'c3', title:'Besøg butik', description:'Besøg butik…', buttonText:'Begynd nu', icon:bagOutline, bgColor:'#E8CDC6', textColor:'#02382C', points:20 },
-  { id:'c4', title:'Podcast', description:'Lyt til podcast…', buttonText:'Begynd nu', icon:radioOutline, bgColor:'#FFE0C6', textColor:'#02382C', points:20 },
+  { id:'c4', title:'Podcast', description:'Lyt til podcast…', buttonText:'Begynd nu', icon:radioOutline, bgColor:'#FFE0C6', textColor:'#02382C', points:20 }
 ]);
 const challengeCount = computed(() => tasks.value.length);
 
@@ -148,21 +144,21 @@ const favoriteItems = computed(() => rewards.filter(r => favorites.value.include
 
 async function toggleFavorite(id) {
   const idx = favorites.value.indexOf(id);
-  if (idx >= 0) favorites.value.splice(idx, 1);
-  else favorites.value.push(id);
+  idx >= 0 ? favorites.value.splice(idx, 1) : favorites.value.push(id);
   await setFavorites(uid.value, favorites.value);
 }
 
-// Favorites scroll: behavior identical to card-grid
+// -- Favorites carousel scroll ---
 const favGrid = ref(null);
 function onFavScroll() {
   const el = favGrid.value;
   if (!el || !el.children.length) return;
-  const card = el.children[0];
-  const gap = parseInt(getComputedStyle(el).gap) || 0;
-  // compute index or just allow full visibility
 }
 onMounted(onFavScroll);
+
+function goToFavoritesList() {
+  router.push({ name: 'FavoritesList' });
+}
 
 function openDetail(id) {
   router.push({ name: 'ProductDetail', params: { id } });
@@ -178,23 +174,28 @@ function onScroll2() {
   if (!el || !el.children.length) return;
 }
 onMounted(onScroll2);
+
 function viewDetails(id) {
   router.push({ name: 'ChallengeDetails', params: { id } });
 }
 
+function goToChallengesList() {
+  router.push({ name: 'ChallengesList' });
+}
+
 function startTask(id) {
-  // your existing start logic
+  // existing logic
 }
 </script>
 
 <style scoped>
 .no-pad {
   --padding-start: 0 !important;
-  --padding-end: 0 !important;
-  overflow-y: visible;
+  --padding-end:   0 !important;
+  overflow-y:      visible;
 }
 
-/* Scroll-snap container for Opgaver & Favorites & Ongoing */
+/* Scroll-snap containers */
 .card-grid,
 .cards-scroll {
   display: flex;
@@ -217,18 +218,8 @@ function startTask(id) {
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
-.card-grid::-webkit-scrollbar,
-.cards-scroll::-webkit-scrollbar {
-  display: none;
-}
-.card-grid > *,
-.cards-scroll > * {
-  flex-shrink: 0;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-}
 
-/* Pagination dots (tasks only) */
+/* Pagination dots */
 .dots {
   display: flex;
   justify-content: center;
@@ -241,8 +232,8 @@ function startTask(id) {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.15);
-  transition: background 0.2s, width 0.2s;
+  background: rgba(0,0,0,0.15);
+  transition: background .2s, width .2s;
 }
 .dots li.active {
   width: 16px;
@@ -258,29 +249,35 @@ function startTask(id) {
   margin: 30px 20px;
 }
 
-/* Section headers */
 .section-header {
+  position: relative;
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
+  padding: 0 20px;
   margin: 16px 0 0;
+  margin-bottom: 20px;
 }
-.section-title {
-  margin: 0 0 16px 0;
+.section-header .section-title {
+  margin: 0;
   font-size: 20px;
   font-weight: 600;
-  margin-left: 20px;
 }
 .challenge-count {
   font-size: 12px;
   font-weight: 400;
 }
+.section-header IonButton {
+  margin: 0 !important;
+  padding: 0 !important;
+}
 
-/* Header balance */
-.header-balance {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+
+.challenge-count {
+  margin-left: auto;  /* <-- push it all the way right */
+  font-size: 12px;
+  font-weight: 400;
+  color: #02382C;
 }
 </style>
+
 

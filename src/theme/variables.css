@@ -68,3 +68,31 @@ ion-button {
   --padding-top: 15px !important;
   --padding-bottom: 15px !important;
 }
+
+.see-all {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 5px;
+  padding: 0 8px!important;
+  border-radius: 16px;
+  border: 1px solid #DDDBD7;
+  text-transform: none;
+
+  background: var(--ion-background-color, #fff);
+  color: #02382C;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+
+  /* override Ionic defaults */
+  margin: 0 !important;
+  padding: 0 !important;  
+}

@@ -123,8 +123,8 @@ function goBack()           { router.back(); }
 
 /* coin icon sizing */
 .coin-icon {
-  width: 22px;
-  height: 22px;
+  width: 15px;
+  height: 15px;
   object-fit: contain;
 }
 
