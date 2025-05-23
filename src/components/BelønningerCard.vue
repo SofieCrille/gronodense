@@ -24,7 +24,8 @@
         <IonButton fill="clear" class="favorite-button" @click.stop="handleToggleFavorite">
           <IonIcon
             :icon="isFavorite ? star : starOutline"
-            :style="{ color: isFavorite ? '#ffcc00' : '#858489' }"
+            class="star-icon"
+            :class="{ favorited: isFavorite }"
           />
         </IonButton>
       </div>
@@ -153,5 +154,21 @@ function handleToggleFavorite() { emit('toggle-favorite'); }
   --padding-start: 0;
   --padding-end: 0;
   margin-top: -6px; /* lift star to align with title */
+}
+
+/* Pop animation for favorite star */
+@keyframes pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.star-icon {
+  transition: color 0.3s, transform 0.3s;
+}
+
+.star-icon.favorited {
+  animation: pop 0.4s ease-in-out;
+  color: #ffcc00 !important;
 }
 </style>
