@@ -1,8 +1,7 @@
 <script setup>
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonCard, IonCardContent, IonIcon } from '@ionic/vue';
 import { useRouter } from 'vue-router';
-import { bicycleOutline, trashOutline } from 'ionicons/icons';
-import { starOutline } from 'ionicons/icons';
+import { starOutline, leafOutline } from 'ionicons/icons';
 
 const router = useRouter();
 
@@ -39,17 +38,16 @@ const user = {
 
         <div class="card-row large-cards">
           <IonCard class="large-card large-card--purple">
-            <IonIcon icon="bicycleOutline" size="large" />
             <IonCardContent>
-              <h5>407 km</h5>
+              <h1>407 km</h1>
               <p>Du har anvendt grøn transport 36% mere end andre brugere!</p>
             </IonCardContent>
           </IonCard>
 
           <IonCard class="large-card large-card--green">
-            <IonIcon icon="trashOutline" size="large" />
             <IonCardContent>
-              <h5>3 træer reddet</h5>
+              <h1>3 træer reddet</h1>
+              <IonIcon :icon="leafOutline" class="icon-green" />
               <p>Du har sparet CO₂ svarende til 3 træer ved at køre 407 km i grøn transport</p>
             </IonCardContent>
           </IonCard>
@@ -57,11 +55,24 @@ const user = {
 
         <div class="card-row small-cards">
           <IonCard class="small-card">
-            <IonCardContent>17 opgaver udført</IonCardContent>
+            <IonCardContent class="small-card-content">
+              <div class="card-number">17</div>
+              <div class="card-text">
+                <h2>Opgaver</h2>
+                <h4>Udført</h4>
+              </div>
+            </IonCardContent>
           </IonCard>
           <IonCard class="small-card">
-            <IonCardContent>9 stykker skrald sorteret korrekt</IonCardContent>
+            <IonCardContent class="small-card-content">
+              <div class="card-number">9</div>
+              <div class="card-text">
+                <h2>Stykker skrald</h2>
+                <h4>Sorteret korrekt</h4>
+              </div>
+            </IonCardContent>
           </IonCard>
+
         </div>
       </section>
 
@@ -73,7 +84,8 @@ const user = {
 
         <IonCard class="custom-card">
           <IonCardContent>
-            <p>Her kan du skrive tekst til udfordringen og style kortet efter behov.</p>
+            <h3>Juni cykel udfordring</h3>
+            <p>8 dage tilbage</p>
           </IonCardContent>
         </IonCard>
       </section>
@@ -101,24 +113,24 @@ const user = {
 
   <ul class="historik-list">
     <li class="historik-item">
-      <span>Udførte opgave: Sortering af skrald</span>
+      <span>Udførte opgave: Grøn transport</span>
       <div class="point">
         <IonIcon :icon="starOutline" />
         <span>+20</span>
       </div>
     </li>
     <li class="historik-item">
-      <span>Udførte opgave: Cyklet til skole</span>
+      <span>Udførte opgave: Skraldesortering</span>
       <div class="point">
         <IonIcon :icon="starOutline" />
         <span>+15</span>
       </div>
     </li>
     <li class="historik-item">
-      <span>Udførte opgave: Hjælp i fælleshaven</span>
+      <span>Indløste: 20kr voucher til SDU kantine</span>
       <div class="point">
         <IonIcon :icon="starOutline" />
-        <span>+30</span>
+        <span>-100</span>
       </div>
     </li>
   </ul>
@@ -182,6 +194,7 @@ const user = {
   align-items: center;
   gap: 1rem;
   padding: 1rem;
+  border-radius: 15px;
 }
 
 .large-card--purple {
@@ -199,18 +212,50 @@ const user = {
   color: var(--ion-color-primary);
 }
 
+.icon-green {
+  color: #C3DCA5 !important; /* Brug !important hvis andet overskriver det */
+  font-size: 1.2rem;
+}
+
 .small-cards .small-card {
   flex: 1;
   padding: 1rem;
-  text-align: center;
-  font-weight: 500;
   background-color: #ffffff;
+  border-radius: 15px;
+}
+
+.small-card-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card-number {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #02382C;
+  min-width: 60px;
+  text-align: center;
+}
+
+.card-text h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #02382C;
+}
+
+.card-text h4 {
+  margin: 0.3rem 0 0 0;
+  font-size: 0.9rem;
+  font-weight: normal;
+  color: #555;
 }
 
 .udfordringer {
   margin-top: 2rem;
   padding: 1rem;
-  border-radius: 10px;
+  border-radius: 15px;
 }
 
 .section-title {
@@ -223,8 +268,20 @@ const user = {
   padding: 1rem;
   background-color: #005F4A;
   color: #ffffff;
-  border-radius: 10px;
+  border-radius: 15px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.custom-card h3 {
+  font-weight: 600;       /* semi-bold */
+  margin-bottom: 0.5rem;  /* lidt luft under overskriften */
+  line-height: 1.4;       /* øget linjeafstand */
+}
+
+.custom-card p {
+  font-weight: 500;       /* lidt lettere end semi-bold */
+  line-height: 1.6;       /* mere luft mellem linjerne */
+  margin: 0;              /* fjern evt. standard margin */
 }
 
 .badges {
@@ -240,8 +297,8 @@ const user = {
 }
 
 .badge {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
