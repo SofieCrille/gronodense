@@ -1,5 +1,7 @@
 {
     "recommendations": [
-        "ionic.ionic"
+      "ionic.ionic",
+      "vue.volar"       // if you’re using Volar
+      // or "octref.vetur" if you’re on Vetur instead
     ]
-}
+  }

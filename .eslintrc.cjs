@@ -4,32 +4,26 @@ module.exports = {
   env: {
     browser: true,
     node:    true,
-    es2021:  true
+    es2021:  true,
+  },
+  parser: 'vue-eslint-parser',           // ← ensure Vue parser
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType:  'module',
+    parser:      '@typescript-eslint/parser',
   },
   extends: [
     'plugin:vue/vue3-essential',
     'eslint:recommended',
-    '@vue/typescript/recommended'
+    '@vue/typescript/recommended',
   ],
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType:  'module'
-  },
   rules: {
-    // console/debugger are warnings in production, off during dev
-    'no-console':  process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-console':                         process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger':                        process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
 
-    // allow `any` in TS
-    '@typescript-eslint/no-explicit-any': 'off'
+    // globally disable deprecated-slot
+    'vue/no-deprecated-slot-attribute':   'off',
+    'vue/valid-v-slot':                   'off',
   },
-  overrides: [
-    {
-      files: ['*.vue'],
-      rules: {
-        // disable deprecated slot attribute check in .vue SFCs
-        'vue/no-deprecated-slot-attribute': 'off'
-      }
-    }
-  ]
-};
+}

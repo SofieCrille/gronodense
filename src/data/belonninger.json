@@ -1,0 +1,22 @@
+
+[
+    {
+      "id": 1,
+      "title": "50 kr rabat",
+      "vendor": "Butik Cirkel",
+      "points": 200,
+      "category": "trending",
+      "image": "/img/zirkel.webp",
+      "logo": "/img/cirkel-logo.png"
+    },
+    {
+      "id": 2,
+      "title": "100 kr gavekort",
+      "vendor": "Odense Velvære",
+      "points": 300,
+      "category": "skonhed",
+      "image": "/img/odensevelvaere.jpg",
+      "logo": "/img/velvaere-logo.png"
+    }
+  ]
+  

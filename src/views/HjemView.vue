@@ -45,11 +45,13 @@
 
       <div class="section-divider"></div>
 
-      <!-- FAVORITTER carousel (no dots) -->
+      <!-- FAVORITTER carousel -->
       <div v-if="favoriteItems.length" class="favorites-section">
         <div class="section-header">
           <h3 class="section-title">Favoritter</h3>
-          <IonButton class="see-all" fill="clear" size="small" @click="goToFavoritesList">Se alle &rsaquo;</IonButton>
+          <IonButton class="see-all" fill="clear" size="small" @click="goToFavoritesList">
+            Se alle ›
+          </IonButton>
         </div>
         <div class="cards-scroll" ref="favGrid" @scroll="onFavScroll">
           <BelønningerCard
@@ -59,6 +61,7 @@
             :vendor="item.vendor"
             :points="item.points"
             :image="item.image"
+            :logo="item.logo"
             :isFavorite="true"
             @select="openDetail(item.id)"
             @toggle-favorite="toggleFavorite(item.id)"
@@ -71,9 +74,23 @@
       <!-- IGANGVÆRENDE UDFORDRINGER -->
       <div class="section-header">
         <h3 class="section-title">Udfordringer</h3>
-        <IonButton class="see-all" fill="clear" size="small" @click="goToChallengesList">Se alle &rsaquo;</IonButton>
+        <IonButton class="see-all" fill="clear" size="small" @click="goToChallengesList">
+          Se alle ›
+        </IonButton>
       </div>
       <div class="card-grid" ref="grid2" @scroll="onScroll2">
+        <UdfordringerCard
+          v-for="u in ongoing"
+          :key="u.id"
+          :title="u.title"
+          :daysLeft="u.daysLeft"
+          :points="u.points"
+          :icon="u.icon"
+          :bgColor="u.bgColor"
+          :textColor="u.textColor"
+          :buttonText="`+${u.points} pts`"
+          @action="() => viewDetails(u.id)"
+        />
       </div>
     </IonContent>
   </IonPage>
@@ -95,6 +112,7 @@ import {
 import ChallengeCard from '@/components/ChallengeCard.vue';
 import UdfordringerCard from '@/components/UdfordringerCard.vue';
 import BelønningerCard from '@/components/BelønningerCard.vue';
+import rewards from '@/data/belonninger.json';
 
 import { getFavorites, setFavorites, getBalance } from '@/firebaseRest.js';
 import { useAuth } from '@/composables/useAuth';
@@ -114,13 +132,13 @@ function goToNotifications() {
 // -- Opgaver (Tasks) --
 const tasks = ref([
   { id:'c1', title:'Bæredygtig transport', description:'Tag cyklen…', buttonText:'Begynd nu', icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C', points:20 },
-  { id:'c2', title:'Affaldssortering', description:'Lær hvordan…', buttonText:'Begynd nu', icon:trashOutline, bgColor:'#D2E3BC', textColor:'#02382C', points:20 },
-  { id:'c3', title:'Besøg butik', description:'Besøg butik…', buttonText:'Begynd nu', icon:bagOutline, bgColor:'#E8CDC6', textColor:'#02382C', points:20 },
-  { id:'c4', title:'Podcast', description:'Lyt til podcast…', buttonText:'Begynd nu', icon:radioOutline, bgColor:'#FFE0C6', textColor:'#02382C', points:20 }
+  { id:'c2', title:'Affaldssortering',        description:'Lær hvordan…', buttonText:'Begynd nu', icon:trashOutline,   bgColor:'#D2E3BC', textColor:'#02382C', points:20 },
+  { id:'c3', title:'Besøg butik',               description:'Besøg butik…', buttonText:'Begynd nu', icon:bagOutline,     bgColor:'#E8CDC6', textColor:'#02382C', points:20 },
+  { id:'c4', title:'Podcast',                   description:'Lyt til podcast…', buttonText:'Begynd nu', icon:radioOutline,   bgColor:'#FFE0C6', textColor:'#02382C', points:20 }
 ]);
 const challengeCount = computed(() => tasks.value.length);
 
-// Scroll-snapping for tasks
+// Scroll snapping for tasks
 const grid = ref(null), currentIndex = ref(0);
 function onScroll() {
   const el = grid.value;
@@ -132,23 +150,21 @@ function onScroll() {
 onMounted(onScroll);
 
 // -- Favorites --
-const rewards = [
-  { id:1, title:'100 kr gavekort', vendor:'Odense Velvære', points:300, image:'img/odensevelvaere.jpg' },
-  { id:2, title:'50 kr café-bon', vendor:'Café Aroma', points:150, image:'img/cafearoma.jpg' }
-];
 const favorites = ref([]);
 onMounted(async () => {
   favorites.value = await getFavorites(uid.value) || [];
 });
-const favoriteItems = computed(() => rewards.filter(r => favorites.value.includes(r.id)));
+const favoriteItems = computed(() =>
+  rewards.filter(r => favorites.value.includes(r.id))
+);
 
 async function toggleFavorite(id) {
   const idx = favorites.value.indexOf(id);
-  idx >= 0 ? favorites.value.splice(idx, 1) : favorites.value.push(id);
+  idx >= 0 ? favorites.value.splice(idx,1) : favorites.value.push(id);
   await setFavorites(uid.value, favorites.value);
 }
 
-// -- Favorites carousel scroll ---
+// Favorites carousel scroll snapping
 const favGrid = ref(null);
 function onFavScroll() {
   const el = favGrid.value;
@@ -157,9 +173,8 @@ function onFavScroll() {
 onMounted(onFavScroll);
 
 function goToFavoritesList() {
-  router.push({ name: 'FavoritesList' });
+  router.push({ name: 'CategoryList', params: { category: 'favorites' } });
 }
-
 function openDetail(id) {
   router.push({ name: 'ProductDetail', params: { id } });
 }
@@ -178,11 +193,9 @@ onMounted(onScroll2);
 function viewDetails(id) {
   router.push({ name: 'ChallengeDetails', params: { id } });
 }
-
 function goToChallengesList() {
   router.push({ name: 'ChallengesList' });
 }
-
 function startTask(id) {
   // existing logic
 }
@@ -195,7 +208,7 @@ function startTask(id) {
   overflow-y:      visible;
 }
 
-/* Scroll-snap containers */
+/* Scroll-snap containers for tasks & favorites */
 .card-grid,
 .cards-scroll {
   display: flex;
@@ -255,7 +268,6 @@ function startTask(id) {
   align-items: center;
   padding: 0 20px;
   margin: 16px 0 0;
-  margin-bottom: 20px;
 }
 .section-header .section-title {
   margin: 0;
@@ -263,21 +275,33 @@ function startTask(id) {
   font-weight: 600;
 }
 .challenge-count {
-  font-size: 12px;
-  font-weight: 400;
-}
-.section-header IonButton {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-
-.challenge-count {
-  margin-left: auto;  /* <-- push it all the way right */
+  margin-left: auto;
   font-size: 12px;
   font-weight: 400;
   color: #02382C;
 }
+
+/* Chips bar (unused here) */
+
+/* “Se alle” pill styling */
+.see-all {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 16px;
+  border: 1px solid #DDDBD7;
+  background: var(--ion-background-color, #fff);
+
+  color: #02382C;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
 </style>
-
-

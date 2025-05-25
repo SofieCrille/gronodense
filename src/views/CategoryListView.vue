@@ -1,94 +1,104 @@
-<!-- src/views/CategoryListView.vue -->
+
 <template>
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonBackButton defaultHref="/tabs/shop" />
-          </IonButtons>
-          <IonTitle>{{ categoryNames[category] || category }}</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-  
-      <IonContent class="ion-padding">
-        <div class="cards-vertical">
-          <IonCard
-            v-for="item in filtered"
-            :key="item.id"
-            :routerLink="{ name: 'ProductDetail', params: { id: item.id } }"
-            routerDirection="forward"
-            class="category-card"
-          >
-            <div class="placeholder-box" />
-            <IonCardHeader class="card-header">
-              <IonCardTitle>{{ item.title }}</IonCardTitle>
-              <IonCardSubtitle>{{ item.vendor }}</IonCardSubtitle>
-            </IonCardHeader>
-            <IonCardContent>
-              <strong>{{ item.points }} pts</strong>
-            </IonCardContent>
-          </IonCard>
-        </div>
-      </IonContent>
-    </IonPage>
-  </template>
-  
-  <script setup>
-  import { computed } from 'vue';
-  import { useRoute } from 'vue-router';
-  import {
-    IonPage, IonHeader, IonToolbar, IonTitle,
-    IonButtons, IonBackButton, IonContent,
-    IonCard, IonCardHeader, IonCardTitle,
-    IonCardSubtitle, IonCardContent
-  } from '@ionic/vue';
-  
-  const route    = useRoute();
-  const category = route.params.category;
-  
-  // your same rewards array or import from shared module
-  const rewards = [
-    { id: 1, title: '50 kr rabat',           vendor: 'Butik Cirkel',     points: 200, category: 'trending' },
-    { id: 2, title: '100 kr gavekort',       vendor: 'Odense Velvære',   points: 300, category: 'skonhed' },
-    { id: 3, title: '30% mode & accessoirer',vendor: 'Modehuset',       points: 250, category: 'skonhed' },
-    { id: 4, title: '20 kr café-bon',        vendor: 'Café Aroma',       points: 150, category: 'mad' },
-    { id: 5, title: 'Biografbillet',         vendor: 'Cinema City',      points: 220, category: 'oplevelser' },
-    // …etc.
-  ];
-  
-  const filtered = computed(() =>
-    rewards.filter(r => r.category === category)
-  );
-  
-  const categoryNames = {
-    trending:    'Trending',
-    skonhed:     'Skønhed & mode',
-    mad:         'Mad & drikke',
-    oplevelser:  'Oplevelser'
-  };
-  </script>
-  
-  <style scoped>
-  .cards-vertical {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  <IonPage>
+    <IonHeader>
+      <IonToolbar>
+        <IonButtons slot="start">
+          <IonBackButton default-href="/tabs/hjem" />
+        </IonButtons>
+        <IonTitle>{{ title }}</IonTitle>
+      </IonToolbar>
+    </IonHeader>
+
+    <IonContent fullscreen class="ion-padding no-pad">
+      <div class="cards-vertical">
+        <BelønningerCard
+          v-for="item in filteredRewards"
+          :key="item.id"
+          :title="item.title"
+          :vendor="item.vendor"
+          :points="item.points"
+          :image="item.image"
+          :logo="item.logo"
+          :isFavorite="favorites.includes(item.id)"
+          @select="openItem(item.id)"
+          @toggle-favorite="toggleFavorite(item.id)"
+        />
+      </div>
+    </IonContent>
+  </IonPage>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import {
+  IonPage, IonHeader, IonToolbar, IonTitle,
+  IonButtons, IonBackButton, IonContent
+} from '@ionic/vue';
+import BelønningerCard from '@/components/BelønningerCard.vue';
+import rewards from '@/data/belonninger.json';
+import { getFavorites, setFavorites } from '@/firebaseRest';
+import { useAuth } from '@/composables/useAuth';
+
+// route & router
+const route = useRoute();
+const router = useRouter();
+const categoryParam = route.params.category;
+
+// category display names
+const categoryNames = {
+  trending:   'Trending',
+  skonhed:    'Skønhed & mode',
+  mad:        'Mad & drikke',
+  oplevelser: 'Oplevelser',
+  favorites:  'Favoritter'
+};
+
+// auth & favorites
+const { uid } = useAuth();
+const favorites = ref([]);
+onMounted(async () => {
+  try {
+    favorites.value = await getFavorites(uid.value) || [];
+  } catch {
+    favorites.value = [];
   }
-  .category-card {
-    width: 100%;
-    border-radius: 12px;
-    box-sizing: border-box;
+});
+async function toggleFavorite(id) {
+  const idx = favorites.value.indexOf(id);
+  if (idx >= 0) favorites.value.splice(idx, 1);
+  else favorites.value.push(id);
+  await setFavorites(uid.value, favorites.value);
+}
+
+// filtered list based on category or favorites
+const filteredRewards = computed(() => {
+  if (categoryParam === 'favorites') {
+    return rewards.filter(r => favorites.value.includes(r.id));
   }
-  .placeholder-box {
-    width: 100%;
-    height: 120px;
-    background-color: #ccc;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    margin-bottom: 8px;
-  }
-  .card-header {
-    position: relative;
-  }
-  </style>
-  
+  return rewards.filter(r => r.category === categoryParam);
+});
+
+// header title
+const title = computed(() => categoryNames[categoryParam] || categoryParam);
+
+// navigation to detail
+function openItem(id) {
+  router.push({ name: 'ProductDetail', params: { id } });
+}
+</script>
+
+<style scoped>
+.no-pad {
+  --padding-start: 0;
+  --padding-end:   0;
+}
+
+.cards-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 20px 20px;
+}
+</style>
