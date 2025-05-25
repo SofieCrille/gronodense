@@ -34,7 +34,6 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
 import { IonCard, IonImg, IonButton, IonIcon } from '@ionic/vue';
 import { star, starOutline } from 'ionicons/icons';
 
