@@ -62,11 +62,9 @@ ion-toolbar ion-title {
   color: #02382C !important;
 }
 
-ion-button {
-  --text-transform: none !important;
-  --border-width: 1px !important;
-  --padding-top: 15px !important;
-  --padding-bottom: 15px !important;
+ion-button.flat {
+  --padding-top: 15px;
+  --padding-bottom: 15px;
 }
 
 .see-all {
@@ -95,4 +93,5 @@ ion-button {
   /* override Ionic defaults */
   margin: 0 !important;
   padding: 0 !important;  
+  
 }

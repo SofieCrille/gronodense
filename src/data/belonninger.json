@@ -1,22 +1,30 @@
-
 [
-    {
-      "id": 1,
-      "title": "50 kr rabat",
-      "vendor": "Butik Cirkel",
-      "points": 200,
-      "category": "trending",
-      "image": "/img/zirkel.webp",
-      "logo": "/img/cirkel-logo.png"
-    },
-    {
-      "id": 2,
-      "title": "100 kr gavekort",
-      "vendor": "Odense Velvære",
-      "points": 300,
-      "category": "skonhed",
-      "image": "/img/odensevelvaere.jpg",
-      "logo": "/img/velvaere-logo.png"
-    }
-  ]
-  
+  {
+    "id": 1,
+    "title": "50 kr rabat",
+    "vendor": "Butik Cirkel",
+    "points": 500,
+    "category": "trending",
+    "image": "/img/zirkel.webp",
+    "logo": "/img/cirkel-logo.png",
+    "offer": "Få 50 kr rabat på dit næste køb hos Butik Cirkel. Gælder på alle varer i butikken.",
+    "location": "Vintapperstræde 11, 5000 Odense C",
+    "phone": "+45 26 42 13 23",
+    "email": "kontakt@butikcirkel.dk",
+    "mapImage": "/img/grey.png"
+  },
+  {
+    "id": 2,
+    "title": "100 kr gavekort",
+    "vendor": "Odense Velvære",
+    "points": 300,
+    "category": "skonhed",
+    "image": "/img/odensevelvaere.jpg",
+    "logo": "/img/velvaere-logo.png",
+    "offer": "100 kr gavekort til forkælelse hos Odense Velvære. Kan bruges på alle behandlinger.",
+    "location": "Hunderupgade 56, 5000 Odense C",
+    "phone": "+45 65 23 11 45",
+    "email": "info@odensevelvaere.dk",
+    "mapImage": "/img/maps/velvaere-map.png"
+  }
+]
