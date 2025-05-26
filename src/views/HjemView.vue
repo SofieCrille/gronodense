@@ -38,35 +38,48 @@
           :onActionClick="() => startTask(task.id)"
         />
       </div>
-      <!-- Dots for tasks -->
       <ul class="dots">
         <li v-for="(_, i) in tasks" :key="i" :class="{ active: i === currentIndex }"></li>
       </ul>
 
       <div class="section-divider"></div>
 
-      <!-- FAVORITTER carousel -->
-      <div v-if="favoriteItems.length" class="favorites-section">
+      <!-- FAVORITTER carousel or empty state -->
+      <div class="favorites-section">
         <div class="section-header">
           <h3 class="section-title">Favoritter</h3>
-          <IonButton class="see-all" fill="clear" size="small" @click="goToFavoritesList">
+          <IonButton
+            v-if="favoriteItems.length"
+            class="see-all"
+            fill="clear"
+            size="small"
+            @click="goToFavoritesList"
+          >
             Se alle ›
           </IonButton>
         </div>
-        <div class="cards-scroll" ref="favGrid" @scroll="onFavScroll">
-          <BelønningerCard
-            v-for="item in favoriteItems"
-            :key="item.id"
-            :title="item.title"
-            :vendor="item.vendor"
-            :points="item.points"
-            :image="item.image"
-            :logo="item.logo"
-            :isFavorite="true"
-            @select="openDetail(item.id)"
-            @toggle-favorite="toggleFavorite(item.id)"
-          />
+        <template v-if="favoriteItems.length">
+          <div class="cards-scroll" ref="favGrid" @scroll="onFavScroll">
+            <BelønningerCard
+              v-for="item in favoriteItems"
+              :key="item.id"
+              :title="item.title"
+              :vendor="item.vendor"
+              :points="item.points"
+              :image="item.image"
+              :logo="item.logo"
+              :isFavorite="true"
+              @select="openDetail(item.id)"
+              @toggle-favorite="toggleFavorite(item.id)"
+            />
+          </div>
+        </template>
+        <template v-else>
+          <div class="empty-favorites-card">
+          <IonIcon :icon="starOutline" size="large" color="medium" />
+          <p>Tryk på stjerneikonet for at tilføje belønning til favoritter</p>
         </div>
+        </template>
       </div>
 
       <div class="section-divider"></div>
@@ -104,9 +117,10 @@ import {
   IonButtons, IonButton, IonIcon
 } from '@ionic/vue';
 import {
-  star, notificationsOutline,
+  notificationsOutline,
   bicycleOutline, trashOutline,
-  bagOutline, radioOutline
+  bagOutline, radioOutline,
+  starOutline
 } from 'ionicons/icons';
 
 import ChallengeCard from '@/components/ChallengeCard.vue';
@@ -120,7 +134,7 @@ import { useAuth } from '@/composables/useAuth';
 const router = useRouter();
 const { uid } = useAuth();
 
-// -- Balance & Notifications --
+// Balance & notifications
 const balance = ref(0);
 onMounted(async () => {
   balance.value = await getBalance(uid.value);
@@ -129,15 +143,14 @@ function goToNotifications() {
   router.push({ name: 'Notifications' });
 }
 
-// -- Opgaver (Tasks) --
+// Tasks
 const tasks = ref([
   { id:'c1', title:'Bæredygtig transport', description:'Tag cyklen…', buttonText:'Begynd nu', icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C', points:20 },
-  { id:'c2', title:'Affaldssortering',        description:'Lær hvordan…', buttonText:'Begynd nu', icon:trashOutline,   bgColor:'#D2E3BC', textColor:'#02382C', points:20 },
-  { id:'c3', title:'Besøg butik',               description:'Besøg butik…', buttonText:'Begynd nu', icon:bagOutline,     bgColor:'#E8CDC6', textColor:'#02382C', points:20 },
-  { id:'c4', title:'Podcast',                   description:'Lyt til podcast…', buttonText:'Begynd nu', icon:radioOutline,   bgColor:'#FFE0C6', textColor:'#02382C', points:20 }
+  { id:'c2', title:'Affaldssortering', description:'Lær hvordan…', buttonText:'Begynd nu', icon:trashOutline, bgColor:'#D2E3BC', textColor:'#02382C', points:20 },
+  { id:'c3', title:'Besøg butik', description:'Besøg butik…', buttonText:'Begynd nu', icon:bagOutline, bgColor:'#E8CDC6', textColor:'#02382C', points:20 },
+  { id:'c4', title:'Podcast', description:'Lyt til podcast…', buttonText:'Begynd nu', icon:radioOutline, bgColor:'#FFE0C6', textColor:'#02382C', points:20 }
 ]);
 const challengeCount = computed(() => tasks.value.length);
-
 // Scroll snapping for tasks
 const grid = ref(null), currentIndex = ref(0);
 function onScroll() {
@@ -149,7 +162,7 @@ function onScroll() {
 }
 onMounted(onScroll);
 
-// -- Favorites --
+// Favorites
 const favorites = ref([]);
 onMounted(async () => {
   favorites.value = await getFavorites(uid.value) || [];
@@ -157,21 +170,18 @@ onMounted(async () => {
 const favoriteItems = computed(() =>
   rewards.filter(r => favorites.value.includes(r.id))
 );
-
 async function toggleFavorite(id) {
   const idx = favorites.value.indexOf(id);
   idx >= 0 ? favorites.value.splice(idx,1) : favorites.value.push(id);
   await setFavorites(uid.value, favorites.value);
 }
-
-// Favorites carousel scroll snapping
+// Favorites scroll snapping
 const favGrid = ref(null);
 function onFavScroll() {
   const el = favGrid.value;
   if (!el || !el.children.length) return;
 }
 onMounted(onFavScroll);
-
 function goToFavoritesList() {
   router.push({ name: 'CategoryList', params: { category: 'favorites' } });
 }
@@ -179,7 +189,7 @@ function openDetail(id) {
   router.push({ name: 'ProductDetail', params: { id } });
 }
 
-// -- Ongoing Challenges --
+// Ongoing challenges
 const ongoing = ref([
   { id:'u1', title:'Juni cykel udfordring', daysLeft:8, points:50, icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C' }
 ]);
@@ -189,7 +199,6 @@ function onScroll2() {
   if (!el || !el.children.length) return;
 }
 onMounted(onScroll2);
-
 function viewDetails(id) {
   router.push({ name: 'ChallengeDetails', params: { id } });
 }
@@ -281,15 +290,12 @@ function startTask(id) {
   color: #02382C;
 }
 
-/* Chips bar (unused here) */
-
 /* “Se alle” pill styling */
 .see-all {
   position: absolute;
   right: 20px;
   top: 50%;
   transform: translateY(-50%);
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -297,11 +303,20 @@ function startTask(id) {
   border-radius: 16px;
   border: 1px solid #DDDBD7;
   background: var(--ion-background-color, #fff);
-
   color: #02382C;
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
+}
+
+.empty-favorites-card {
+  margin: 20px;
+  padding: 40px;
+  background: #eee;
+  border-radius: 12px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
 }
 </style>
