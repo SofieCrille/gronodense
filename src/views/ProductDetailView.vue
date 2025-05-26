@@ -40,7 +40,7 @@
       </div>
 
       <!-- Divider before offer -->
-      <div class="section-divider" />
+      <div class="section-divider"></div>
 
       <!-- Offer section -->
       <div class="offer-section" v-if="product.offer">
@@ -49,11 +49,10 @@
       </div>
 
       <!-- Divider before info -->
-      <div class="section-divider" />
+      <div class="section-divider"></div>
 
       <!-- Company info title -->
       <h3 class="info-title">Information</h3>
-      <!-- Company info & location -->
       <IonCard class="info-card" v-if="product.location">
         <IonCardContent>
           <div class="map-container">
@@ -67,20 +66,29 @@
         </IonCardContent>
       </IonCard>
 
-      <!-- Details and redeem button -->
+      <!-- Description -->
       <div class="details">
         <p v-if="product.description">{{ product.description }}</p>
+      </div>
+    </IonContent>
+
+    <!-- Footer button -->
+    <IonFooter>
+      <IonToolbar>
         <IonButton
           expand="block"
           fill="solid"
           shape="round"
-          class="redeem-btn"
-          @click="redeem"
+          class="footer-btn"
+          @click="goToPurchaseView"
+          :disabled="balance < product.points"
+          :color="balance < product.points ? 'medium' : 'primary'"
+          style="margin: 0 16px;"
         >
           Indløs nu
         </IonButton>
-      </div>
-    </IonContent>
+      </IonToolbar>
+    </IonFooter>
   </IonPage>
 </template>
 
@@ -95,13 +103,14 @@ import {
   IonButtons,
   IonBackButton,
   IonContent,
+  IonFooter,
   IonImg,
   IonButton,
   IonCard,
   IonCardContent
 } from '@ionic/vue';
 import rewards from '@/data/belonninger.json';
-import { getBalance, changeBalance } from '@/firebaseRest.js';
+import { getBalance } from '@/firebaseRest.js';
 import { useAuth } from '@/composables/useAuth';
 
 const route = useRoute();
@@ -109,29 +118,24 @@ const router = useRouter();
 const { uid } = useAuth();
 const id = route.params.id;
 
-const product = ref({ id: null, title: '', vendor: '', points: 0, description: '', image: '', offer: '', mapImage: '', location: '', phone: '', email: '' });
+const product = ref({});
 const balance = ref(0);
 const progressPercent = ref(0);
 
-async function redeem() {
-  try {
-    await changeBalance(uid.value, -product.value.points);
-    balance.value = await getBalance(uid.value);
-    progressPercent.value = Math.min((balance.value / product.value.points) * 100, 100);
-  } catch (e) {
-    console.error(e);
-  }
+function goToPurchaseView() {
+  // navigate to PurchaseView route by name
+  router.push({ name: 'PurchaseView', params: { id } });
 }
 
 onMounted(async () => {
   const found = rewards.find(r => String(r.id) === String(id));
-  if (found) {
-    product.value = found;
-    balance.value = await getBalance(uid.value) || 0;
-    progressPercent.value = Math.min((balance.value / product.value.points) * 100, 100);
-  } else {
+  if (!found) {
     router.back();
+    return;
   }
+  product.value = found;
+  balance.value = (await getBalance(uid.value)) || 0;
+  progressPercent.value = Math.min((balance.value / product.value.points) * 100, 100);
 });
 </script>
 
@@ -143,145 +147,132 @@ onMounted(async () => {
   margin: 0 20px 16px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
-
 .info-card ion-card-content {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   padding: 8px;
 }
-
 .section-divider {
   width: calc(100% - 40px);
   height: 1px;
   background: #DDDBD7;
   margin: 16px 20px;
 }
-
 .no-pad {
   --padding-start: 0;
-  --padding-end:   0;
+  --padding-end: 0;
 }
-
 .image-wrapper {
-  width: 100%;
-  height: 350px;
-  overflow: hidden;
+  width:100%;
+  height:350px;
+  overflow:hidden;
 }
 .detail-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
-
 .progress-container {
-  padding: 16px;
+  padding:16px;
 }
 .details-title h2 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #02382C;
-  margin: 0 0 8px;
+  font-size:20px;
+  font-weight:600;
+  color:#02382C;
+  margin:0 0 8px;
 }
 .missing-text {
-  font-size: 14px;
-  color: #02382C;
-  margin-bottom: 8px;
+  font-size:14px;
+  color:#02382C;
+  margin-bottom:8px;
 }
 .progress-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 .progress-bar {
-  flex: 1;
-  height: 8px;
-  background: #DDDBD7;
-  border-radius: 4px;
-  overflow: hidden;
+  flex:1;
+  height:8px;
+  background:#DDDBD7;
+  border-radius:4px;
+  overflow:hidden;
 }
 .progress-fill {
-  height: 100%;
-  background: #02382C;
-  transition: width 0.3s ease;
+  height:100%;
+  background:#02382C;
+  transition:width 0.3s ease;
 }
 .points-total {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 16px;
-  font-weight: 600;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:16px;
+  font-weight:600;
 }
 .coin-icon-small {
-  width: 16px;
-  height: 16px;
-  object-fit: contain;
+  width:16px;
+  height:16px;
+  object-fit:contain;
 }
-
 .offer-section {
-  padding: 0 20px 16px;
+  padding:0 20px 16px;
 }
 .offer-section h3 {
-  margin: 0 0 8px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #02382C;
+  margin:0 0 8px;
+  font-size:18px;
+  font-weight:600;
+  color:#02382C;
 }
 .offer-section p {
-  margin: 0;
-  font-size: 14px;
-  color: #02382C;
-  line-height: 1.4;
+  margin:0;
+  font-size:14px;
+  color:#02382C;
+  line-height:1.4;
 }
-
 .info-title {
-  margin: 0 20px 8px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #02382C;
+  margin:0 20px 8px;
+  font-size:18px;
+  font-weight:600;
+  color:#02382C;
 }
-
 .map-container {
-  flex: none;
-  width: 120px;
-  height: 130px;
-  overflow: hidden;
-  border-radius: 15px;
+  flex:none;
+  width:120px;
+  height:130px;
+  overflow:hidden;
+  border-radius:15px;
 }
 .map-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
-
 .info-container {
-  flex: 1;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
+  flex:1;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:4px;
 }
 .info-container p {
-  margin: 0;
-  font-size: 14px;
-  color: #02382C;
-  line-height: 1.4;
+  margin:0;
+  font-size:14px;
+  color:#02382C;
+  line-height:1.4;
 }
 .info-container .location {
-  font-size: 16px;
-  font-weight: 600;
+  font-size:16px;
+  font-weight:600;
 }
-
 .details {
-  padding: 16px;
+  padding:16px;
 }
-
-/* Redeem button styling */
-.redeem-btn {
-  font-size: 16px;
-  font-weight: 600;
-  --border-radius: 50px;
+.footer-btn {
+  font-size:20px;
+  font-weight:600;
+  --border-radius:50px;
 }
-
 </style>

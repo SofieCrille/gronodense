@@ -5,7 +5,6 @@
         <!-- Balance & notifications -->
         <IonButtons slot="start">
           <div class="header-balance">
-            <IonIcon :icon="star" />
             <span>{{ balance }}</span>
           </div>
         </IonButtons>

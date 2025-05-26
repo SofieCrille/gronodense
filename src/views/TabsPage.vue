@@ -20,7 +20,7 @@
           </template>
         </IonButtons>
 
-        <!-- Dynamic title: also handles category list and favorites -->
+        <!-- Dynamic title -->
         <IonTitle>{{ pageTitle }}</IonTitle>
 
         <!-- Right: Notification or Settings -->
@@ -42,7 +42,8 @@
 
     <IonTabs>
       <IonRouterOutlet />
-      <IonTabBar slot="bottom">
+      <!-- only show tab bar on main tabs -->
+      <IonTabBar slot="bottom" v-if="isMainTab">
         <IonTabButton tab="hjem" href="/tabs/hjem">
           <IonIcon :icon="homeIcon" />
           <IonLabel>Hjem</IonLabel>
@@ -78,7 +79,7 @@ import {
   podiumOutline, podium,
   personOutline, person,
   notificationsOutline,
-  settingsOutline, chevronBackOutline
+  settingsOutline
 } from 'ionicons/icons';
 import { getBalance } from '@/firebaseRest.js';
 import { useAuth } from '@/composables/useAuth';
@@ -93,7 +94,10 @@ const currentTab = computed(() => route.path.split('/')[2] || 'hjem');
 // primary tabs where we show balance pill
 const primaryTabs = ['hjem', 'shop', 'udfordringer', 'profil'];
 // sub-pages where we want back button
-const excludedPages = ['CategoryList','ProductDetail','Notifications','Settings','ChallengeDetails'];
+const excludedPages = [
+  'CategoryList', 'ProductDetail', 'Notifications', 'Settings',
+  'ChallengeDetails', 'PurchaseView'
+];
 const isMainTab = computed(() =>
   primaryTabs.includes(currentTab.value) &&
   !excludedPages.includes(route.name)
@@ -127,10 +131,10 @@ const pageTitle = computed(() => {
 });
 
 // tab icons
-const homeIcon   = computed(() => currentTab.value==='hjem'?home:homeOutline);
-const shopIcon   = computed(() => currentTab.value==='shop'?gift:giftOutline);
-const udfIcon    = computed(() => currentTab.value==='udfordringer'?podium:podiumOutline);
-const profilIcon = computed(() => currentTab.value==='profil'?person:personOutline);
+const homeIcon   = computed(() => currentTab.value === 'hjem' ? home : homeOutline);
+const shopIcon   = computed(() => currentTab.value === 'shop' ? gift : giftOutline);
+const udfIcon    = computed(() => currentTab.value === 'udfordringer' ? podium : podiumOutline);
+const profilIcon = computed(() => currentTab.value === 'profil' ? person : personOutline);
 
 // user balance
 const { uid } = useAuth();

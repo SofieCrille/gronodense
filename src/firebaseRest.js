@@ -28,7 +28,7 @@ export async function getBalance(uid) {
   const res = await fetch(`${BASE_URL}/users/${uid}/balance.json`);
   if (!res.ok) throw new Error('Failed to fetch balance');
   const data = await res.json();
-  return typeof data === 'number' ? data : 200;
+  return typeof data === 'number' ? data : 500;
 }
 
 export async function changeBalance(uid, delta) {

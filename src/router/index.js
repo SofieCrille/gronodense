@@ -4,6 +4,7 @@ import TabsPage          from '@/views/TabsPage.vue';
 import HjemView          from '@/views/HjemView.vue';
 import PointshopView     from '@/views/PointshopView.vue';
 import ProductDetailView from '@/views/ProductDetailView.vue';
+import PurchaseView      from '@/views/PurchaseView.vue';       // ← import it here
 import CategoryListView  from '@/views/CategoryListView.vue';
 import UdfordringerView  from '@/views/UdfordringerView.vue';
 import ChallengeDetails  from '@/views/ChallengeDetailsView.vue';
@@ -14,20 +15,28 @@ import SettingsView      from '@/views/SettingsView.vue';
 const routes = [
   { path: '/', redirect: '/tabs/hjem' },
 
-  // Tabs container
   {
     path: '/tabs',
     component: TabsPage,
     children: [
-      { path: '', redirect: '/tabs/hjem' },
-      { path: 'hjem',   component: HjemView },
-      { path: 'shop',   component: PointshopView },
+      { path: '',                redirect: '/tabs/hjem' },
+      { path: 'hjem',            component: HjemView },
+      { path: 'shop',            component: PointshopView },
+
+      // **Purchase must come before ProductDetail** so it's not swallowed by shop/:id
+      {
+        path: 'shop/:id/purchase',
+        name: 'PurchaseView',
+        component: PurchaseView,
+        props: true
+      },
       {
         path: 'shop/:id',
         name: 'ProductDetail',
         component: ProductDetailView,
         props: true
       },
+
       {
         path: 'shop/category/:category',
         name: 'CategoryList',
@@ -42,7 +51,6 @@ const routes = [
       },
       { path: 'udfordringer', component: UdfordringerView },
 
-      // moved inside tabs so header back button works correctly
       {
         path: 'notifications',
         name: 'Notifications',
@@ -53,7 +61,6 @@ const routes = [
         name: 'Settings',
         component: SettingsView
       },
-
       { path: 'profil', component: ProfilView }
     ]
   }
