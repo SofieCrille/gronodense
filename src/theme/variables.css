@@ -95,3 +95,7 @@ ion-button.flat {
   padding: 0 !important;  
   
 }
+
+ion-content {
+  overscroll-behavior: auto !important;
+}
