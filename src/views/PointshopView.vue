@@ -7,6 +7,21 @@
     </IonHeader>
 
     <IonContent fullscreen class="ion-padding no-pad">
+
+      <!-- 0) Scroll-snap carousel above chips bar -->
+      <div class="chips-slideshow" ref="containerRef">
+        <div class="slides-container">
+          <div
+            v-for="(imgSrc, idx) in slideImages"
+            :ref="el => slideRefs[idx] = el"
+            :key="idx"
+            class="slide-wrap"
+          >
+            <img :src="imgSrc" alt="slide image" class="slide-image" />
+          </div>
+        </div>
+      </div>
+
       <!-- 1) Chips bar -->
       <div class="chips-bar">
         <IonChip
@@ -51,6 +66,7 @@
           />
         </div>
       </div>
+
     </IonContent>
   </IonPage>
 </template>
@@ -59,56 +75,48 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonChip, IonButton
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonChip,
+  IonButton
 } from '@ionic/vue';
 import { getFavorites, setFavorites } from '@/firebaseRest';
 import { useAuth } from '@/composables/useAuth';
 import BelønningerCard from '@/components/BelønningerCard.vue';
 import rewards from '@/data/belonninger.json';
 
+// slideshow images
+const slideImages = ['/img/grey.png', '/img/grey.png', '/img/grey.png'];
+const slideRefs = ref([]);
+
 // categories and display names
-const categories = ['trending','skonhed','mad','oplevelser'];
-const categoryNames = {
-  trending:   'Trending',
-  skonhed:    'Skønhed & mode',
-  mad:        'Mad & drikke',
-  oplevelser: 'Oplevelser'
-};
+const categories = ['trending', 'skonhed', 'mad', 'oplevelser'];
+const categoryNames = { trending: 'Trending', skonhed: 'Skønhed & mode', mad: 'Mad & drikke', oplevelser: 'Oplevelser' };
+const groupedRewards = computed(() => categories.map(cat => ({ category: cat, items: rewards.filter(r => r.category === cat) })));
 
-// group rewards by category
-const groupedRewards = computed(() =>
-  categories.map(cat => ({
-    category: cat,
-    items: rewards.filter(r => r.category === cat)
-  }))
-);
-
+// favorites & navigation
 const router = useRouter();
 const { uid } = useAuth();
 const favorites = ref([]);
 
-// load user favorites
 onMounted(async () => {
-  try {
-    favorites.value = await getFavorites(uid.value) || [];
-  } catch {
-    favorites.value = [];
-  }
+  favorites.value = (await getFavorites(uid.value)) || [];
 });
 
-// toggle and persist favorite state
 async function toggleFavorite(id) {
-  const idx = favorites.value.indexOf(id);
-  if (idx >= 0) favorites.value.splice(idx, 1);
+  const i = favorites.value.indexOf(id);
+  if (i >= 0) favorites.value.splice(i, 1);
   else favorites.value.push(id);
   await setFavorites(uid.value, favorites.value);
 }
 
-// navigate to category list or product detail
 function goToCategory(cat) {
   router.push({ name: 'CategoryList', params: { category: cat } });
 }
+
 function openItem(id) {
   router.push({ name: 'ProductDetail', params: { id } });
 }
@@ -117,18 +125,59 @@ function openItem(id) {
 <style scoped>
 .no-pad {
   --padding-start: 0;
-  --padding-end:   0;
+  --padding-end: 0;
 }
 
+/* Enable horizontal swipe snapping on mobile */
+.chips-slideshow {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  padding: 0 20px;
+  box-sizing: border-box;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;            /* hide scrollbar Firefox */
+  -ms-overflow-style: none;         /* hide scrollbar IE10+ */
+}
+.chips-slideshow::-webkit-scrollbar {
+  display: none;
+}
+
+.slides-container {
+  display: flex;
+  gap: 10px;
+}
+.slide-wrap {
+  flex: 0 0 calc(100%);
+  scroll-snap-align: center;
+}
+.slide-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Buffer after last slide */
+.slides-container::after {
+  content: "";
+  flex: 0 0 20px;
+}
+
+/* rest unchanged... */
 .chips-bar {
   display: flex;
   overflow-x: auto;
   gap: 0.5rem;
-  padding: 0 20px 1rem;        /* 20px inset on left/right */
+  padding: 0 20px 1rem;
   scrollbar-width: none;
   scroll-snap-type: x mandatory;
 }
-.chips-bar::-webkit-scrollbar { display: none; }
+.chips-bar::-webkit-scrollbar {
+  display: none;
+}
 .chips-bar > * {
   flex-shrink: 0;
   scroll-snap-align: start;
@@ -138,15 +187,13 @@ function openItem(id) {
   --color: #02382C;
   font-weight: 600;
 }
-
 .category-section {
   margin-bottom: 2rem;
 }
-
 .section-header {
-  position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 20px;
   margin-bottom: 0.5rem;
 }
@@ -155,7 +202,6 @@ function openItem(id) {
   font-size: 20px;
   font-weight: 600;
 }
-
 .cards-scroll {
   display: flex;
   overflow-x: auto;
@@ -164,31 +210,14 @@ function openItem(id) {
   scrollbar-width: none;
   scroll-snap-type: x mandatory;
 }
-.cards-scroll::-webkit-scrollbar { display: none; }
+.cards-scroll::-webkit-scrollbar {
+  display: none;
+}
 .cards-scroll > * {
   flex-shrink: 0;
   scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
-
 .see-all {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 12px;
-  border-radius: 16px;
-  border: 1px solid #DDDBD7;
-  background: var(--ion-background-color, #fff);
-
-  color: #02382C;
   font-size: 12px;
-  font-weight: 600;
-  line-height: 1;
-  cursor: pointer;
 }
 </style>
