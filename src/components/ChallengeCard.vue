@@ -24,7 +24,7 @@
     <IonButton
       class="card-button"
       fill="outline"
-      @click="onActionClick"
+      @click="onActionClick()"
       :style="{
         '--color': textColor,
         '--border-color': textColor,
@@ -45,27 +45,20 @@ import {
   IonButton,
   IonIcon,
 } from '@ionic/vue';
-import { starOutline } from 'ionicons/icons';
 
-const {
-  title,
-  description,
-  buttonText,
-  leftIcon,
-  onActionClick,
-  bgColor,
-  textColor,
-  points,
-} = defineProps({
-  title: String,
-  description: String,
-  buttonText: String,
-  leftIcon: { type: [String, Object], required: true },
-  onActionClick: Function,
-  bgColor: { type: String, default: '#ffffff' },
-  textColor: { type: String, default: '#000000' },
-  points: { type: Number, required: true },
+const props = defineProps({
+  title:           { type: String, required: true },
+  description:     { type: String, required: true },
+  buttonText:      { type: String, required: true },
+  leftIcon:        { type: [String, Object], required: true },
+  onActionClick:   { type: Function, default: () => {} },
+  bgColor:         { type: String, default: '#ffffff' },
+  textColor:       { type: String, default: '#000000' },
+  points:          { type: Number, required: true },
 });
+
+// expose for template
+const { title, description, buttonText, leftIcon, onActionClick, bgColor, textColor, points } = props;
 </script>
 
 <style scoped>
@@ -75,7 +68,6 @@ const {
   height: 310px;
   padding: 0 10px;
   box-sizing: border-box;
-  color: #02382C;
   border-radius: 15px;
   margin: 8px 0;
   box-shadow:
@@ -88,7 +80,6 @@ const {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  text-align: left;
 }
 
 .main-icon {
@@ -102,28 +93,22 @@ const {
   font-weight: 600;
   font-size: 24px;
   margin: 0;
-  color: #02382C;
 }
 
-.card-description {
+.card-content .card-description {
   font-size: 14px;
   margin: 0;
-  color: #02382C;
   width: 12rem;
 }
 
 .card-button {
   position: absolute;
   bottom: 16px;
-  margin-left: 16px;
+  left: 16px;
   text-transform: none !important;
   font-weight: 600;
   font-size: 16px;
   box-shadow: none;
-
-  --color: #02382C;
-  --border-color: #02382C;
-  --border-radius: 50px;
 }
 
 .card-button:hover {
@@ -134,25 +119,16 @@ const {
   position: absolute;
   top: 16px;
   right: 16px;
-
   display: flex;
   align-items: center;
   gap: 4px;
-
   background: #ffffff;
-  color: #02382C;
   padding: 4px 8px;
   border-radius: 999px;
   font-weight: 600;
   font-size: 16px;
 }
 
-.points-bubble ion-icon {
-  font-size: 1rem;
-}
-
-
-/* Coin icon sizing */
 .coin-icon {
   width: 15px;
   height: 15px;

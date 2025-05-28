@@ -23,7 +23,6 @@ const routes = [
       { path: 'hjem',            component: HjemView },
       { path: 'shop',            component: PointshopView },
 
-      // **Purchase must come before ProductDetail** so it's not swallowed by shop/:id
       {
         path: 'shop/:id/purchase',
         name: 'PurchaseView',

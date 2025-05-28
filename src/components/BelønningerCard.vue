@@ -3,9 +3,20 @@
     <!-- Image -->
     <div class="image-wrapper">
       <IonImg :src="image" class="card-image" />
+
+      <!-- Tag badges -->
+      <div class="tag-container">
+        <span
+          v-for="tag in tags"
+          :key="tag"
+          :class="['tag', tagClass(tag)]"
+        >
+          {{ tagLabel(tag) }}
+        </span>
+      </div>
+
       <!-- Points badge overlay -->
       <div class="points-badge">
-        <!-- use custom coin image instead of star -->
         <img src="/icons/coins.png" class="coin-icon" alt="points" />
         <span>{{ points }}</span>
       </div>
@@ -33,9 +44,10 @@
   </IonCard>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { IonCard, IonImg, IonButton, IonIcon } from '@ionic/vue';
 import { star, starOutline } from 'ionicons/icons';
+import { PropType } from 'vue';
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -44,11 +56,30 @@ const props = defineProps({
   image: { type: String, required: true },
   logo: { type: String, required: true },
   isFavorite: { type: Boolean, default: false },
+  category: { type: String, required: true },
+  tags:     { type: Array as PropType<string[]>, default: () => [] }
 });
 
 const emit = defineEmits(['select', 'toggle-favorite']);
 function handleSelect() { emit('select'); }
 function handleToggleFavorite() { emit('toggle-favorite'); }
+
+// Helpers for tag classes and labels
+function tagClass(tag: string) {
+  return {
+    'ny':       'new',
+    'trending': 'trending',
+    'begrænset':'limited'
+  }[tag] || tag;
+}
+
+function tagLabel(tag: string) {
+  return {
+    'ny':       'Ny',
+    'trending': 'Trending',
+    'begrænset':'Begrænset'
+  }[tag] || tag;
+}
 </script>
 
 <style scoped>
@@ -75,15 +106,47 @@ function handleToggleFavorite() { emit('toggle-favorite'); }
   object-fit: cover;
 }
 
+/* TAG STYLES */
+.tag-container {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 12px;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1;
+}
+
+.tag.new {
+  background-color: #28A745;
+}
+
+.tag.trending {
+  background-color: #FF6F00;
+}
+
+.tag.limited {
+  background-color: #DC3545;
+}
+
 .points-badge {
   position: absolute;
   top: 8px;
   right: 8px;
-
   display: flex;
   align-items: center;
   gap: 4px;
-
   background: #ffffff;
   padding: 4px 8px;
   border-radius: 999px;
@@ -113,7 +176,7 @@ function handleToggleFavorite() { emit('toggle-favorite'); }
 .header-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline; /* align star with title */
+  align-items: baseline;
   width: 100%;
 }
 
@@ -152,10 +215,9 @@ function handleToggleFavorite() { emit('toggle-favorite'); }
   --padding-bottom: 0;
   --padding-start: 0;
   --padding-end: 0;
-  margin-top: -6px; /* lift star to align with title */
+  margin-top: -6px;
 }
 
-/* Pop animation for favorite star */
 @keyframes pop {
   0%   { transform: scale(1); }
   50%  { transform: scale(1.3); }

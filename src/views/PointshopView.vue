@@ -60,6 +60,8 @@
             :points="item.points"
             :image="item.image"
             :logo="item.logo"
+            :category="item.category"
+            :tags="item.tags"
             :isFavorite="favorites.includes(item.id)"
             @select="openItem(item.id)"
             @toggle-favorite="toggleFavorite(item.id)"
@@ -219,5 +221,18 @@ function openItem(id) {
 }
 .see-all {
   font-size: 12px;
+}
+
+.no-pad {
+  --padding-start: 0;
+  --padding-end:   0;
+}
+
+.section-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  margin-bottom: 0.5rem;
 }
 </style>

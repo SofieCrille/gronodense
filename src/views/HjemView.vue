@@ -34,7 +34,7 @@
           :bgColor="task.bgColor"
           :textColor="task.textColor"
           :points="task.points"
-          :onActionClick="() => startTask(task.id)"
+          :on-action-click="() => startTask(task.id)"
         />
       </div>
       <ul class="dots">
