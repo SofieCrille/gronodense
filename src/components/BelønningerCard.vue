@@ -44,43 +44,52 @@
   </IonCard>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { IonCard, IonImg, IonButton, IonIcon } from '@ionic/vue';
 import { star, starOutline } from 'ionicons/icons';
-import { PropType } from 'vue';
 
+// 1. Runtime-only prop definitions (no TS)
 const props = defineProps({
-  title: { type: String, required: true },
-  vendor: { type: String, required: true },
-  points: { type: Number, required: true },
-  image: { type: String, required: true },
-  logo: { type: String, required: true },
+  title:      { type: String,  required: true },
+  vendor:     { type: String,  required: true },
+  points:     { type: Number,  required: true },
+  image:      { type: String,  required: true },
+  logo:       { type: String,  required: true },
   isFavorite: { type: Boolean, default: false },
-  category: { type: String, required: true },
-  tags:     { type: Array as PropType<string[]>, default: () => [] }
+  category:   { type: String,  required: true },
+  tags:       { type: Array,   default: () => [] }
 });
 
+// 2. Plain-JS emits
 const emit = defineEmits(['select', 'toggle-favorite']);
-function handleSelect() { emit('select'); }
-function handleToggleFavorite() { emit('toggle-favorite'); }
 
-// Helpers for tag classes and labels
-function tagClass(tag: string) {
-  return {
-    'ny':       'new',
-    'trending': 'trending',
-    'begrænset':'limited'
-  }[tag] || tag;
+function handleSelect() {
+  emit('select');
+}
+function handleToggleFavorite() {
+  emit('toggle-favorite');
 }
 
-function tagLabel(tag: string) {
+function tagClass(tag) {
   return {
-    'ny':       'Ny',
-    'trending': 'Trending',
-    'begrænset':'Begrænset'
+    ny:        'new',
+    trending:  'trending',
+    begrænset: 'limited'
+  }[tag] || tag;
+}
+function tagLabel(tag) {
+  return {
+    ny:        'Ny',
+    trending:  'Trending',
+    begrænset: 'Begrænset'
   }[tag] || tag;
 }
 </script>
+
+<style scoped>
+/* …your styles stay exactly the same… */
+</style>
+
 
 <style scoped>
 .belonninger-card {

@@ -1,0 +1,57 @@
+[
+    {
+      "id":      "t1",
+      "title":   "Bæredygtig transport",
+      "description": "Tag cyklen…",
+      "buttonText":  "Begynd nu",
+      "icon":    "bicycleOutline",
+      "bgColor": "#C9E0DD",
+      "textColor":"#02382C",
+      "points":  20,
+      "estimatedCO2": "1.2 kg",
+      "benefit": "Reduces carbon footprint and traffic congestion",
+      "overview": "Commute by bicycle instead of by car.",
+      "steps": [
+        "Plan your route using a bike map.",
+        "Check tire pressure and brakes.",
+        "Lock your bike securely at your destination."
+      ],
+      "duration": "About 30 minutes",
+      "prerequisites": ["Bicycle", "Helmet", "GPS enabled"],
+      "location": "Anywhere with bike lanes",
+      "verification": "GPS tracking of your ride",
+      "safetyTips": ["Wear a helmet", "Obey traffic laws"],
+      "accessibility": "E-bikes allowed for longer routes"
+    },
+    {
+      "id":      "t2",
+      "title":   "Affaldssortering",
+      "description": "Lær hvordan…",
+      "buttonText":  "Begynd nu",
+      "icon":    "trashOutline",
+      "bgColor": "#D2E3BC",
+      "textColor":"#02382C",
+      "points":  20
+    },
+    {
+      "id":      "t3",
+      "title":   "Besøg butik",
+      "description": "Besøg butik…",
+      "buttonText":  "Begynd nu",
+      "icon":    "bagOutline",
+      "bgColor": "#E8CDC6",
+      "textColor":"#02382C",
+      "points":  20
+    },
+    {
+      "id":      "t4",
+      "title":   "Podcast",
+      "description": "Lyt til podcast…",
+      "buttonText":  "Begynd nu",
+      "icon":    "radioOutline",
+      "bgColor": "#FFE0C6",
+      "textColor":"#02382C",
+      "points":  20
+    }
+  ]
+  

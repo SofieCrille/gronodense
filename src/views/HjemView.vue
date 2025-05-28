@@ -24,17 +24,18 @@
         <span class="challenge-count">{{ challengeCount }} opgaver</span>
       </div>
       <div class="card-grid" ref="grid" @scroll="onScroll">
-        <ChallengeCard
+        <OpgaverCard
           v-for="(task, i) in tasks"
           :key="task.id"
-          :leftIcon="task.icon"
+          :left-icon="icons[task.icon]"
           :title="task.title"
           :description="task.description"
-          :buttonText="task.buttonText"
-          :bgColor="task.bgColor"
-          :textColor="task.textColor"
+          :button-text="task.active ? 'I gang' : 'Start'"
+          :bg-color="task.bgColor"
+          :text-color="task.textColor"
           :points="task.points"
-          :on-action-click="() => startTask(task.id)"
+          :active="task.active"
+          :on-action-click="() => viewTaskDetails(task.id)"
         />
       </div>
       <ul class="dots">
@@ -67,7 +68,7 @@
               :points="item.points"
               :image="item.image"
               :logo="item.logo"
-              :isFavorite="true"
+              :is-favorite="true"
               @select="openDetail(item.id)"
               @toggle-favorite="toggleFavorite(item.id)"
             />
@@ -75,9 +76,9 @@
         </template>
         <template v-else>
           <div class="empty-favorites-card">
-          <IonIcon :icon="starOutline" size="large" color="medium" />
-          <p>Tryk på stjerneikonet for at tilføje belønning til favoritter</p>
-        </div>
+            <IonIcon :icon="starOutline" size="large" color="medium" />
+            <p>Tryk på stjerneikonet for at tilføje belønning til favoritter</p>
+          </div>
         </template>
       </div>
 
@@ -95,12 +96,12 @@
           v-for="u in ongoing"
           :key="u.id"
           :title="u.title"
-          :daysLeft="u.daysLeft"
+          :days-left="u.daysLeft"
           :points="u.points"
-          :icon="u.icon"
-          :bgColor="u.bgColor"
-          :textColor="u.textColor"
-          :buttonText="`+${u.points} pts`"
+          :icon="icons[u.icon]"
+          :bg-color="u.bgColor"
+          :text-color="u.textColor"
+          :button-text="`+${u.points} pts`"
           @action="() => viewDetails(u.id)"
         />
       </div>
@@ -115,20 +116,17 @@ import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
   IonButtons, IonButton, IonIcon
 } from '@ionic/vue';
-import {
-  notificationsOutline,
-  bicycleOutline, trashOutline,
-  bagOutline, radioOutline,
-  starOutline
-} from 'ionicons/icons';
+import { notificationsOutline, starOutline } from 'ionicons/icons';
+import * as icons from 'ionicons/icons';
 
-import ChallengeCard from '@/components/ChallengeCard.vue';
+import OpgaverCard from '@/components/OpgaverCard.vue';
 import UdfordringerCard from '@/components/UdfordringerCard.vue';
 import BelønningerCard from '@/components/BelønningerCard.vue';
 import rewards from '@/data/belonninger.json';
 
 import { getFavorites, setFavorites, getBalance } from '@/firebaseRest.js';
 import { useAuth } from '@/composables/useAuth';
+import { useTasks } from '@/composables/useTasks';
 
 const router = useRouter();
 const { uid } = useAuth();
@@ -142,19 +140,15 @@ function goToNotifications() {
   router.push({ name: 'Notifications' });
 }
 
-// Tasks
-const tasks = ref([
-  { id:'c1', title:'Bæredygtig transport', description:'Tag cyklen…', buttonText:'Begynd nu', icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C', points:20 },
-  { id:'c2', title:'Affaldssortering', description:'Lær hvordan…', buttonText:'Begynd nu', icon:trashOutline, bgColor:'#D2E3BC', textColor:'#02382C', points:20 },
-  { id:'c3', title:'Besøg butik', description:'Besøg butik…', buttonText:'Begynd nu', icon:bagOutline, bgColor:'#E8CDC6', textColor:'#02382C', points:20 },
-  { id:'c4', title:'Podcast', description:'Lyt til podcast…', buttonText:'Begynd nu', icon:radioOutline, bgColor:'#FFE0C6', textColor:'#02382C', points:20 }
-]);
+// Tasks (with Firebase persistence)
+const { tasks } = useTasks(uid.value);
 const challengeCount = computed(() => tasks.value.length);
+
 // Scroll snapping for tasks
 const grid = ref(null), currentIndex = ref(0);
 function onScroll() {
   const el = grid.value;
-  if (!el || !el.children.length) return;
+  if (!el?.children.length) return;
   const card = el.children[0];
   const gap = parseInt(getComputedStyle(el).gap) || 0;
   currentIndex.value = Math.round(el.scrollLeft / (card.offsetWidth + gap));
@@ -171,16 +165,17 @@ const favoriteItems = computed(() =>
 );
 async function toggleFavorite(id) {
   const idx = favorites.value.indexOf(id);
-  idx >= 0 ? favorites.value.splice(idx,1) : favorites.value.push(id);
+  idx >= 0 ? favorites.value.splice(idx, 1) : favorites.value.push(id);
   await setFavorites(uid.value, favorites.value);
 }
-// Favorites scroll snapping
+
 const favGrid = ref(null);
 function onFavScroll() {
   const el = favGrid.value;
-  if (!el || !el.children.length) return;
+  if (!el?.children.length) return;
 }
 onMounted(onFavScroll);
+
 function goToFavoritesList() {
   router.push({ name: 'CategoryList', params: { category: 'favorites' } });
 }
@@ -190,24 +185,34 @@ function openDetail(id) {
 
 // Ongoing challenges
 const ongoing = ref([
-  { id:'u1', title:'Juni cykel udfordring', daysLeft:8, points:50, icon:bicycleOutline, bgColor:'#C9E0DD', textColor:'#02382C' }
+  {
+    id: 'u1',
+    title: 'Juni cykel udfordring',
+    daysLeft: 8,
+    points: 50,
+    icon: 'bicycleOutline',
+    bgColor: '#C9E0DD',
+    textColor: '#02382C'
+  }
 ]);
+
 const grid2 = ref(null);
 function onScroll2() {
   const el = grid2.value;
-  if (!el || !el.children.length) return;
+  if (!el?.children.length) return;
 }
 onMounted(onScroll2);
-function viewDetails(id) {
-  router.push({ name: 'ChallengeDetails', params: { id } });
+
+// Navigation handlers
+function viewTaskDetails(id) {
+  router.push({ name: 'TaskDetails', params: { id } });
 }
 function goToChallengesList() {
-  router.push({ name: 'ChallengesList' });
-}
-function startTask(id) {
-  // existing logic
+  router.push({ name: 'UdfordringerView' });
 }
 </script>
+
+
 
 <style scoped>
 .no-pad {

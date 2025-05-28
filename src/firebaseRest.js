@@ -48,3 +48,24 @@ export async function changeBalance(uid, delta) {
   if (!res.ok) throw new Error('Failed to update balance');
   return next;
 }
+
+// ACTIVE TASKS PERSISTENCE
+export async function getActiveTasks(uid) {
+  const res = await fetch(`${BASE_URL}/users/${uid}/activeTasks.json`);
+  if (!res.ok) throw new Error('Failed to fetch active tasks');
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
+
+export async function setActiveTasks(uid, activeTasks) {
+  const res = await fetch(
+    `${BASE_URL}/users/${uid}/activeTasks.json`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(activeTasks)
+    }
+  );
+  if (!res.ok) throw new Error('Failed to save active tasks');
+  return res.json();
+}

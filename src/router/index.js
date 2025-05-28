@@ -4,10 +4,10 @@ import TabsPage          from '@/views/TabsPage.vue';
 import HjemView          from '@/views/HjemView.vue';
 import PointshopView     from '@/views/PointshopView.vue';
 import ProductDetailView from '@/views/ProductDetailView.vue';
-import PurchaseView      from '@/views/PurchaseView.vue';       // ← import it here
+import PurchaseView      from '@/views/PurchaseView.vue';
 import CategoryListView  from '@/views/CategoryListView.vue';
 import UdfordringerView  from '@/views/UdfordringerView.vue';
-import ChallengeDetails  from '@/views/ChallengeDetailsView.vue';
+import TaskDetails       from '@/views/TaskDetailsView.vue';
 import ProfilView        from '@/views/ProfilView.vue';
 import NotificationsView from '@/views/NotificationsView.vue';
 import SettingsView      from '@/views/SettingsView.vue';
@@ -43,11 +43,12 @@ const routes = [
         props: true
       },
       {
-        path: 'challenge/:id',
-        name: 'ChallengeDetails',
-        component: ChallengeDetails,
+        path: 'task/:id',
+        name: 'TaskDetails',
+        component: TaskDetails,
         props: true
       },
+
       { path: 'udfordringer', component: UdfordringerView },
 
       {
