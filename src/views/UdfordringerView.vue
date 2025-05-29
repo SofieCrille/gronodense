@@ -3,6 +3,9 @@
     <!-- Header -->
     <IonHeader>
       <IonToolbar>
+        <IonButtons slot="start">
+          <IonBackButton default-href="/tabs/hjem" />
+        </IonButtons>
         <IonTitle>Udfordringer</IonTitle>
       </IonToolbar>
     </IonHeader>
@@ -12,16 +15,19 @@
       <h3 class="section-title">Igangværende udfordringer</h3>
       <div class="card-grid">
         <UdfordringerCard
-          v-for="c in ongoing"
+          v-for="c in activeChallenges"
           :key="c.id"
+          :id="c.id"
           :title="c.title"
-          :daysLeft="c.daysLeft"
+          :days-left="c.daysLeft"
           :points="c.points"
-          :icon="c.icon"
-          :buttonText="`+${c.points} pts`"
-          :bgColor="c.bgColor"
-          :textColor="c.textColor"
-          @action="() => viewDetails(c.id)"
+          :icon="icons[c.icon]"
+          :bg-color="c.bgColor"
+          :text-color="c.textColor"
+          :active="c.active"
+          :button-text="c.active ? 'Annuller' : `+${c.points} pts`"
+          @action="() => toggleChallenge(c.id)"
+          @click.native="goToDetails(c.id)"
         />
       </div>
 
@@ -29,16 +35,19 @@
       <h3 class="section-title">Alle udfordringer</h3>
       <div class="card-grid">
         <UdfordringerCard
-          v-for="c in allChallenges"
+          v-for="c in challenges"
           :key="c.id"
+          :id="c.id"
           :title="c.title"
-          :daysLeft="c.daysLeft"
+          :days-left="c.daysLeft"
           :points="c.points"
-          :icon="c.icon"
-          buttonText="Start"
-          :bgColor="c.bgColor"
-          :textColor="c.textColor"
-          @action="() => startChallenge(c.id)"
+          :icon="icons[c.icon]"
+          :bg-color="c.bgColor"
+          :text-color="c.textColor"
+          :active="c.active"
+          :button-text="c.active ? 'Annuller' : 'Start'"
+          @action="() => toggleChallenge(c.id)"
+          @click.native="goToDetails(c.id)"
         />
       </div>
     </IonContent>
@@ -46,38 +55,32 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuth } from '@/composables/useAuth';
+import { useChallenges } from '@/composables/useChallenges';
 import UdfordringerCard from '@/components/UdfordringerCard.vue';
-import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent
-} from '@ionic/vue';
-import { bicycleOutline, refreshOutline } from 'ionicons/icons';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton } from '@ionic/vue';
+import * as icons from 'ionicons/icons';
 
 const router = useRouter();
+const { uid } = useAuth();
+const { challenges, activeChallenges, startChallenge, cancelChallenge } = useChallenges(uid.value);
 
-// Define ongoing and all challenges separately
-const ongoing = ref([
-  { id: 't1', title: 'Juni cykel udfordring', daysLeft: 8, points: 50, icon: bicycleOutline, bgColor: '#D2E3BC', textColor: '#02382C' }
-]);
-
-const allChallenges = ref([
-  { id: 't2', title: 'Hold telefonen slukket i 12 timer', daysLeft: 21, points: 40, icon: refreshOutline, bgColor: '#FFF1E5', textColor: '#02382C' },
-  { id: 't3', title: 'Bæredygtig transport i en uge', daysLeft: 30, points: 60, icon: bicycleOutline, bgColor: '#C9E0DD', textColor: '#02382C' }
-]);
-
-function viewDetails(id) {
-  router.push({ name: 'ChallengeDetails', params: { id } });
+function toggleChallenge(id) {
+  const c = challenges.value.find(x => x.id === id);
+  if (c.active) cancelChallenge(id);
+  else startChallenge(id);
 }
 
-function startChallenge(id) {
-  router.push({ name: 'ChallengeDetails', params: { id } });
+function goToDetails(id) {
+  router.push(`/tabs/udfordringer/${id}`);
 }
 </script>
 
 <style scoped>
 .section-title {
   margin: 1rem 0 0.5rem;
+  font-weight: 600;
 }
 .card-grid {
   display: flex;

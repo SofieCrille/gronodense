@@ -1,0 +1,34 @@
+[
+    {
+    "id": "u1",
+    "title": "Juni Cykel Udfordring",
+    "description": "Cykle mindst 15 km i løbet af juni for at reducere CO₂-udledning.",
+    "daysLeft": 8,
+    "points": 50,
+    "icon": "bicycleOutline",
+    "bgColor": "#C9E0DD",
+    "textColor": "#02382C"
+    },
+    
+    {
+    "id": "u2",
+    "title": "Plastindsamling",
+    "description": "Samle plastaffald i lokalområdet for at holde naturen ren.",
+    "daysLeft": 5,
+    "points": 30,
+    "icon": "trashOutline",
+    "bgColor": "#D2E3BC",
+    "textColor": "#02382C"
+    },
+    
+    {
+    "id": "u3",
+    "title": "Gå eller Offentlig Transport",
+    "description": "Gå eller brug offentlig transport til arbejde i en uge for at spare CO₂.",
+    "daysLeft": 7,
+    "points": 40,
+    "icon": "walkOutline",
+    "bgColor": "#E8CDC6",
+    "textColor": "#02382C"
+    }
+    ]

@@ -69,3 +69,24 @@ export async function setActiveTasks(uid, activeTasks) {
   if (!res.ok) throw new Error('Failed to save active tasks');
   return res.json();
 }
+
+// ACTIVE CHALLENGES PERSISTENCE
+export async function getActiveChallenges(uid) {
+  const res = await fetch(`${BASE_URL}/users/${uid}/activeChallenges.json`);
+  if (!res.ok) throw new Error('Failed to fetch active challenges');
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
+
+export async function setActiveChallenges(uid, activeChallenges) {
+  const res = await fetch(
+    `${BASE_URL}/users/${uid}/activeChallenges.json`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(activeChallenges)
+    }
+  );
+  if (!res.ok) throw new Error('Failed to save active challenges');
+  return res.json();
+}

@@ -1,149 +1,100 @@
-<script setup>
-import {
-  IonCard,
-  IonCardContent,
-  IonBadge,
-  IonIcon
-} from '@ionic/vue';
-import { star } from 'ionicons/icons';
-import { computed } from 'vue';
-
-const props = defineProps({
-  title: String,
-  daysLeft: Number,
-  points: Number,
-  icon: { type: [String, Object], required: true },
-  imageUrl: String,
-  kilometers: Number, 
-  goal: { type: Number, default: 100 },
-  onActionClick: Function
-});
-
-// compute percentage of goal achieved
-const percent = computed(() => Math.min((props.kilometers / props.goal) * 100, 100));
-// compute angle
-const angle = computed(() => (percent.value / 100) * 360);
-</script>
-
 <template>
-  <IonCard class="ud-card" @click="props.onActionClick">
-    <div class="ud-card-bg" :style="{ backgroundImage: `url(${props.imageUrl})` }" />
-    <IonCardContent class="ud-content">
-      <div class="ud-text">
-        <h2 class="ud-title">{{ props.title }}</h2>
-        <p class="ud-subtitle">{{ props.daysLeft }} dage tilbage</p>
-        <div class="ud-footer">
-          <IonIcon :icon="props.icon" class="ud-icon" />
-          <IonBadge class="ud-badge">+{{ props.points }} pts</IonBadge>
+  <IonCard
+    class="challenge-card"
+    :class="{ 'active-card': active }"
+    :style="cardStyles"
+    @click="handleClick"
+  >
+    <IonCardContent class="card-content">
+      <div class="text-group">
+        <h2 class="title">{{ title }}</h2>
+        <p class="subtitle">{{ daysLeft }} dage tilbage</p>
+        <div class="footer">
+          <IonIcon :icon="icon" />
+          <span class="points">+{{ points }} pts</span>
         </div>
       </div>
-      <div class="ud-progress">
-        <div class="circle">
-          <div class="mask full" :style="{ transform: `rotate(${angle}deg)` }">
-            <div class="fill" :style="{ transform: `rotate(${angle}deg)` }"></div>
-          </div>
-          <div class="mask half">
-            <div class="fill" :style="{ transform: `rotate(${angle}deg)` }"></div>
-          </div>
-          <div class="inside-circle">
-            {{ props.kilometers }}km
-          </div>
-        </div>
-      </div>
+      <IonButton
+        class="action-button"
+        fill="outline"
+        @click.stop="handleClick"
+      >
+        {{ active ? 'Annuller' : buttonText }}
+      </IonButton>
     </IonCardContent>
   </IonCard>
 </template>
 
+<script setup>
+import { IonCard, IonCardContent, IonButton, IonIcon } from '@ionic/vue';
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+
+const props = defineProps({
+  id: { type: String, required: true },
+  title: { type: String, required: true },
+  daysLeft: { type: Number, required: true },
+  points: { type: Number, required: true },
+  icon: { type: [String, Object], required: true },
+  bgColor: { type: String, default: '#fff' },
+  textColor: { type: String, default: '#000' },
+  active: { type: Boolean, default: false },
+  buttonText: { type: String, default: 'Start' }
+});
+
+const router = useRouter();
+function handleClick() {
+  router.push({ name: 'ChallengeDetails', params: { id: props.id } });
+}
+
+const cardStyles = computed(() => ({
+  backgroundColor: props.bgColor,
+  color: props.textColor,
+  borderRadius: '12px',
+  border: props.active ? '2px solid black' : 'none',
+  transition: 'transform 0.2s, border 0.2s',
+  transform: props.active ? 'scale(1.05)' : 'none'
+}));
+</script>
+
 <style scoped>
-.ud-card {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  display: flex;
-  min-height: 200px;
-  margin-right: 1rem;
+.challenge-card {
+  margin: 0.5rem;
+  width: 200px;
 }
-.ud-card-bg {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-size: cover;
-  background-position: center;
-  filter: brightness(0.5);
+.challenge-card.active-card {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
-.ud-content {
-  position: relative;
+.card-content {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 1rem;
-  color: #fff;
+  height: 100%;
 }
-.ud-text {
+.text-group {
   flex: 1;
 }
-.ud-title {
+.title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
-.ud-subtitle {
-  margin: 0.5rem 0;
+.subtitle {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
 }
-.ud-footer {
+.footer {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
+  font-size: 0.9rem;
 }
-.ud-icon {
-  font-size: 1.6rem;
-  color: #fff;
+.points {
+  font-weight: 600;
 }
-.ud-badge {
-  background: rgba(255,255,255,0.8);
-  color: #000;
-}
-.ud-progress {
-  width: 80px;
-  height: 80px;
-  position: relative;
-}
-.circle {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-.mask,
-.fill {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  border-radius: 50%;
-}
-.mask {
-  clip: rect(0px, 80px, 80px, 40px);
-}
-.mask.full {
-  clip: rect(0px, 40px, 80px, 0px);
-}
-.fill {
-  background: #fff;
-  clip: rect(0px, 40px, 80px, 0px);
-}
-.inside-circle {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.5);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  position: absolute;
-  top: 10px;
-  left: 10px;
+.action-button {
+  margin-top: 0.5rem;
+  --border-radius: 20px;
+  --color: var(--ion-color-primary);
 }
 </style>
