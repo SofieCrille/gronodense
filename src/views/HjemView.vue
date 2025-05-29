@@ -47,7 +47,13 @@
       <div class="favorites-section">
         <div class="section-header">
           <h3 class="section-title">Favoritter</h3>
-          <IonButton v-if="favoriteItems.length" class="see-all" fill="clear" size="small" @click="goToFavoritesList">
+          <IonButton
+            v-if="favoriteItems.length"
+            class="see-all"
+            fill="clear"
+            size="small"
+            @click="goToFavoritesList"
+          >
             Se alle ›
           </IonButton>
         </div>
@@ -61,7 +67,7 @@
               :points="item.points"
               :image="item.image"
               :logo="item.logo"
-              :is-favorite="true"
+              :is-favorite="favorites.includes(item.id)"
               @select="openDetail(item.id)"
               @toggle-favorite="toggleFavorite(item.id)"
             />
@@ -82,18 +88,16 @@
       </div>
       <div class="card-grid" ref="grid2" @scroll="onScroll2">
         <UdfordringerCard
-          v-for="c in activeChallenges"
-          :key="c.id"
-          :id="c.id"
-          :title="c.title"
-          :days-left="c.daysLeft"
-          :points="c.points"
-          :icon="icons[c.icon]"
-          :bg-color="c.bgColor"
-          :text-color="c.textColor"
-          :active="c.active"
-          :button-text="c.active ? 'Annuller' : `+${c.points} pts`"
-          @action="toggleChallenge(c.id)"
+          v-for="u in ongoing"
+          :key="u.id"
+          :title="u.title"
+          :days-left="u.daysLeft"
+          :points="u.points"
+          :icon="icons[u.icon]"
+          :bg-color="u.bgColor"
+          :text-color="u.textColor"
+          :button-text="`+${u.points} pts`"
+          @action="viewDetails(u.id)"
         />
       </div>
     </IonContent>
@@ -115,10 +119,10 @@ import UdfordringerCard from '@/components/UdfordringerCard.vue';
 import BelønningerCard from '@/components/BelønningerCard.vue';
 import rewards from '@/data/belonninger.json';
 
-import { getFavorites, setFavorites, getBalance } from '@/firebaseRest.js';
+import { getBalance } from '@/firebaseRest.js';
+import { useFavorites } from '@/composables/useFavorites';
 import { useAuth } from '@/composables/useAuth';
 import { useTasks } from '@/composables/useTasks';
-import { useChallenges } from '@/composables/useChallenges';
 
 const router = useRouter();
 const { uid } = useAuth();
@@ -141,68 +145,46 @@ const grid = ref(null);
 const currentIndex = ref(0);
 function onScroll() {
   const el = grid.value;
-  if (!el || !el.children.length) return;
-  const card = el.children[0];
+  if (!el?.children.length) return;
   const gap = parseInt(getComputedStyle(el).gap) || 0;
-  currentIndex.value = Math.round(el.scrollLeft / (card.offsetWidth + gap));
+  currentIndex.value = Math.round(el.scrollLeft / (el.children[0].offsetWidth + gap));
 }
 onMounted(onScroll);
 
-// Favorites
-const favorites = ref([]);
-onMounted(async () => {
-  favorites.value = (await getFavorites(uid.value)) || [];
-});
+// Favorites (shared state)
+const { favorites, toggleFavorite } = useFavorites(uid.value);
 const favoriteItems = computed(() =>
   rewards.filter(r => favorites.value.includes(r.id))
 );
-async function toggleFavorite(id) {
-  const idx = favorites.value.indexOf(id);
-  if (idx >= 0) favorites.value.splice(idx, 1);
-  else favorites.value.push(id);
-  await setFavorites(uid.value, favorites.value);
-}
-const favGrid = ref(null);
-function onFavScroll() {
-  const el = favGrid.value;
-  if (!el || !el.children.length) return;
-}
-onMounted(onFavScroll);
-
 function goToFavoritesList() {
   router.push({ name: 'CategoryList', params: { category: 'favorites' } });
 }
-
 function openDetail(id) {
   router.push({ name: 'ProductDetail', params: { id } });
 }
 
-// Challenges
-const { challenges, activeChallenges, startChallenge, cancelChallenge } = useChallenges(uid.value);
-
-function toggleChallenge(id) {
-  const c = challenges.value.find(x => x.id === id);
-  if (c && c.active) cancelChallenge(id);
-  else startChallenge(id);
-}
+// Ongoing challenges (static sample)
+const ongoing = ref([
+  { id: 'u1', title: 'Juni cykel udfordring', daysLeft: 8, points: 50, icon: 'bicycleOutline', bgColor: '#C9E0DD', textColor: '#02382C' }
+]);
 
 // Challenge scroll snapping
 const grid2 = ref(null);
 function onScroll2() {
   const el = grid2.value;
-  if (!el || !el.children.length) return;
+  if (!el?.children.length) return;
 }
 onMounted(onScroll2);
 
-// Navigation
+// Navigation handlers
 function viewTaskDetails(id) {
   router.push({ name: 'TaskDetails', params: { id } });
 }
+function viewDetails(id) {
+  router.push({ name: 'ChallengeDetails', params: { id } });
+}
 function goToChallengesList() {
   router.push({ name: 'UdfordringerView' });
-}
-function viewChallengeDetails(id) {
-  router.push({ name: 'ChallengeDetails', params: { id } });
 }
 </script>
 
@@ -212,8 +194,6 @@ function viewChallengeDetails(id) {
   --padding-end:   0 !important;
   overflow-y:      visible;
 }
-
-/* Scroll-snap containers for tasks & favorites */
 .card-grid,
 .cards-scroll {
   display: flex;
@@ -236,8 +216,6 @@ function viewChallengeDetails(id) {
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
-
-/* Pagination dots */
 .dots {
   display: flex;
   justify-content: center;
@@ -258,15 +236,12 @@ function viewChallengeDetails(id) {
   border-radius: 4px;
   background: #02382C;
 }
-
-/* Section divider */
 .section-divider {
   width: calc(100% - 40px);
   height: 1px;
   background: #DDDBD7;
   margin: 30px 20px;
 }
-
 .section-header {
   position: relative;
   display: flex;
@@ -285,8 +260,6 @@ function viewChallengeDetails(id) {
   font-weight: 400;
   color: #02382C;
 }
-
-/* “Se alle” pill styling */
 .see-all {
   position: absolute;
   right: 20px;
@@ -305,7 +278,6 @@ function viewChallengeDetails(id) {
   line-height: 1;
   cursor: pointer;
 }
-
 .empty-favorites-card {
   margin: 20px;
   padding: 40px;

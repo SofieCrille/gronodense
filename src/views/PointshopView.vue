@@ -62,7 +62,7 @@
             :logo="item.logo"
             :category="item.category"
             :tags="item.tags"
-            :isFavorite="favorites.includes(item.id)"
+            :is-favorite="favorites.includes(item.id)"
             @select="openItem(item.id)"
             @toggle-favorite="toggleFavorite(item.id)"
           />
@@ -74,7 +74,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   IonPage,
@@ -85,8 +85,8 @@ import {
   IonChip,
   IonButton
 } from '@ionic/vue';
-import { getFavorites, setFavorites } from '@/firebaseRest';
 import { useAuth } from '@/composables/useAuth';
+import { useFavorites } from '@/composables/useFavorites';
 import BelønningerCard from '@/components/BelønningerCard.vue';
 import rewards from '@/data/belonninger.json';
 
@@ -97,23 +97,14 @@ const slideRefs = ref([]);
 // categories and display names
 const categories = ['trending', 'skonhed', 'mad', 'oplevelser'];
 const categoryNames = { trending: 'Trending', skonhed: 'Skønhed & mode', mad: 'Mad & drikke', oplevelser: 'Oplevelser' };
-const groupedRewards = computed(() => categories.map(cat => ({ category: cat, items: rewards.filter(r => r.category === cat) })));
+const groupedRewards = computed(() =>
+  categories.map(cat => ({ category: cat, items: rewards.filter(r => r.category === cat) }))
+);
 
-// favorites & navigation
+// auth & favorites composable
 const router = useRouter();
 const { uid } = useAuth();
-const favorites = ref([]);
-
-onMounted(async () => {
-  favorites.value = (await getFavorites(uid.value)) || [];
-});
-
-async function toggleFavorite(id) {
-  const i = favorites.value.indexOf(id);
-  if (i >= 0) favorites.value.splice(i, 1);
-  else favorites.value.push(id);
-  await setFavorites(uid.value, favorites.value);
-}
+const { favorites, toggleFavorite } = useFavorites(uid.value);
 
 function goToCategory(cat) {
   router.push({ name: 'CategoryList', params: { category: cat } });
