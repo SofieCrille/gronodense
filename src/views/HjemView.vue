@@ -2,11 +2,8 @@
   <IonPage>
     <IonHeader>
       <IonToolbar>
-        <!-- Balance & notifications -->
         <IonButtons slot="start">
-          <div class="header-balance">
-            <span>{{ balance }}</span>
-          </div>
+          <div class="header-balance"><span>{{ balance }}</span></div>
         </IonButtons>
         <IonTitle>GronOdense</IonTitle>
         <IonButtons slot="end">
@@ -18,29 +15,54 @@
     </IonHeader>
 
     <IonContent class="no-pad" style="background-color: #C9E0DD;">
-      <!-- Opgaver header & cards -->
+      <!-- Active & Completed Tasks -->
+      <template v-if="activeAndCompleted.length">
+        <div class="section-header">
+          <h3 class="section-title">Dine opgaver</h3>
+        </div>
+        <div class="card-grid" ref="activeGrid">
+          <OpgaverCard
+            v-for="task in activeAndCompleted"
+            :id="task.id"
+            :key="task.id"
+            :left-icon="icons[task.icon]"
+            :title="task.title"
+            :description="task.description"
+            :bg-color="task.bgColor"
+            :text-color="task.textColor"
+            :points="task.points"
+            :active="task.active"
+            :completed="task.completed"
+            :start-date="task.startDate"
+            :deadline="task.deadline"
+            :button-text="task.active ? 'I gang' : 'Hent belønning'"
+            @action-click="onCardAction(task)"
+          />
+        </div>
+      </template>
+
+      <!-- Inactive Tasks -->
       <div class="section-header">
-        <h3 class="section-title">Opgaver</h3>
-        <span class="challenge-count">{{ challengeCount }} opgaver</span>
+        <h3 class="section-title">Flere opgaver</h3>
+        <span class="challenge-count">{{ inactiveTasks.length }} flere</span>
       </div>
-      <div class="card-grid" ref="grid" @scroll="onScroll">
+      <div class="card-grid" ref="inactiveGrid" @scroll="onScrollInactive">
         <OpgaverCard
-          v-for="(task, i) in tasks"
+          v-for="task in inactiveTasks"
+          :id="task.id"
           :key="task.id"
           :left-icon="icons[task.icon]"
           :title="task.title"
           :description="task.description"
-          :button-text="task.active ? 'I gang' : 'Start'"
           :bg-color="task.bgColor"
           :text-color="task.textColor"
           :points="task.points"
-          :active="task.active"
-          @action-click="viewTaskDetails(task.id)"
+          :active="false"
+          :completed="false"
+          :button-text="'Start'"
+          @action-click="onCardAction(task)"
         />
       </div>
-      <ul class="dots">
-        <li v-for="(_, i) in tasks" :key="i" :class="{ active: i === currentIndex }"></li>
-      </ul>
 
       <!-- FAVORITTER carousel or empty state -->
       <div class="section-divider"></div>
@@ -82,24 +104,30 @@
       </div>
 
       <!-- IGANGVÆRENDE UDFORDRINGER -->
-      <div class="section-divider"></div>
-      <div class="section-header">
-        <h3 class="section-title">Igangværende udfordringer</h3>
-      </div>
-      <div class="card-grid" ref="grid2" @scroll="onScroll2">
-        <UdfordringerCard
-          v-for="u in ongoing"
-          :key="u.id"
-          :title="u.title"
-          :days-left="u.daysLeft"
-          :points="u.points"
-          :icon="icons[u.icon]"
-          :bg-color="u.bgColor"
-          :text-color="u.textColor"
-          :button-text="`+${u.points} pts`"
-          @action="viewDetails(u.id)"
-        />
-      </div>
+      <template v-if="ongoing.length">
+        <div class="section-divider"></div>
+        <div class="section-header">
+          <h3 class="section-title">Igangværende udfordringer</h3>
+        </div>
+        <div class="card-grid" ref="grid2" @scroll="onScroll2">
+          <UdfordringerCard
+            v-for="u in ongoing"
+            :id="u.id"
+            :key="u.id"
+            :title="u.title"
+            :days-left="u.daysLeft"
+            :points="u.points"
+            :icon="icons[u.icon]"
+            :bg-color="u.bgColor"
+            :text-color="u.textColor"
+            :active="u.active"
+            :bg-image="u.bgImage || ''"
+            :button-text="u.active ? 'Annuller' : 'Start'"
+            @action="() => toggleChallenge(u.id)"
+            @click.native="viewDetails(u.id)"
+          />
+        </div>
+      </template>
     </IonContent>
   </IonPage>
 </template>
@@ -123,39 +151,42 @@ import { getBalance } from '@/firebaseRest.js';
 import { useFavorites } from '@/composables/useFavorites';
 import { useAuth } from '@/composables/useAuth';
 import { useTasks } from '@/composables/useTasks';
+import { useChallenges } from '@/composables/useChallenges';
 
 const router = useRouter();
 const { uid } = useAuth();
+const { activeChallenges, challenges, startChallenge, cancelChallenge } = useChallenges(uid.value);
+const ongoing = computed(() => activeChallenges.value);
 
-// Balance & notifications
 const balance = ref(0);
 onMounted(async () => {
   balance.value = await getBalance(uid.value);
 });
+
 function goToNotifications() {
   router.push({ name: 'Notifications' });
 }
 
-// Tasks
-const { tasks } = useTasks(uid.value);
-const challengeCount = computed(() => tasks.value.length);
+const { activeTasks, completedTasks, inactiveTasks, claimReward } = useTasks(uid.value);
+const activeAndCompleted = computed(() => [...activeTasks.value, ...completedTasks.value]);
 
-// Task scroll snapping
-const grid = ref(null);
-const currentIndex = ref(0);
-function onScroll() {
-  const el = grid.value;
-  if (!el?.children.length) return;
-  const gap = parseInt(getComputedStyle(el).gap) || 0;
-  currentIndex.value = Math.round(el.scrollLeft / (el.children[0].offsetWidth + gap));
+const inactiveGrid = ref(null);
+function onScrollInactive() {}
+const grid2 = ref(null);
+function onScroll2() {}
+
+async function onCardAction(task) {
+  if (task.completed) {
+    await claimReward(task.id);
+    task.completed = false;
+    activeTasks.value = [...activeTasks.value];
+  } else {
+    router.push({ name: 'TaskDetails', params: { id: task.id } });
+  }
 }
-onMounted(onScroll);
 
-// Favorites (shared state)
 const { favorites, toggleFavorite } = useFavorites(uid.value);
-const favoriteItems = computed(() =>
-  rewards.filter(r => favorites.value.includes(r.id))
-);
+const favoriteItems = computed(() => rewards.filter(r => favorites.value.includes(r.id)));
 function goToFavoritesList() {
   router.push({ name: 'CategoryList', params: { category: 'favorites' } });
 }
@@ -163,28 +194,14 @@ function openDetail(id) {
   router.push({ name: 'ProductDetail', params: { id } });
 }
 
-// Ongoing challenges (static sample)
-const ongoing = ref([
-  { id: 'u1', title: 'Juni cykel udfordring', daysLeft: 8, points: 50, icon: 'bicycleOutline', bgColor: '#C9E0DD', textColor: '#02382C' }
-]);
-
-// Challenge scroll snapping
-const grid2 = ref(null);
-function onScroll2() {
-  const el = grid2.value;
-  if (!el?.children.length) return;
+function toggleChallenge(id) {
+  const c = challenges.value.find(x => x.id === id);
+  if (c.active) cancelChallenge(id);
+  else startChallenge(id);
 }
-onMounted(onScroll2);
 
-// Navigation handlers
-function viewTaskDetails(id) {
-  router.push({ name: 'TaskDetails', params: { id } });
-}
 function viewDetails(id) {
   router.push({ name: 'ChallengeDetails', params: { id } });
-}
-function goToChallengesList() {
-  router.push({ name: 'UdfordringerView' });
 }
 </script>
 
@@ -206,35 +223,11 @@ function goToChallengesList() {
   gap: 10px;
   scrollbar-width: none;
 }
-.card-grid::-webkit-scrollbar,
-.cards-scroll::-webkit-scrollbar {
-  display: none;
-}
 .card-grid > *,
 .cards-scroll > * {
   flex-shrink: 0;
   scroll-snap-align: start;
   scroll-snap-stop: always;
-}
-.dots {
-  display: flex;
-  justify-content: center;
-  margin: 4px 0 16px;
-  gap: 6px;
-  padding: 0;
-  list-style: none;
-}
-.dots li {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.15);
-  transition: background .2s, width .2s;
-}
-.dots li.active {
-  width: 16px;
-  border-radius: 4px;
-  background: #02382C;
 }
 .section-divider {
   width: calc(100% - 40px);
@@ -243,16 +236,15 @@ function goToChallengesList() {
   margin: 30px 20px;
 }
 .section-header {
-  position: relative;
   display: flex;
   align-items: center;
   padding: 0 20px;
   margin: 16px 0 0;
 }
-.section-header .section-title {
-  margin: 0;
+.section-title {
   font-size: 20px;
   font-weight: 600;
+  margin: 0;
 }
 .challenge-count {
   margin-left: auto;

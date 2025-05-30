@@ -10,115 +10,133 @@
     </IonHeader>
 
     <IonContent class="ion-padding">
-      <!-- Icon and category badge -->
-      <div class="header-visuals">
-        <IonIcon :icon="icons[task.icon]" size="large" />
-        <span class="badge">{{ task.category }}</span>
-      </div>
-
-      <!-- Points & impact -->
-      <div class="points-impact">
-        <h3>Earn {{ task.points }} points</h3>
-        <p>Save ~{{ task.estimatedCO2 }} CO₂</p>
-        <small>{{ task.benefit }}</small>
-      </div>
-
-      <!-- Overview & instructions -->
-      <section>
-        <h4>Overview</h4>
-        <p>{{ task.overview }}</p>
+      <section class="image-section">
+        <img src="/img/grey.png" alt="Task image" class="task-image" />
       </section>
-      <section>
-        <h4>Steps</h4>
-        <ol>
+
+      <section class="title-section">
+        <h2>{{ task.title }}</h2>
+        <p class="description">{{ task.description }}</p>
+      </section>
+
+      <section v-if="task.active && !task.completed" class="countdown">
+        <h3>Tid tilbage:</h3>
+        <div class="timer">
+          <span>{{ timeLeft.days }}d</span>
+          <span>{{ timeLeft.hours }}h</span>
+          <span>{{ timeLeft.minutes }}m</span>
+          <span>{{ timeLeft.seconds }}s</span>
+        </div>
+      </section>
+
+      <section v-if="(task.active || task.completed)" class="progress">
+        <h3>Din fremgang</h3>
+        <IonProgressBar :value="progressValue" />
+      </section>
+
+      <section v-if="task.steps" class="steps">
+        <h3>Trin</h3>
+        <ul>
           <li v-for="(step, i) in task.steps" :key="i">{{ step }}</li>
-        </ol>
-      </section>
-      <section>
-        <p><strong>Duration:</strong> {{ task.duration }}</p>
-      </section>
-
-      <!-- Requirements & verification -->
-      <section>
-        <h4>Requirements</h4>
-        <ul>
-          <li v-for="(req, i) in task.prerequisites" :key="i">{{ req }}</li>
         </ul>
-        <p><strong>Location:</strong> {{ task.location }}</p>
-        <p><strong>Verify by:</strong> {{ task.verification }}</p>
       </section>
 
-      <!-- Safety & accessibility -->
-      <section>
-        <h4>Safety Tips</h4>
-        <ul>
-          <li v-for="(tip, i) in task.safetyTips" :key="i">{{ tip }}</li>
-        </ul>
-        <h4>Accessibility</h4>
-        <p>{{ task.accessibility }}</p>
+      <section v-if="task.active && !task.completed" class="verification">
+        <IonButton expand="block" @click="handleVerify">Løs opgave</IonButton>
       </section>
 
-      <!-- Call to action -->
-      <IonButton expand="block" @click="toggleTask">
-        {{ task.active ? 'Annuller opgave' : 'Start opgave' }}
+      <section v-if="task.completed && !task._claimed" class="claim">
+        <IonButton expand="block" @click="handleClaim">Hent belønning</IonButton>
+      </section>
+
+      <IonButton
+        v-if="!task.completed"
+        expand="block"
+        class="start-button"
+        @click="toggleTask"
+      >
+        {{ task.active ? 'Annuller' : 'Start' }}
       </IonButton>
     </IonContent>
   </IonPage>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import { useTasks } from '@/composables/useTasks';
 import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonButtons, IonBackButton, IonIcon, IonButton
+  IonPage, IonHeader, IonToolbar, IonButtons, IonBackButton,
+  IonTitle, IonContent, IonProgressBar, IonButton
 } from '@ionic/vue';
-import * as icons from 'ionicons/icons';
 
 const route = useRoute();
 const router = useRouter();
 const { uid } = useAuth();
-const { getTask, startTask, cancelTask } = useTasks(uid.value);
-const task = ref({});
+const { tasks, startTask, cancelTask, completeTask, claimReward } = useTasks(uid.value);
+
+const id = route.params.id;
+const task = computed(() => tasks.value.find(t => t.id === id) || {});
+
+const timeLeft = ref({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+let intervalId;
+function updateCountdown() {
+  if (!task.value.deadline) return;
+  const end = new Date(task.value.deadline);
+  const now = new Date();
+  let diff = end - now;
+  if (diff < 0) diff = 0;
+  const days = Math.floor(diff / 86400000);
+  diff %= 86400000;
+  const hours = Math.floor(diff / 3600000);
+  diff %= 3600000;
+  const minutes = Math.floor(diff / 60000);
+  diff %= 60000;
+  const seconds = Math.floor(diff / 1000);
+  timeLeft.value = { days, hours, minutes, seconds };
+}
 
 onMounted(() => {
-  const id = route.params.id;
-  task.value = getTask(id) || {};
+  updateCountdown();
+  intervalId = setInterval(updateCountdown, 1000);
+});
+onUnmounted(() => clearInterval(intervalId));
+
+const progressValue = computed(() => {
+  if (task.value.completed) return 1;
+  if (!task.value.active) return 0;
+  const start = new Date(task.value.startDate);
+  const end = new Date(task.value.deadline);
+  const now = new Date();
+  if (now >= end) return 1;
+  return (now - start) / (end - start);
 });
 
-async function toggleTask() {
-  if (task.value.active) {
-    await cancelTask(task.value.id);
-  } else {
-    await startTask(task.value.id);
-  }
+async function handleVerify() {
+  await completeTask(id);
   router.back();
+}
+
+async function handleClaim() {
+  await claimReward(id);
+}
+
+function toggleTask() {
+  if (task.value.active) cancelTask(id);
+  else startTask(id);
 }
 </script>
 
 <style scoped>
-.header-visuals {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.badge {
-  background: #d1e7dd;
-  color: #0f5132;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-}
-.points-impact {
-  margin-bottom: 24px;
-}
-.points-impact h3 {
-  margin: 0;
-}
-section {
-  margin-bottom: 16px;
-}
+.image-section { text-align: center; margin-bottom: 1rem; }
+.task-image { width: 100%; height: auto; border-radius: 8px; }
+.title-section h2 { margin-top: 0; font-size: 1.5rem; font-weight: bold; }
+.title-section .description { margin-bottom: 1rem; }
+.countdown .timer { display: flex; gap: 0.5rem; font-size: 1.2rem; margin-bottom: 1rem; }
+.progress { margin-bottom: 1rem; }
+.steps ul { padding-left: 1.2rem; margin-bottom: 1rem; }
+.verification { margin-bottom: 1.5rem; }
+.start-button { margin-top: 1rem; }
+.claim { margin-top: 1rem; }
 </style>

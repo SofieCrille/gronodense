@@ -7,7 +7,8 @@
     "points": 50,
     "icon": "bicycleOutline",
     "bgColor": "#C9E0DD",
-    "textColor": "#02382C"
+    "textColor": "#02382C",
+    "bgImage": "/img/cafearoma.jpg"
     },
     
     {
@@ -18,7 +19,8 @@
     "points": 30,
     "icon": "trashOutline",
     "bgColor": "#D2E3BC",
-    "textColor": "#02382C"
+    "textColor": "#02382C",
+    "bgImage": "/img/cafearoma.jpg"
     },
     
     {
@@ -29,6 +31,7 @@
     "points": 40,
     "icon": "walkOutline",
     "bgColor": "#E8CDC6",
-    "textColor": "#02382C"
+    "textColor": "#02382C",
+    "bgImage": "/img/cafearoma.jpg"
     }
     ]

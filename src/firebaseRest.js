@@ -28,7 +28,7 @@ export async function getBalance(uid) {
   const res = await fetch(`${BASE_URL}/users/${uid}/balance.json`);
   if (!res.ok) throw new Error('Failed to fetch balance');
   const data = await res.json();
-  return typeof data === 'number' ? data : 500;
+  return typeof data === 'number' ? data : 0;
 }
 
 export async function changeBalance(uid, delta) {
@@ -89,4 +89,36 @@ export async function setActiveChallenges(uid, activeChallenges) {
   );
   if (!res.ok) throw new Error('Failed to save active challenges');
   return res.json();
+}
+
+// COMPLETED TASKS PERSISTENCE
+export async function getCompletedTasks(uid) {
+  const res = await fetch(`${BASE_URL}/users/${uid}/completedTasks.json`);
+  if (!res.ok) throw new Error('Failed to fetch completed tasks');
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
+
+export async function setCompletedTasks(uid, completedTasks) {
+  const res = await fetch(
+    `${BASE_URL}/users/${uid}/completedTasks.json`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(completedTasks)
+    }
+  );
+  if (!res.ok) throw new Error('Failed to save completed tasks');
+  return res.json();
+}
+
+// POINTS ADDITION
+/**
+ * Add points to user's balance.
+ * @param {string} uid - User ID
+ * @param {number} points - Points to add (positive number)
+ * @returns {number} New balance
+ */
+export async function addPoints(uid, points) {
+  return changeBalance(uid, points);
 }

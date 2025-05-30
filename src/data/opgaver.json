@@ -1,57 +1,101 @@
 [
-    {
-      "id":      "t1",
-      "title":   "Bæredygtig transport",
-      "description": "Tag cyklen…",
-      "buttonText":  "Begynd nu",
-      "icon":    "bicycleOutline",
-      "bgColor": "#C9E0DD",
-      "textColor":"#02382C",
-      "points":  20,
-      "estimatedCO2": "1.2 kg",
-      "benefit": "Reduces carbon footprint and traffic congestion",
-      "overview": "Commute by bicycle instead of by car.",
-      "steps": [
-        "Plan your route using a bike map.",
-        "Check tire pressure and brakes.",
-        "Lock your bike securely at your destination."
-      ],
-      "duration": "About 30 minutes",
-      "prerequisites": ["Bicycle", "Helmet", "GPS enabled"],
-      "location": "Anywhere with bike lanes",
-      "verification": "GPS tracking of your ride",
-      "safetyTips": ["Wear a helmet", "Obey traffic laws"],
-      "accessibility": "E-bikes allowed for longer routes"
-    },
-    {
-      "id":      "t2",
-      "title":   "Affaldssortering",
-      "description": "Lær hvordan…",
-      "buttonText":  "Begynd nu",
-      "icon":    "trashOutline",
-      "bgColor": "#D2E3BC",
-      "textColor":"#02382C",
-      "points":  20
-    },
-    {
-      "id":      "t3",
-      "title":   "Besøg butik",
-      "description": "Besøg butik…",
-      "buttonText":  "Begynd nu",
-      "icon":    "bagOutline",
-      "bgColor": "#E8CDC6",
-      "textColor":"#02382C",
-      "points":  20
-    },
-    {
-      "id":      "t4",
-      "title":   "Podcast",
-      "description": "Lyt til podcast…",
-      "buttonText":  "Begynd nu",
-      "icon":    "radioOutline",
-      "bgColor": "#FFE0C6",
-      "textColor":"#02382C",
-      "points":  20
-    }
+  {
+  "id": "t1",
+  "title": "Bæredygtig transport",
+  "description": "Tag cyklen i stedet for bilen for at reducere CO₂-udslip.",
+  "buttonText": "Begynd nu",
+  "icon": "bicycleOutline",
+  "bgColor": "#C9E0DD",
+  "textColor": "#02382C",
+  "points": 20,
+  "estimatedCO2": "1.2 kg",
+  "benefit": "Reduces carbon footprint and traffic congestion",
+  "overview": "Skift bilen ud med cyklen og gør din dag mere bæredygtig.",
+  "steps":[
+  "Planlæg din rute med en cykelkort-app.",
+  "Kontroller dæktryk og bremser.",
+  "Lås din cykel sikkert ved målet."
+  ],
+  "duration": "Circa 30 minutter",
+  "prerequisites": ["Cykel", "Hjelm", "GPS aktiveret på telefon"],
+  "location": "Hvor som helst med cykelstier",
+  "verification": "GPS-spor fra din cykeltur",
+  "safetyTips": ["Husk hjelm", "Overhold færdselsloven"],
+  "accessibility": "El-cykler tilladt for længere ruter",
+  "startDate": "2025-05-29T00:00:00Z",
+  "deadline": "2025-06-05T00:00:00Z"
+  },
+  {
+  "id": "t2",
+  "title": "Affaldssortering",
+  "description": "Lær at sortere dit affald korrekt.",
+  "buttonText": "Begynd nu",
+  "icon": "trashOutline",
+  "bgColor": "#D2E3BC",
+  "textColor": "#02382C",
+  "points": 20,
+  "overview": "Bliv ekspert i at sortere dit daglige affald.",
+  "steps": [
+  "Identificer genanvendelige materialer.",
+  "Skil plast, papir og glas ad.",
+  "Aflever i de korrekte containere.",
+  "Tag billede af din sortering."
+  ],
+  "duration": "Circa 15 minutter",
+  "prerequisites": ["Affaldsspande med etiketter"],
+  "location": "Dit hjem eller lokal genbrugsstation",
+  "verification": "Upload af foto af korrekt sorteret affald",
+  "accessibility": "Egnet for alle husholdninger",
+  "startDate": "2025-05-29T00:00:00Z",
+  "deadline": "2025-06-06T00:00:00Z"
+  },
+  {
+  "id": "t3",
+  "title": "Besøg lokal butik",
+  "description": "Støt lokalt ved at handle tæt på dig.",
+  "buttonText": "Begynd nu",
+  "icon": "bagOutline",
+  "bgColor": "#E8CDC6",
+  "textColor": "#02382C",
+  "points": 20,
+  "overview": "Gå eller cykl til en lokal butik og køb det, du mangler.",
+  "steps": [
+  "Vælg en butik i dit nabolag.",
+  "Gå eller cykl derhen.",
+  "Køb dagligvarer eller andre fornødenheder.",
+  "Gem din bon."
+  ],
+  "duration": "Circa 1 time",
+  "prerequisites": ["Købekort eller kontanter"],
+  "location": "Din nærmeste lokale butik",
+  "verification": "Upload af billede af din kvittering",
+  "accessibility": "Handicapvenlig adgang, hvis tilgængelig",
+  "startDate": "2025-05-29T00:00:00Z",
+  "deadline": "2025-06-07T00:00:00Z"
+  },
+  {
+  "id": "t4",
+  "title": "Hør en bæredygtighedspodcast",
+  "description": "Bliv inspireret af eksperter inden for bæredygtighed.",
+  "buttonText": "Begynd nu",
+  "icon": "radioOutline",
+  "bgColor": "#FFE0C6",
+  "textColor": "#02382C",
+  "points": 20,
+  "overview": "Sæt dine høretelefoner i, og lær om bæredygtige initiativer.",
+  "steps": [
+  "Åbn din foretrukne podcast-app.",
+  "Find en bæredygtighedspodcast.",
+  "Lyt i mindst 20 minutter.",
+  "Del en vigtig pointe på sociale medier."
+  ],
+  "duration": "Circa 20 minutter",
+  "prerequisites": ["Smartphone eller computer"],
+  "location": "Overalt, hvor du kan lytte",
+  "verification": "Tag et screenshot af spillelisten",
+  "accessibility": "Undertekster eller transskription tilgængelig",
+  "startDate": "2025-05-29T00:00:00Z",
+  "deadline": "2025-06-08T00:00:00Z"
+  }
   ]
   
