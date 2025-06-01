@@ -56,7 +56,6 @@ const props = defineProps({
   image:      { type: String,  required: true },
   logo:       { type: String,  required: true },
   isFavorite: { type: Boolean, default: false },
-  category:   { type: String,  required: true },
   tags:       { type: Array,   default: () => [] }
 });
 
@@ -86,15 +85,10 @@ function tagLabel(tag) {
 }
 </script>
 
-<style scoped>
-/* …your styles stay exactly the same… */
-</style>
-
 
 <style scoped>
 .belonninger-card {
   position: relative;
-  width: 100%;
   margin: 0;
   height: 225px;
   border-radius: 12px;
@@ -103,6 +97,8 @@ function tagLabel(tag) {
   cursor: pointer;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 350px;
 }
 
 .image-wrapper {
@@ -121,32 +117,32 @@ function tagLabel(tag) {
   top: 8px;
   left: 8px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 4px;
   z-index: 10;
 }
 
 .tag {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 8px 12px;
   font-size: 12px;
   font-weight: 600;
-  border-radius: 12px;
-  color: #fff;
+  border-radius: 50px;
+  color: #02382C;
   font-family: 'Montserrat', sans-serif;
   line-height: 1;
 }
 
 .tag.new {
-  background-color: #28A745;
+  background-color: #96C0E8;
 }
 
 .tag.trending {
-  background-color: #FF6F00;
+  background-color: #F9F3B2;
 }
 
 .tag.limited {
-  background-color: #DC3545;
+  background-color: #F6B3BD;
 }
 
 .points-badge {
@@ -209,14 +205,14 @@ function tagLabel(tag) {
 .title {
   font-size: 18px;
   font-weight: 600;
-  color: #02382C;
+  color: black;
   line-height: 1;
 }
 
 .vendor {
   font-size: 12px;
-  color: #858489;
   margin-top: 4px;
+  font-weight: 600;
 }
 
 .favorite-button {
@@ -241,4 +237,6 @@ function tagLabel(tag) {
   animation: pop 0.4s ease-in-out;
   color: #ffcc00 !important;
 }
+
+
 </style>

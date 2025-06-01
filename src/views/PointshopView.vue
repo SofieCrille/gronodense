@@ -9,7 +9,7 @@
     <IonContent fullscreen class="ion-padding no-pad">
 
       <!-- 0) Scroll-snap carousel above chips bar -->
-      <div class="chips-slideshow" ref="containerRef">
+      <div class="slideshow" ref="containerRef">
         <div class="slides-container">
           <div
             v-for="(imgSrc, idx) in slideImages"
@@ -60,8 +60,8 @@
             :points="item.points"
             :image="item.image"
             :logo="item.logo"
-            :category="item.category"
             :tags="item.tags"
+            :category="item.category"
             :is-favorite="favorites.includes(item.id)"
             @select="openItem(item.id)"
             @toggle-favorite="toggleFavorite(item.id)"
@@ -74,7 +74,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   IonPage,
@@ -90,13 +90,49 @@ import { useFavorites } from '@/composables/useFavorites';
 import BelønningerCard from '@/components/BelønningerCard.vue';
 import rewards from '@/data/belonninger.json';
 
-// slideshow images
 const slideImages = ['/img/grey.png', '/img/grey.png', '/img/grey.png'];
 const slideRefs = ref([]);
+const containerRef = ref(null);
+
+let autoScrollInterval = null;
+
+onMounted(() => {
+  startAutoScroll();
+});
+
+onBeforeUnmount(() => {
+  stopAutoScroll();
+});
+
+function startAutoScroll() {
+  let currentIndex = 0;
+
+  autoScrollInterval = setInterval(() => {
+    const container = containerRef.value;
+    const slides = slideRefs.value;
+
+    if (!container || slides.length === 0) return;
+
+    currentIndex = (currentIndex + 1) % slides.length;
+    const nextSlide = slides[currentIndex];
+
+    container.scrollTo({
+      left: nextSlide.offsetLeft,
+      behavior: 'smooth'
+    });
+  }, 4000); // scroll every 4 seconds
+}
+
+function stopAutoScroll() {
+  if (autoScrollInterval) {
+    clearInterval(autoScrollInterval);
+    autoScrollInterval = null;
+  }
+}
 
 // categories and display names
-const categories = ['trending', 'skonhed', 'mad', 'oplevelser'];
-const categoryNames = { trending: 'Trending', skonhed: 'Skønhed & mode', mad: 'Mad & drikke', oplevelser: 'Oplevelser' };
+const categories = ['trending', 'skonhed', 'mad', 'oplevelser','transport', 'konkurrencer', 'favoritter'];
+const categoryNames = { trending: 'Trending', skonhed: 'Skønhed & mode', mad: 'Mad & drikke', oplevelser: 'Oplevelser',transport: 'Transport', konkurrencer: 'Kunkurrencer', favoritter: 'Favoritter' };
 const groupedRewards = computed(() =>
   categories.map(cat => ({ category: cat, items: rewards.filter(r => r.category === cat) }))
 );
@@ -121,8 +157,8 @@ function openItem(id) {
   --padding-end: 0;
 }
 
-/* Enable horizontal swipe snapping on mobile */
-.chips-slideshow {
+
+.slideshow {
   width: 100%;
   overflow-x: auto;
   margin-bottom: 1rem;
@@ -133,20 +169,26 @@ function openItem(id) {
   scroll-snap-type: x mandatory;
   scrollbar-width: none;            /* hide scrollbar Firefox */
   -ms-overflow-style: none;         /* hide scrollbar IE10+ */
+  overflow-y: hidden;
 }
-.chips-slideshow::-webkit-scrollbar {
+.slideshow::-webkit-scrollbar {
   display: none;
 }
 
 .slides-container {
   display: flex;
   gap: 10px;
+  justify-content: flex-start;
 }
+
 .slide-wrap {
-  flex: 0 0 calc(100%);
+  flex: 0 0 auto;
+  max-width: 350px;
+  width: 100%;
   scroll-snap-align: center;
 }
 .slide-image {
+  max-width: 350px;
   width: 100%;
   height: 200px;
   object-fit: cover;
@@ -159,14 +201,17 @@ function openItem(id) {
   flex: 0 0 20px;
 }
 
-/* rest unchanged... */
 .chips-bar {
   display: flex;
   overflow-x: auto;
-  gap: 0.5rem;
   padding: 0 20px 1rem;
   scrollbar-width: none;
   scroll-snap-type: x mandatory;
+}
+
+.chips-bar > :first-child {
+  margin-left: 0;
+  scroll-margin-left: 20px;
 }
 .chips-bar::-webkit-scrollbar {
   display: none;
@@ -176,19 +221,15 @@ function openItem(id) {
   scroll-snap-align: start;
 }
 .chips-bar ion-chip {
-  --outline-color: #DDDBD7;
   --color: #02382C;
+  border: 1px solid #DDDBD7 !important; /* full border declaration */
   font-weight: 600;
+  font-size: 16px;
+  height: 40px;
+  border-radius: 50px;
 }
 .category-section {
   margin-bottom: 2rem;
-}
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  margin-bottom: 0.5rem;
 }
 .section-header h3 {
   margin: 0;
@@ -198,10 +239,16 @@ function openItem(id) {
 .cards-scroll {
   display: flex;
   overflow-x: auto;
+  overflow: visible;
   gap: 1rem;
-  padding: 0 20px 30px;
-  scrollbar-width: none;
+  padding-right: 20px; /* right side spacing */
   scroll-snap-type: x mandatory;
+  scroll-padding-left: 20px;
+}
+
+.cards-scroll > :first-child {
+  scroll-margin-left: 20px; /* Key fix: Ensures first card always has 20px offset */
+  margin-left: 20px; /* Additional explicit safeguard */
 }
 .cards-scroll::-webkit-scrollbar {
   display: none;
@@ -224,6 +271,9 @@ function openItem(id) {
   display: flex;
   align-items: center;
   padding: 0 20px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
+
+
+
 </style>

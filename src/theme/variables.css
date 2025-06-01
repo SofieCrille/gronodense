@@ -13,6 +13,7 @@
     --ion-font-family: 'Montserrat', sans-serif;
 
     --ion-color-primary:    #02382C;
+    
   }
 
   ion-tab-bar {
@@ -98,4 +99,5 @@ ion-button.flat {
 
 ion-content {
   overscroll-behavior: auto !important;
+  
 }

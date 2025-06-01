@@ -24,7 +24,6 @@ const routes = [
       { path: 'hjem',            name: 'Hjem',           component: HjemView },
       { path: 'shop',            name: 'Shop',           component: PointshopView },
 
-      // Shop detail & purchase
       {
         path: 'shop/:id',
         name: 'ProductDetail',
@@ -33,7 +32,7 @@ const routes = [
       },
       {
         path: 'shop/:id/purchase',
-        name: 'Purchase',
+        name: 'PurchaseView',
         component: PurchaseView,
         props: true
       },
@@ -90,5 +89,13 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 });
+
+router.beforeEach((to, from, next) => {
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
+  next();
+});
+
 
 export default router;

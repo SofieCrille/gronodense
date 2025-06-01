@@ -13,7 +13,16 @@
           <template v-else>
             <div class="header-back-btn" @click="goBack">
               <!-- Custom chevron SVG with thinner stroke -->
-              <svg width="24" height="24" viewBox="0 0 512 512" fill="none" stroke="currentColor" stroke-width="35" stroke-linecap="round" stroke-linejoin="round">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 512 512"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="35"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
                 <path d="M328 112 L184 256 L328 400" />
               </svg>
             </div>
@@ -66,23 +75,38 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watchEffect } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import {
-  IonPage, IonHeader, IonToolbar, IonTitle,
-  IonButtons, IonButton, IonIcon, IonTabs,
-  IonRouterOutlet, IonTabBar, IonTabButton, IonLabel
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonButton,
+  IonIcon,
+  IonTabs,
+  IonRouterOutlet,
+  IonTabBar,
+  IonTabButton,
+  IonLabel
 } from '@ionic/vue';
 import {
-  homeOutline, home,
-  giftOutline, gift,
-  podiumOutline, podium,
-  personOutline, person,
+  homeOutline,
+  home,
+  giftOutline,
+  gift,
+  podiumOutline,
+  podium,
+  personOutline,
+  person,
   notificationsOutline,
   settingsOutline
 } from 'ionicons/icons';
-import { getBalance } from '@/firebaseRest.js';
+
 import { useAuth } from '@/composables/useAuth';
+import { database } from '@/firebase';               // ← Import the DB you just exported
+import { ref as dbRef, onValue, off } from 'firebase/database'; // ← Database SDK functions
 
 // router & route
 const router = useRouter();
@@ -95,12 +119,17 @@ const currentTab = computed(() => route.path.split('/')[2] || 'hjem');
 const primaryTabs = ['hjem', 'shop', 'udfordringer', 'profil'];
 // sub-pages where we want back button
 const excludedPages = [
-  'CategoryList', 'ProductDetail', 'Notifications', 'Settings',
-  'ChallengeDetails', 'PurchaseView'
+  'CategoryList',
+  'ProductDetail',
+  'Notifications',
+  'Settings',
+  'ChallengeDetails',
+  'PurchaseView'
 ];
-const isMainTab = computed(() =>
-  primaryTabs.includes(currentTab.value) &&
-  !excludedPages.includes(route.name)
+const isMainTab = computed(
+  () =>
+    primaryTabs.includes(currentTab.value) &&
+    !excludedPages.includes(route.name)
 );
 
 // dynamic page titles
@@ -125,29 +154,82 @@ const pageTitle = computed(() => {
       return 'Notifikationer';
     case 'Settings':
       return 'Instillinger';
+      case 'TaskDetails':
+      return dynamicTaskTitle.value;
     default:
       return baseTitles[currentTab.value] || 'GronOdense';
   }
 });
 
-// tab icons
-const homeIcon   = computed(() => currentTab.value === 'hjem' ? home : homeOutline);
-const shopIcon   = computed(() => currentTab.value === 'shop' ? gift : giftOutline);
-const udfIcon    = computed(() => currentTab.value === 'udfordringer' ? podium : podiumOutline);
-const profilIcon = computed(() => currentTab.value === 'profil' ? person : personOutline);
+const dynamicTaskTitle = ref('Opgave');
+watchEffect(() => {
+  if (route.name === 'TaskDetails') {
+    dynamicTaskTitle.value = route.query.title || 'Opgave';
+  }
+});
 
-// user balance
+// tab icons
+const homeIcon = computed(() =>
+  currentTab.value === 'hjem' ? home : homeOutline
+);
+const shopIcon = computed(() =>
+  currentTab.value === 'shop' ? gift : giftOutline
+);
+const udfIcon = computed(() =>
+  currentTab.value === 'udfordringer' ? podium : podiumOutline
+);
+const profilIcon = computed(() =>
+  currentTab.value === 'profil' ? person : personOutline
+);
+
+// ─── USER BALANCE (real-time) ─────────────────────────────────────
 const { uid } = useAuth();
 const balance = ref(0);
-onMounted(async () => {
-  try { balance.value = await getBalance(uid.value); }
-  catch { balance.value = 0; }
+
+// We’ll keep references here so we can detach the listener later
+let balanceRef = null;
+let unsubscribeFn = null;
+
+onMounted(() => {
+  if (!uid.value) {
+    balance.value = 0;
+    return;
+  }
+
+  // 1) Create a Database reference to /users/{uid}/balance
+  balanceRef = dbRef(database, `users/${uid.value}/balance`);
+
+  // 2) Attach onValue listener
+  unsubscribeFn = onValue(
+    balanceRef,
+    snapshot => {
+      const val = snapshot.val();
+      balance.value = typeof val === 'number' ? val : 0;
+    },
+    error => {
+      console.error('Failed to listen for balance:', error);
+      balance.value = 0;
+    }
+  );
+});
+
+onUnmounted(() => {
+  // Detach the listener when this component unmounts
+  if (balanceRef && unsubscribeFn) {
+    off(balanceRef, 'value', unsubscribeFn);
+  }
 });
 
 // navigation actions
-function goBack() { router.back(); }
-function goToNotifications() { router.push({ name: 'Notifications' }); }
-function goToSettings() { router.push({ name: 'Settings' }); }
+function goBack() {
+  router.back();
+}
+function goToNotifications() {
+  router.push({ name: 'Notifications' });
+}
+function goToSettings() {
+  router.push({ name: 'Settings' });
+}
 </script>
 
 <style scoped>

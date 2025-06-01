@@ -28,5 +28,53 @@
     "phone": "+45 65 23 11 45",
     "email": "info@odensevelvaere.dk",
     "mapImage": "/img/maps/velvaere-map.png"
+  },
+
+  {
+    "id": 3,
+    "title": "100 kr gavekort",
+    "vendor": "Odense Velvære",
+    "points": 300,
+    "category": "skonhed",
+    "tags": ["ny"],
+    "image": "/img/odensevelvaere.jpg",
+    "logo": "/img/velvaere-logo.png",
+    "offer": "100 kr gavekort til forkælelse hos Odense Velvære. Kan bruges på alle behandlinger.",
+    "location": "Hunderupgade 56, 5000 Odense C",
+    "phone": "+45 65 23 11 45",
+    "email": "info@odensevelvaere.dk",
+    "mapImage": "/img/maps/velvaere-map.png"
+  },
+
+  {
+    "id": 4,
+    "title": "100 kr gavekort",
+    "vendor": "Odense Velvære",
+    "points": 300,
+    "category": "oplevelser",
+    "tags": ["ny"],
+    "image": "/img/odensevelvaere.jpg",
+    "logo": "/img/velvaere-logo.png",
+    "offer": "100 kr gavekort til forkælelse hos Odense Velvære. Kan bruges på alle behandlinger.",
+    "location": "Hunderupgade 56, 5000 Odense C",
+    "phone": "+45 65 23 11 45",
+    "email": "info@odensevelvaere.dk",
+    "mapImage": "/img/maps/velvaere-map.png"
+  },
+
+  {
+    "id": 4,
+    "title": "100 kr gavekort",
+    "vendor": "Odense Velvære",
+    "points": 300,
+    "category": "transport",
+    "tags": ["ny"],
+    "image": "/img/odensevelvaere.jpg",
+    "logo": "/img/velvaere-logo.png",
+    "offer": "100 kr gavekort til forkælelse hos Odense Velvære. Kan bruges på alle behandlinger.",
+    "location": "Hunderupgade 56, 5000 Odense C",
+    "phone": "+45 65 23 11 45",
+    "email": "info@odensevelvaere.dk",
+    "mapImage": "/img/maps/velvaere-map.png"
   }
 ]

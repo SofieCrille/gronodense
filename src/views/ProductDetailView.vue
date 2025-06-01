@@ -20,7 +20,8 @@
         <div class="details-title">
           <h2>{{ product.title }} til {{ product.vendor }}</h2>
         </div>
-        <div class="missing-text">
+                <div class="progress-row">
+            <div class="missing-text">
           <span v-if="balance < product.points">
             Du mangler {{ product.points - balance }} point for at indløse
           </span>
@@ -28,16 +29,17 @@
             Du har nok point til at indløse
           </span>
         </div>
-        <div class="progress-row">
-          <div class="progress-bar">
-            <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
-          </div>
-          <div class="points-total">
-            <img src="/icons/coins.png" class="coin-icon-small" alt="points" />
-            <span>{{ product.points }}</span>
-          </div>
+            <div class="progress-content">
+              <div class="progress-bar">
+                <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
+              </div>
+              <div class="points-total">
+                <img src="/icons/coins.png" class="coin-icon-small" alt="points" />
+                <span>{{ product.points }}</span>
+              </div>
+            </div>
+        </div> 
         </div>
-      </div>
 
       <!-- Divider before offer -->
       <div class="section-divider"></div>
@@ -79,7 +81,8 @@
           expand="block"
           fill="solid"
           shape="round"
-          class="footer-btn"
+          size="small"
+          class="footer-button"
           @click="goToPurchaseView"
           :disabled="balance < product.points"
           :color="balance < product.points ? 'medium' : 'primary'"
@@ -123,7 +126,6 @@ const balance = ref(0);
 const progressPercent = ref(0);
 
 function goToPurchaseView() {
-  // navigate to PurchaseView route by name
   router.push({ name: 'PurchaseView', params: { id } });
 }
 
@@ -141,11 +143,11 @@ onMounted(async () => {
 
 <style scoped>
 .info-card {
-  background: #fff;
+  background:#eee;
   border-radius: 12px;
   overflow: hidden;
   margin: 0 20px 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: none;
 }
 .info-card ion-card-content {
   display: flex;
@@ -169,35 +171,42 @@ onMounted(async () => {
   overflow:hidden;
 }
 .detail-image {
-  width:100%;
-  height:100%;
-  object-fit:cover;
+  width: 100%;
+  height: 50vh;
+  object-fit: cover;
 }
 .progress-container {
   padding:16px;
 }
 .details-title h2 {
-  font-size:20px;
-  font-weight:600;
-  color:#02382C;
-  margin:0 0 8px;
+  margin-top: 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #02382C;
 }
 .missing-text {
-  font-size:14px;
+  font-size:16px;
   color:#02382C;
   margin-bottom:8px;
+  font-weight: 600;
 }
+.progress-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .progress-row {
-  display:flex;
-  align-items:center;
-  gap:12px;
+  padding-top: 8px;
 }
+
 .progress-bar {
-  flex:1;
-  height:8px;
-  background:#DDDBD7;
-  border-radius:4px;
-  overflow:hidden;
+  flex: 1;
+  height: 8px;
+  background: #DDDBD7;
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 0;
 }
 .progress-fill {
   height:100%;
@@ -205,42 +214,42 @@ onMounted(async () => {
   transition:width 0.3s ease;
 }
 .points-total {
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
-  font-size:16px;
-  font-weight:600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 16px;
+  font-weight: 600;
 }
 .coin-icon-small {
-  width:16px;
-  height:16px;
-  object-fit:contain;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
 }
 .offer-section {
   padding:0 20px 16px;
 }
 .offer-section h3 {
   margin:0 0 8px;
-  font-size:18px;
+  font-size:16px;
   font-weight:600;
   color:#02382C;
 }
 .offer-section p {
   margin:0;
-  font-size:14px;
-  color:#02382C;
+  font-size:16px;
+  color:black;
   line-height:1.4;
 }
 .info-title {
   margin:0 20px 8px;
-  font-size:18px;
+  font-size:16px;
   font-weight:600;
   color:#02382C;
 }
 .map-container {
   flex:none;
   width:120px;
-  height:130px;
+  height:120px;
   overflow:hidden;
   border-radius:15px;
 }
@@ -267,12 +276,27 @@ onMounted(async () => {
   font-size:16px;
   font-weight:600;
 }
-.details {
-  padding:16px;
+.footer-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  --padding-top: 15px;
+  --padding-bottom: 15px;
+  font-weight: 600;
 }
-.footer-btn {
-  font-size:20px;
-  font-weight:600;
-  --border-radius:50px;
+
+.progress-wrapper {
+  background: #eee;
+  padding: 20px 20px;
+  border-radius: 10px;
 }
+
+.progress-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
 </style>

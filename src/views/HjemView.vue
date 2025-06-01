@@ -84,11 +84,13 @@
             <BelønningerCard
               v-for="item in favoriteItems"
               :key="item.id"
+              :tags="item.tags"
               :title="item.title"
               :vendor="item.vendor"
               :points="item.points"
               :image="item.image"
               :logo="item.logo"
+              :category="item.category"
               :is-favorite="favorites.includes(item.id)"
               @select="openDetail(item.id)"
               @toggle-favorite="toggleFavorite(item.id)"
@@ -178,8 +180,7 @@ function onScroll2() {}
 async function onCardAction(task) {
   if (task.completed) {
     await claimReward(task.id);
-    task.completed = false;
-    activeTasks.value = [...activeTasks.value];
+    balance.value += task.points;
   } else {
     router.push({ name: 'TaskDetails', params: { id: task.id } });
   }

@@ -42,9 +42,14 @@ import { getFavorites, setFavorites } from '@/firebaseRest';
 import { useAuth } from '@/composables/useAuth';
 
 // route & router
-const route = useRoute();
 const router = useRouter();
-const categoryParam = route.params.category;
+const props = defineProps({
+  category: {
+    type: String,
+    required: true
+  }
+});
+const categoryParam = props.category;
 
 // category display names
 const categoryNames = {

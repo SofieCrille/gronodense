@@ -2,12 +2,11 @@
 
 // 1. Core SDK
 import { initializeApp } from 'firebase/app';
+import { getDatabase } from 'firebase/database';
 
 // 2. Auth SDK
 import {
   getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
 } from 'firebase/auth';
 
 // Your Firebase config (copy-paste the “Config” snippet from Project Settings → General)
@@ -28,7 +27,6 @@ const app = initializeApp(firebaseConfig);
 // Auth instance
 export const auth = getAuth(app);
 
-
-
+export const database = getDatabase(app);
 // Export database URL for your REST wrapper
 export const databaseUrl = firebaseConfig.databaseURL;
