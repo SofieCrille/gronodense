@@ -120,4 +120,11 @@ function confirmLogout() {
   margin-top: 2rem;
   padding: 0 1rem;
 }
+
+:deep(ion-list-header) {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #02382C; /* dark green */
+  margin: 10px 0;
+}
 </style>

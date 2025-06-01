@@ -69,10 +69,6 @@ ion-button.flat {
 }
 
 .see-all {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
 
   display: inline-flex;
   align-items: center;
@@ -100,4 +96,8 @@ ion-button.flat {
 ion-content {
   overscroll-behavior: auto !important;
   
+}
+
+.section-header {
+  color: #02382C;
 }

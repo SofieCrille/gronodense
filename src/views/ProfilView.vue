@@ -1,13 +1,39 @@
 <script setup>
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonCard, IonCardContent, IonIcon } from '@ionic/vue';
+import {
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
+  IonButton, IonIcon
+} from '@ionic/vue';
+
 import { useRouter } from 'vue-router';
-import { starOutline, leafOutline } from 'ionicons/icons';
+import { computed } from 'vue';
+import { leafOutline } from 'ionicons/icons';
+
+import { useAuth } from '@/composables/useAuth';
+import { useChallenges } from '@/composables/useChallenges';
+import UdfordringerCard from '@/components/UdfordringerCard.vue';
 
 const router = useRouter();
+const { uid } = useAuth();
+const { activeChallenges } = useChallenges(uid.value);
+
+const ongoing = computed(() => activeChallenges.value);
 
 function goToUdfordringer() {
   router.push({ name: 'UdfordringerView' });
 }
+
+function toggleChallenge(id) {
+  console.log('Toggling challenge with ID:', id);
+}
+
+function viewDetails(id) {
+  router.push({ name: 'ChallengeDetails', params: { id } });
+}
+
+const icons = {
+  leaf: leafOutline
+  // Add more icons if needed
+};
 
 const user = {
   name: 'Maja Sørensen',
@@ -30,83 +56,80 @@ const user = {
         <p class="profile-email">{{ user.email }}</p>
       </div>
 
+      <div class="section-divider"></div>
+
       <section class="statistik">
         <div class="section-header">
-          <h4>Dine statistikker</h4>
-          <IonButton fill="clear" size="small">Se alle</IonButton>
+          <h3 class="section-title">Dine statistikker</h3>
+          <IonButton class="see-all" fill="clear" size="small">Se alle ›</IonButton>
         </div>
 
-        <div class="card-row large-cards">
-          <IonCard class="large-card large-card--purple">
-            <IonCardContent>
-              <h1>407 km</h1>
-              <p>Du har anvendt grøn transport 36% mere end andre brugere!</p>
-            </IonCardContent>
-          </IonCard>
+        <div class="card-grid">
+          <div class="stat-card large stat-card--purple">
+            <div class="stat-value">407 km</div>
+            <p class="stat-description">Du har anvendt grøn transport 36% mere end andre brugere!</p>
+          </div>
 
-          <IonCard class="large-card large-card--green">
-            <IonCardContent>
-              <h1>3 træer reddet</h1>
-              <IonIcon :icon="leafOutline" class="icon-green" />
-              <p>Du har sparet CO₂ svarende til 3 træer ved at køre 407 km i grøn transport</p>
-            </IonCardContent>
-          </IonCard>
-        </div>
+          <div class="stat-card large stat-card--green">
+            <div class="stat-value">3 træer reddet</div>
+            <p class="stat-description">Du har sparet CO₂ svarende til 3 træer ved at køre 407 km i grøn transport</p>
+          </div>
 
-        <div class="card-row small-cards">
-          <IonCard class="small-card">
-            <IonCardContent class="small-card-content">
-              <div class="card-number">17</div>
-              <div class="card-text">
-                <h2>Opgaver</h2>
-                <h4>Udført</h4>
-              </div>
-            </IonCardContent>
-          </IonCard>
-          <IonCard class="small-card">
-            <IonCardContent class="small-card-content">
-              <div class="card-number">9</div>
-              <div class="card-text">
-                <h2>Stykker skrald</h2>
-                <h4>Sorteret korrekt</h4>
-              </div>
-            </IonCardContent>
-          </IonCard>
+          <div class="stat-card small">
+            <div class="stat-value">17</div>
+            <p class="stat-description">Udførte opgaver</p>
+          </div>
 
+          <div class="stat-card small">
+            <div class="stat-value">550</div>
+            <p class="stat-description">Point tjent</p>
+          </div>
         </div>
       </section>
 
       <section class="udfordringer">
         <div class="section-header">
           <h3 class="section-title">Udfordringer</h3>
-          <IonButton fill="clear" @click="goToUdfordringer" size="small">Se alle</IonButton>
+          <IonButton class="see-all" fill="clear" size="small" @click="goToUdfordringer">Se alle ›</IonButton>
         </div>
 
-        <IonCard class="custom-card">
-          <IonCardContent>
-            <h3>Juni cykel udfordring</h3>
-            <p>8 dage tilbage</p>
-          </IonCardContent>
-        </IonCard>
+        <div class="card-grid">
+          <UdfordringerCard
+            v-for="challenge in ongoing"
+            :key="challenge.id"
+            :id="challenge.id"
+            :title="challenge.title"
+            :days-left="challenge.daysLeft"
+            :points="challenge.points"
+            :icon="icons[challenge.icon]"
+            :bg-color="challenge.bgColor"
+            :text-color="challenge.textColor"
+            :active="challenge.active"
+            :bg-image="challenge.bgImage || ''"
+            :button-text="challenge.active ? 'Annuller' : 'Start'"
+            @action="() => toggleChallenge(challenge.id)"
+            @click.native="viewDetails(challenge.id)"
+          />
+        </div>
       </section>
 
       <section class="badges">
-  <div class="section-header">
-    <h4>Badges</h4>
-    <IonButton fill="clear" size="small">Se alle</IonButton>
-  </div>
+        <div class="section-header">
+          <h3 class="section-title">Badges</h3>
+          <IonButton class="see-all" fill="clear" size="small">Se alle ›</IonButton>
+        </div>
 
-  <div class="badge-row">
-    <div class="badge badge-green">3</div>
-    <div class="badge badge-blue">100 km</div>
-    <div class="badge badge-purple">1</div>
-  </div>
-</section>
+        <div class="badge-row">
+          <div class="badge badge-green">3</div>
+          <div class="badge badge-blue">100 km</div>
+          <div class="badge badge-purple">1</div>
+        </div>
+      </section>
 
-<section class="historik">
+      <section class="historik">
   <div class="section-header">
-    <h4>Historik</h4>
-    <IonButton fill="clear" size="small">Se alle</IonButton>
+    <h3 class="section-title">Historik</h3>
+    <IonButton class="see-all" fill="clear" size="small">Se alle ›</IonButton>
   </div>
 
   <h5 class="historik-subtitle">I dag</h5>
@@ -115,21 +138,21 @@ const user = {
     <li class="historik-item">
       <span>Udførte opgave: Grøn transport</span>
       <div class="point">
-        <IonIcon :icon="starOutline" />
+        <img src="/icons/coins.png" alt="coin icon" class="coin-icon" />
         <span>+20</span>
       </div>
     </li>
     <li class="historik-item">
       <span>Udførte opgave: Skraldesortering</span>
       <div class="point">
-        <IonIcon :icon="starOutline" />
+        <img src="/icons/coins.png" alt="coin icon" class="coin-icon" />
         <span>+15</span>
       </div>
     </li>
     <li class="historik-item">
       <span>Indløste: 20kr voucher til SDU kantine</span>
       <div class="point">
-        <IonIcon :icon="starOutline" />
+        <img src="/icons/coins.png" alt="coin icon" class="coin-icon" />
         <span>-100</span>
       </div>
     </li>
@@ -137,20 +160,18 @@ const user = {
 </section>
     </IonContent>
   </IonPage>
-
-
 </template>
+
 
 <style scoped>
 .profile-container {
   text-align: center;
-  margin-top: 2rem;
 }
 
 .round-image {
   width: 120px;
   height: 120px;
-  border-radius: 50%; /* Rundt */
+  border-radius: 50%;
   object-fit: cover;
   display: block;
   margin: 0 auto 1rem;
@@ -170,98 +191,76 @@ const user = {
   text-align: center;
 }
 
-.statistik {
-  margin-top: 2rem;
-  padding: 0 1rem;
-}
-
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-}
-
-.card-row {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.large-cards .large-card {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  border-radius: 15px;
-}
-
-.large-card--purple {
-  background-color: #CBCBE3; /* lys grøn */
-  color: #02382C; /* mørk grøn tekst */
-}
-
-.large-card--green {
-  background-color: #02382C; /* lys blå */
-  color: #C3DCA5; /* mørk blå tekst */
-}
-
-.large-card ion-icon {
-  font-size: 2.5rem;
-  color: var(--ion-color-primary);
-}
-
-.icon-green {
-  color: #C3DCA5 !important; /* Brug !important hvis andet overskriver det */
-  font-size: 1.2rem;
-}
-
-.small-cards .small-card {
-  flex: 1;
-  padding: 1rem;
-  background-color: #ffffff;
-  border-radius: 15px;
-}
-
-.small-card-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.card-number {
-  font-size: 3rem;
-  font-weight: bold;
-  color: #02382C;
-  min-width: 60px;
-  text-align: center;
-}
-
-.card-text h2 {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #02382C;
-}
-
-.card-text h4 {
-  margin: 0.3rem 0 0 0;
-  font-size: 0.9rem;
-  font-weight: normal;
-  color: #555;
-}
-
-.udfordringer {
-  margin-top: 2rem;
-  padding: 1rem;
-  border-radius: 15px;
+  margin: 1.5rem 20px 1rem;
 }
 
 .section-title {
   margin: 0;
-  font-weight: bold;
+  font-weight: 600;
   font-size: 1.2rem;
+}
+
+.section-divider {
+  width: calc(100% - 40px);
+  height: 1px;
+  background: #DDDBD7;
+  margin: 30px 20px;
+}
+
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 20px;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  width: calc(50% - 5px);
+  border-radius: 15px;
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.stat-card.large {
+  height: 180px;
+  font-size: 1rem;
+}
+
+.stat-card.small {
+  height: 100px;
+  font-size: 0.9rem;
+}
+
+.stat-card--purple {
+  background-color: #CBCBE3;
+  color: #02382C;
+}
+
+.stat-card--green {
+  background-color: #02382C;
+  color: #C3DCA5;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.stat-description {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin: 0;
 }
 
 .custom-card {
@@ -273,27 +272,23 @@ const user = {
 }
 
 .custom-card h3 {
-  font-weight: 600;       /* semi-bold */
-  margin-bottom: 0.5rem;  /* lidt luft under overskriften */
-  line-height: 1.4;       /* øget linjeafstand */
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
 }
 
 .custom-card p {
-  font-weight: 500;       /* lidt lettere end semi-bold */
-  line-height: 1.6;       /* mere luft mellem linjerne */
-  margin: 0;              /* fjern evt. standard margin */
-}
-
-.badges {
-  margin-top: 2rem;
-  padding: 0 1rem;
+  font-weight: 500;
+  line-height: 1.6;
+  margin: 0;
 }
 
 .badge-row {
   display: flex;
   justify-content: space-around;
+  margin: 0 20px;
   margin-top: 1rem;
-  gap: 1rem;
+  gap: 20px;
 }
 
 .badge {
@@ -324,7 +319,6 @@ const user = {
 
 .historik {
   margin-top: 2rem;
-  padding: 1rem;
   border-radius: 10px;
 }
 
@@ -333,12 +327,14 @@ const user = {
   font-size: 1rem;
   color: #555;
   font-weight: 500;
+  padding: 0 20px;
 }
 
 .historik-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  padding: 0 20px;
 }
 
 .historik-item {
@@ -360,4 +356,13 @@ const user = {
   font-weight: bold;
   color: var(--ion-color-primary);
 }
+
+.coin-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
 </style>
+
+

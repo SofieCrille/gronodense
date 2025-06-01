@@ -112,7 +112,6 @@ import {
 } from '@ionic/vue';
 
 const route = useRoute();
-const title = route.query.title;
 const router = useRouter();
 const { uid } = useAuth();
 const { tasks, startTask, cancelTask, completeTask, claimReward } = useTasks(uid.value);
@@ -305,7 +304,6 @@ IonFooter {
 .footer-button {
   display: flex;
   align-items: center;
-  size: small;
   justify-content: center;
   padding: 0 10px;
   font-size: 20px;

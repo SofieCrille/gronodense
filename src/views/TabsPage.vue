@@ -41,9 +41,9 @@
             </div>
           </template>
           <template v-else-if="isMainTab && currentTab === 'profil'">
-            <IonButton fill="clear" @click="goToSettings">
-              <IonIcon :icon="settingsOutline" />
-            </IonButton>
+            <div class="header-settings-btn" @click="goToSettings">
+  <IonIcon :icon="settingsOutline" />
+</div>
           </template>
         </IonButtons>
       </IonToolbar>
@@ -262,6 +262,21 @@ function goToSettings() {
 }
 .header-notification-btn ion-icon {
   font-size: 1.5rem;
+}
+
+.header-settings-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #DDDBD7;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.header-settings-btn ion-icon {
+  font-size: 1.5rem;
+  color: var(--ion-color-primary);
 }
 .notification-dot {
   position: absolute;

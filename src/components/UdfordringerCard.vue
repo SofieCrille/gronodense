@@ -25,7 +25,7 @@
       <div class="action-slot">
         <IonButton
           v-if="!active"
-          class="action-button"
+          class="cta-button"
           fill="outline"
           @click.stop="handleClick"
         >
@@ -75,7 +75,7 @@ function handleClick() {
 const cardStyles = computed(() => ({
   backgroundColor: props.bgColor,
   color: props.textColor,
-  borderRadius: '12px'
+  borderRadius: '15px'
 }));
 </script>
 
@@ -85,8 +85,9 @@ const cardStyles = computed(() => ({
   width: calc(100vw - 40px);
   max-width: 360px;
   height: 130px;
-  margin: 0 auto;
   overflow: hidden;
+  margin: 0;
+  margin-left: 10px;
 }
 .bg-image-front {
   position: absolute;
@@ -123,8 +124,8 @@ const cardStyles = computed(() => ({
   display: inline-flex;
   align-items: center;
   background: var(--ion-color-light, #f0f0f0);
-  border-radius: 8px;
-  padding: 2px 4px;
+  border-radius: 50px;
+  padding: 4px 8px;
   margin-top: 8px;
 }
 .coin-image {
@@ -144,13 +145,13 @@ const cardStyles = computed(() => ({
   display: flex;
   align-items: center;
 }
-.action-button {
-  --border-radius: 20px;
+.cta-button {
+  --border-radius: 50px;
   --color: var(--ion-color-primary);
 }
 .progress-container {
-  width: 70px;
-  height: 70px;
+  width: 100px;
+  height: 100px;
 }
 .progress-circle {
   width: 100%;
@@ -169,7 +170,7 @@ const cardStyles = computed(() => ({
   transition: stroke-dasharray 0.3s ease;
 }
 .percentage {
-  font-size: 0.8em;
+  font-size: 10px;
   font-weight: 600;
   fill: currentColor;
 }

@@ -192,7 +192,7 @@ function openItem(id) {
   width: 100%;
   height: 200px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 15px;
 }
 
 /* Buffer after last slide */
@@ -247,8 +247,8 @@ function openItem(id) {
 }
 
 .cards-scroll > :first-child {
-  scroll-margin-left: 20px; /* Key fix: Ensures first card always has 20px offset */
-  margin-left: 20px; /* Additional explicit safeguard */
+  scroll-margin-left: 20px;
+  margin-left: 20px;
 }
 .cards-scroll::-webkit-scrollbar {
   display: none;
@@ -272,6 +272,7 @@ function openItem(id) {
   align-items: center;
   padding: 0 20px;
   margin-bottom: 1rem;
+  justify-content: space-between;
 }
 
 

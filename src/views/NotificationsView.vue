@@ -59,8 +59,6 @@ import { IonPage, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, Io
 // dummy data for demonstration
 const allNotifications = ref([
   { id: 1, title: 'Velkommen!', body: 'Tak for at tilmelde dig.', date: new Date(), read: false },
-  { id: 2, title: 'Ny udfordring', body: 'Du har en ny udfordring disponible.', date: new Date(Date.now() - 3600e3), read: false },
-  { id: 3, title: 'Belønning modtaget', body: 'Du fik 50 pts for at gennemføre en udfordring.', date: new Date(Date.now() - 86400e3), read: true },
   // … more
 ]);
 

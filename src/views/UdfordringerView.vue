@@ -88,11 +88,15 @@ function goToDetails(id) {
   margin: 1rem 0 0.5rem;
   font-weight: 600;
   padding: 0 20px;
+  font-size: 1.2rem;
+  color: #02382C;
+
 }
 .card-list {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 1rem;
-  padding: 0 20px 1rem;
+  padding: 0 10px;
 }
 </style>

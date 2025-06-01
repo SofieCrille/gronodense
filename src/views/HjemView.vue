@@ -5,7 +5,7 @@
         <IonButtons slot="start">
           <div class="header-balance"><span>{{ balance }}</span></div>
         </IonButtons>
-        <IonTitle>GronOdense</IonTitle>
+        <IonTitle>GrønOdense</IonTitle>
         <IonButtons slot="end">
           <IonButton fill="clear" @click="goToNotifications">
             <IonIcon :icon="notificationsOutline" size="large" color="dark" />
@@ -43,8 +43,8 @@
 
       <!-- Inactive Tasks -->
       <div class="section-header">
-        <h3 class="section-title">Flere opgaver</h3>
-        <span class="challenge-count">{{ inactiveTasks.length }} flere</span>
+        <h3 class="section-title">Alle opgaver</h3>
+        <span class="challenge-count">{{ inactiveTasks.length }} Opgaver</span>
       </div>
       <div class="card-grid" ref="inactiveGrid" @scroll="onScrollInactive">
         <OpgaverCard
@@ -84,13 +84,11 @@
             <BelønningerCard
               v-for="item in favoriteItems"
               :key="item.id"
-              :tags="item.tags"
               :title="item.title"
               :vendor="item.vendor"
               :points="item.points"
               :image="item.image"
               :logo="item.logo"
-              :category="item.category"
               :is-favorite="favorites.includes(item.id)"
               @select="openDetail(item.id)"
               @toggle-favorite="toggleFavorite(item.id)"
@@ -109,7 +107,15 @@
       <template v-if="ongoing.length">
         <div class="section-divider"></div>
         <div class="section-header">
-          <h3 class="section-title">Igangværende udfordringer</h3>
+          <h3 class="section-title">Dine udfordringer</h3>
+          <IonButton
+          class="see-all"
+          fill="clear"
+          size="small"
+          @click="goToChallengesList"
+        >
+          Se alle ›
+        </IonButton>
         </div>
         <div class="card-grid" ref="grid2" @scroll="onScroll2">
           <UdfordringerCard
@@ -200,6 +206,9 @@ function toggleChallenge(id) {
   if (c.active) cancelChallenge(id);
   else startChallenge(id);
 }
+function goToChallengesList() {
+  router.push({ name: 'UdfordringerView' }); 
+}
 
 function viewDetails(id) {
   router.push({ name: 'ChallengeDetails', params: { id } });
@@ -208,6 +217,7 @@ function viewDetails(id) {
 
 <style scoped>
 .no-pad {
+  --padding-top: 16px;
   --padding-start: 0 !important;
   --padding-end:   0 !important;
   overflow-y:      visible;
@@ -240,7 +250,8 @@ function viewDetails(id) {
   display: flex;
   align-items: center;
   padding: 0 20px;
-  margin: 16px 0 0;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 .section-title {
   font-size: 20px;
@@ -254,10 +265,6 @@ function viewDetails(id) {
   color: #02382C;
 }
 .see-all {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -280,4 +287,6 @@ function viewDetails(id) {
   color: #666;
   font-size: 14px;
 }
+
+
 </style>
