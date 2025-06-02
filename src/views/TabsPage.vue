@@ -105,6 +105,7 @@ import {
 } from 'ionicons/icons';
 
 import { useAuth } from '@/composables/useAuth';
+import { database } from '@/firebase';               // ← Import the DB you just exported
 import { ref as dbRef, onValue, off } from 'firebase/database'; // ← Database SDK functions
 
 // router & route
