@@ -1,3 +1,31 @@
+<script setup>
+import { useRouter } from 'vue-router';
+import { useAuth } from '@/composables/useAuth';
+import { useChallenges } from '@/composables/useChallenges';
+import { computed } from 'vue';
+import UdfordringerCard from '@/components/UdfordringerCard.vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton } from '@ionic/vue';
+import * as icons from 'ionicons/icons';
+
+const router = useRouter();
+const { uid } = useAuth();
+const { challenges, activeChallenges, startChallenge, cancelChallenge } = useChallenges(uid.value);
+
+const inactiveChallenges = computed(() =>
+  challenges.value.filter(c => !c.active)
+);
+
+function toggleChallenge(id) {
+  const c = challenges.value.find(x => x.id === id);
+  if (c.active) cancelChallenge(id);
+  else startChallenge(id);
+}
+
+function goToDetails(id) {
+  router.push(`/tabs/udfordringer/${id}`);
+}
+</script>
+
 <template>
   <IonPage>
     <IonHeader>
@@ -54,34 +82,6 @@
     </IonContent>
   </IonPage>
 </template>
-
-<script setup>
-import { useRouter } from 'vue-router';
-import { useAuth } from '@/composables/useAuth';
-import { useChallenges } from '@/composables/useChallenges';
-import { computed } from 'vue';
-import UdfordringerCard from '@/components/UdfordringerCard.vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton } from '@ionic/vue';
-import * as icons from 'ionicons/icons';
-
-const router = useRouter();
-const { uid } = useAuth();
-const { challenges, activeChallenges, startChallenge, cancelChallenge } = useChallenges(uid.value);
-
-const inactiveChallenges = computed(() =>
-  challenges.value.filter(c => !c.active)
-);
-
-function toggleChallenge(id) {
-  const c = challenges.value.find(x => x.id === id);
-  if (c.active) cancelChallenge(id);
-  else startChallenge(id);
-}
-
-function goToDetails(id) {
-  router.push(`/tabs/udfordringer/${id}`);
-}
-</script>
 
 <style scoped>
 .section-title {

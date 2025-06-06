@@ -1,100 +1,3 @@
-<template>
-  <IonPage>
-    <IonHeader>
-      <IonToolbar>
-        <IonButtons slot="start">
-          <IonBackButton default-href="/tabs/shop" />
-        </IonButtons>
-        <IonTitle>Detaljer</IonTitle>
-      </IonToolbar>
-    </IonHeader>
-
-    <IonContent fullscreen class="no-pad">
-      <!-- Image -->
-      <div class="image-wrapper">
-        <IonImg :src="product.image" class="detail-image" />
-      </div>
-
-      <!-- Progress section -->
-      <div class="progress-container">
-        <div class="details-title">
-          <h2>{{ product.title }} til {{ product.vendor }}</h2>
-        </div>
-                <div class="progress-row">
-            <div class="missing-text">
-          <span v-if="balance < product.points">
-            Du mangler {{ product.points - balance }} point for at indløse
-          </span>
-          <span v-else>
-            Du har nok point til at indløse
-          </span>
-        </div>
-            <div class="progress-content">
-              <div class="progress-bar">
-                <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
-              </div>
-              <div class="points-total">
-                <img src="/icons/coins.png" class="coin-icon-small" alt="points" />
-                <span>{{ product.points }}</span>
-              </div>
-            </div>
-        </div> 
-        </div>
-
-      <!-- Divider before offer -->
-      <div class="section-divider"></div>
-
-      <!-- Offer section -->
-      <div class="offer-section" v-if="product.offer">
-        <h3>Om tilbud</h3>
-        <p>{{ product.offer }}</p>
-      </div>
-
-      <!-- Divider before info -->
-      <div class="section-divider"></div>
-
-      <!-- Company info title -->
-      <h3 class="info-title">Information</h3>
-      <IonCard class="info-card" v-if="product.location">
-        <IonCardContent>
-          <div class="map-container">
-            <img :src="product.mapImage" class="map-image" alt="map" />
-          </div>
-          <div class="info-container">
-            <p class="location"><strong>{{ product.location }}</strong></p>
-            <p v-if="product.phone" class="phone">{{ product.phone }}</p>
-            <p v-if="product.email" class="email">{{ product.email }}</p>
-          </div>
-        </IonCardContent>
-      </IonCard>
-
-      <!-- Description -->
-      <div class="details">
-        <p v-if="product.description">{{ product.description }}</p>
-      </div>
-    </IonContent>
-
-    <!-- Footer button -->
-    <IonFooter>
-      <IonToolbar>
-        <IonButton
-          expand="block"
-          fill="solid"
-          shape="round"
-          size="small"
-          class="footer-button"
-          @click="goToPurchaseView"
-          :disabled="balance < product.points"
-          :color="balance < product.points ? 'medium' : 'primary'"
-          style="margin: 0 16px;"
-        >
-          Indløs nu
-        </IonButton>
-      </IonToolbar>
-    </IonFooter>
-  </IonPage>
-</template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -140,6 +43,95 @@ onMounted(async () => {
   progressPercent.value = Math.min((balance.value / product.value.points) * 100, 100);
 });
 </script>
+
+<template>
+  <IonPage>
+    <IonHeader>
+      <IonToolbar>
+        <IonButtons slot="start">
+          <IonBackButton default-href="/tabs/shop" />
+        </IonButtons>
+        <IonTitle>Detaljer</IonTitle>
+      </IonToolbar>
+    </IonHeader>
+
+    <IonContent fullscreen class="no-pad">
+      <div class="image-wrapper">
+        <IonImg :src="product.image" class="detail-image" />
+      </div>
+
+      <div class="progress-container">
+        <div class="details-title">
+          <h2>{{ product.title }} til {{ product.vendor }}</h2>
+        </div>
+                <div class="progress-row">
+            <div class="missing-text">
+          <span v-if="balance < product.points">
+            Du mangler {{ product.points - balance }} point for at indløse
+          </span>
+          <span v-else>
+            Du har nok point til at indløse
+          </span>
+        </div>
+            <div class="progress-content">
+              <div class="progress-bar">
+                <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
+              </div>
+              <div class="points-total">
+                <img src="/icons/coins.png" class="coin-icon-small" alt="points" />
+                <span>{{ product.points }}</span>
+              </div>
+            </div>
+        </div> 
+        </div>
+
+      <div class="section-divider"></div>
+
+      <div class="offer-section" v-if="product.offer">
+        <h3>Om tilbud</h3>
+        <p>{{ product.offer }}</p>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <h3 class="info-title">Information</h3>
+      <IonCard class="info-card" v-if="product.location">
+        <IonCardContent>
+          <div class="map-container">
+            <img :src="product.mapImage" class="map-image" alt="map" />
+          </div>
+          <div class="info-container">
+            <p class="location"><strong>{{ product.location }}</strong></p>
+            <p v-if="product.phone" class="phone">{{ product.phone }}</p>
+            <p v-if="product.email" class="email">{{ product.email }}</p>
+          </div>
+        </IonCardContent>
+      </IonCard>
+
+      <div class="details">
+        <p v-if="product.description">{{ product.description }}</p>
+      </div>
+    </IonContent>
+
+    <IonFooter>
+      <IonToolbar>
+        <IonButton
+          expand="block"
+          fill="solid"
+          shape="round"
+          size="small"
+          class="footer-button"
+          @click="goToPurchaseView"
+          :disabled="balance < product.points"
+          :color="balance < product.points ? 'medium' : 'primary'"
+          style="margin: 0 16px;"
+        >
+          Indløs nu
+        </IonButton>
+      </IonToolbar>
+    </IonFooter>
+  </IonPage>
+</template>
 
 <style scoped>
 .info-card {

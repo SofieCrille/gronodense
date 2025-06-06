@@ -6,7 +6,7 @@ module.exports = {
     node:    true,
     es2021:  true,
   },
-  parser: 'vue-eslint-parser',           // ← ensure Vue parser
+  parser: 'vue-eslint-parser',
   parserOptions: {
     ecmaVersion: 2020,
     sourceType:  'module',
@@ -21,8 +21,6 @@ module.exports = {
     'no-console':                         process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger':                        process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-
-    // globally disable deprecated-slot
     'vue/no-deprecated-slot-attribute':   'off',
     'vue/valid-v-slot':                   'off',
   },

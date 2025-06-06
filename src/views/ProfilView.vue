@@ -32,7 +32,6 @@ function viewDetails(id) {
 
 const icons = {
   leaf: leafOutline
-  // Add more icons if needed
 };
 
 const user = {

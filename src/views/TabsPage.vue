@@ -51,7 +51,6 @@
 
     <IonTabs>
       <IonRouterOutlet />
-      <!-- only show tab bar on main tabs -->
       <IonTabBar slot="bottom" v-if="isMainTab">
         <IonTabButton tab="hjem" href="/tabs/hjem">
           <IonIcon :icon="homeIcon" />

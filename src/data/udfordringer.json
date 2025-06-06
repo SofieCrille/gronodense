@@ -2,25 +2,25 @@
     {
     "id": "u1",
     "title": "Juni Cykel Udfordring",
-    "description": "Cykle mindst 15 km i løbet af juni for at reducere CO₂-udledning.",
+    "description": "Cykel 100 km i løbet af juni for at reducere CO₂-udledning.",
     "daysLeft": 8,
     "points": 50,
     "icon": "bicycleOutline",
     "bgColor": "#C9E0DD",
     "textColor": "#02382C",
-    "bgImage": "/img/cafearoma.jpg"
+    "bgImage": "/img/cykelodense.jpg"
     },
     
     {
     "id": "u2",
     "title": "Plastindsamling",
-    "description": "Samle plastaffald i lokalområdet for at holde naturen ren.",
+    "description": "Saml plastaffald i lokalområdet for at holde naturen ren.",
     "daysLeft": 5,
     "points": 30,
     "icon": "trashOutline",
     "bgColor": "#D2E3BC",
     "textColor": "#02382C",
-    "bgImage": "/img/cafearoma.jpg"
+    "bgImage": "/img/plast.jpg"
     },
     
     {
@@ -32,6 +32,6 @@
     "icon": "walkOutline",
     "bgColor": "#E8CDC6",
     "textColor": "#02382C",
-    "bgImage": "/img/cafearoma.jpg"
+    "bgImage": "/img/walk.jpg"
     }
     ]

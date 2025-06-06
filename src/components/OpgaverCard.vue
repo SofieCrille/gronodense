@@ -1,109 +1,3 @@
-<template>
-  <IonCard
-    class="challenge-card"
-    :class="{ 'active-card': active, 'completed-card': completed }"
-    :style="[ baseStyle, (active || completed) ? miniCardStyle : {} ]"
-    @click="handleCardClick"
-  >
-    <!-- Mini layout for active or completed -->
-    <template v-if="active || completed">
-      <!-- Active state: icon, title, progress -->
-      <template v-if="active">
-        <!-- 1) Coins badge, top‐left -->
-        <div class="mini-layout">
-          <div class="icon-title-row">
-            <IonIcon :icon="leftIcon" class="mini-icon" />
-            <div class="mini-title">{{ title }}</div>
-            <div class="mini-points-bubble">
-              <img src="/icons/coins.png" class="coin-icon-mini" alt="Points" />
-              +{{ points }}
-            </div>
-          </div>
-          <svg viewBox="0 0 36 36" class="circular-progress">
-            <path
-              class="circle-bg"
-              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-            <path
-              class="circle"
-              :stroke-dasharray="`${(progress * 100).toFixed(1)}, 100`"
-              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-            <text
-              x="50%"
-              y="50%"
-              class="percentage-text"
-              dominant-baseline="middle"
-              text-anchor="middle"
-            >
-              {{ percent }}%
-            </text>
-          </svg>
-        </div>
-      </template>
-
-      <!-- Completed state: icon/title + small button -->
-      <template v-else>
-        <div class="mini-layout">
-          <div class="icon-title-row">
-            <IonIcon :icon="leftIcon" class="mini-icon" />
-            <div class="mini-title">{{ title }}</div>
-            <div class="mini-points-bubble">
-              <img src="/icons/coins.png" class="coin-icon-mini" alt="Points" />
-              +{{ points }}
-            </div>
-          </div>
-          <!-- Button takes the circle’s place -->
-          <div class="mini-button-wrapper">
-          <IonButton
-            class="mini-button"
-            @click.stop="onActionClick()"
-            style="
-              width: 140px;
-              height: 60px;
-            "
-          >
-            {{ buttonText }}
-          </IonButton>
-          </div>
-        </div>
-      </template>
-    </template>
-
-    <!-- Full card for default state -->
-    <template v-else>
-      <div class="points-bubble">
-        <img src="/icons/coins.png" class="coin-icon" alt="points" />
-        <span>+{{ points }}</span>
-      </div>
-      <IonCardHeader class="card-header">
-        <IonIcon
-          class="main-icon"
-          :icon="leftIcon"
-          :style="{ color: textColor }"
-        />
-        <IonCardTitle class="card-title">{{ title }}</IonCardTitle>
-      </IonCardHeader>
-      <IonCardContent class="card-content">
-        <p class="card-description">{{ description }}</p>
-      </IonCardContent>
-      <IonButton
-        class="card-button"
-        fill="outline"
-        @click.stop="onActionClick()"
-        :style="{
-          '--color': textColor,
-          '--border-color': textColor,
-          '--border-radius': '50px'
-        }"
-      >
-        {{ buttonText }}
-      </IonButton>
-    </template>
-  </IonCard>
-</template>
-
-
 <script setup>
 import { useRouter } from 'vue-router';
 import {
@@ -176,6 +70,110 @@ const progress = computed(() => {
 
 </script>
 
+<template>
+  <IonCard
+    class="challenge-card"
+    :class="{ 'active-card': active, 'completed-card': completed }"
+    :style="[ baseStyle, (active || completed) ? miniCardStyle : {} ]"
+    @click="handleCardClick"
+  >
+    <!-- Acttive and completed kort -->
+    <template v-if="active || completed">
+      <!-- active state -->
+      <template v-if="active">
+        <div class="mini-layout">
+          <div class="icon-title-row">
+            <IonIcon :icon="leftIcon" class="mini-icon" />
+            <div class="mini-title">{{ title }}</div>
+            <div class="mini-points-bubble">
+              <img src="/icons/coins.png" class="coin-icon-mini" alt="Points" />
+              +{{ points }}
+            </div>
+          </div>
+          <svg viewBox="0 0 36 36" class="circular-progress">
+            <path
+              class="circle-bg"
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+            />
+            <path
+              class="circle"
+              :stroke-dasharray="`${(progress * 100).toFixed(1)}, 100`"
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+            />
+            <text
+              x="50%"
+              y="50%"
+              class="percentage-text"
+              dominant-baseline="middle"
+              text-anchor="middle"
+            >
+              {{ percent }}%
+            </text>
+          </svg>
+        </div>
+      </template>
+
+      <template v-else>
+        <div class="mini-layout">
+          <div class="icon-title-row">
+            <IonIcon :icon="leftIcon" class="mini-icon" />
+            <div class="mini-title">{{ title }}</div>
+            <div class="mini-points-bubble">
+              <img src="/icons/coins.png" class="coin-icon-mini" alt="Points" />
+              +{{ points }}
+            </div>
+          </div>
+          <!-- Button takes the circle’s place -->
+          <div class="mini-button-wrapper">
+          <IonButton
+            class="mini-button"
+            @click.stop="onActionClick()"
+            style="
+              width: 140px;
+              height: 60px;
+            "
+          >
+            {{ buttonText }}
+          </IonButton>
+          </div>
+        </div>
+      </template>
+    </template>
+
+    <!-- default state -->
+    <template v-else>
+      <div class="points-bubble">
+        <img src="/icons/coins.png" class="coin-icon" alt="points" />
+        <span>+{{ points }}</span>
+      </div>
+      <IonCardHeader class="card-header">
+        <IonIcon
+          class="main-icon"
+          :icon="leftIcon"
+          :style="{ color: textColor }"
+        />
+        <IonCardTitle class="card-title">{{ title }}</IonCardTitle>
+      </IonCardHeader>
+      <IonCardContent class="card-content">
+        <p class="card-description">{{ description }}</p>
+      </IonCardContent>
+      <IonButton
+        class="card-button"
+        fill="outline"
+        @click.stop="onActionClick()"
+        :style="{
+          '--color': textColor,
+          '--border-color': textColor,
+          '--border-radius': '50px'
+        }"
+      >
+        {{ buttonText }}
+      </IonButton>
+    </template>
+  </IonCard>
+</template>
+
+
 <style scoped>
 .challenge-card {
   position: relative;
@@ -236,7 +234,6 @@ const progress = computed(() => {
 }
 
 .mini-button {
-  /* align with circular-progress size */
   padding: 0 12px;
   font-size: 14px;
   height: 36px;
@@ -273,13 +270,59 @@ const progress = computed(() => {
  align-items: flex-start;
  }
 
-.main-icon { width: 3rem; height: 3rem; margin-bottom: 16px; }
-.card-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 24px; margin: 0; }
-.card-content .card-description { font-size: 14px; margin: 0; width: 12rem; }
-.card-button { position: absolute; bottom: 16px; left: 16px; text-transform: none !important; font-weight: 600; font-size: 16px; box-shadow: none; }
-.card-button:hover { background-color: rgba(2, 56, 44, 0.1); }
-.points-bubble { position: absolute; top: 16px; right: 16px; display: flex; align-items: center; gap: 4px; background: #ffffff; padding: 4px 8px; border-radius: 999px; font-weight: 600; font-size: 16px; }
-.coin-icon { width: 15px; height: 15px; object-fit: contain; }
+.main-icon {
+ width: 3rem; 
+ height: 3rem; 
+ margin-bottom: 16px; 
+}
+
+.card-title {
+   font-family: 'Montserrat', sans-serif; 
+   font-weight: 600; 
+   font-size: 24px; 
+   margin: 0; 
+  }
+
+.card-content .card-description {
+   font-size: 14px; 
+   margin: 0; 
+   width: 12rem; 
+  }
+
+.card-button {
+   position: absolute; 
+   bottom: 16px; 
+   left: 16px; 
+   text-transform: none!important; 
+   font-weight: 600; 
+   font-size: 16px; 
+   box-shadow: none; 
+  }
+
+.card-button:hover {
+   background-color: rgba(2, 56, 44, 0.1); 
+  }
+
+.points-bubble {
+   position: absolute; 
+   top: 16px; 
+   right: 16px; 
+   display: flex; 
+   align-items: 
+   center; 
+   gap: 4px; 
+   background: #ffffff; 
+   padding: 4px 8px; 
+   border-radius: 999px; 
+   font-weight: 600; 
+   font-size: 16px; 
+  }
+
+.coin-icon {
+   width: 15px; 
+   height: 15px; 
+   object-fit: contain; 
+  }
 
 .mini-button {
   position: relative;

@@ -1,104 +1,3 @@
-<template>
-  <IonPage>
-    <IonHeader>
-      <IonToolbar>
-        <IonButtons slot="start">
-          <IonBackButton default-href="/tabs/hjem" />
-        </IonButtons>
-        <IonTitle>{{ task.title }}</IonTitle>
-      </IonToolbar>
-    </IonHeader>
-
-    <IonContent class="no-pad">
-      <section v-if="task.image" class="image-section">
-        <img :src="task.image" alt="task-image" class="task-image" />
-      </section>
-      <div class="container">
-        <section class="title-section">
-          <h2>{{ task.title }}</h2>
-          <p class="description">{{ task.description }}</p>
-        </section>
-
-        <h3>Fremskridt</h3>
-        <section v-if="task.active || task.completed" class="progress">
-  <div class="progress-row">
-    <span class="progress-percent">{{ progressPercent }}%</span>
-    <div class="progress-bar">
-      <div class="progress-fill" :style="{ width: animatedPercent + '%' }"></div>
-    </div>
-  </div>
-</section>
-
-        <section v-if="task.deadline" class="countdown">
-          <div class="count-coins">
-            <div class="timer">
-              <span>{{ timeLeft.days }}d</span>
-              <span>{{ timeLeft.hours }}h</span>
-              <span>{{ timeLeft.minutes }}m</span>
-              <span>{{ timeLeft.seconds }}s</span>
-            </div>
-            <div class="coins-container">
-              <img src="/public/icons/coins.png" alt="coins">
-            <p>+{{ task.points }} </p>
-          </div>
-          </div>
-        </section>
-
-        <section v-if="task.steps" class="steps">
-          <h3>Hvad skal du gøre?</h3>
-          <ul>
-            <li v-for="(step, i) in task.steps" :key="i">{{ step }}</li>
-          </ul>
-        </section>
-
-        <section v-if="task.active && !task.completed" class="verification">
-  <IonButton
-    class="verification-placeholder"
-    @click="handleVerify"
-  >
-    Løs opgave
-  </IonButton>
-</section>
-
-      </div>
-    </IonContent>
-
-    <IonFooter>
-      <IonToolbar>
-        <IonButton
-          v-if="!task.completed"
-          expand="block"
-          class="footer-button"
-          :style="{ '--border-radius': '50px' }"
-          @click="toggleTask"
-          size="small"
-          :color="task.active ? 'danger' : 'primary'"
-        >
-          {{ task.active ? 'Afbryd opgave' : 'Start' }}
-        </IonButton>
-        <IonButton
-          v-else-if="task.completed && !task._claimed"
-          expand="block"
-          class="footer-button"
-          :style="{ '--border-radius': '50px' }"
-          @click="handleClaim"
-        >
-          Hent belønning
-        </IonButton>
-        <IonAlert
-        :is-open="showCancelAlert"
-        header="Bekræft annullering"
-        message="Er du sikker på, at du vil afbryde opgaven? Du skal starte forfra, hvis du begynder opgaven igen."
-        :buttons="[
-          { text: 'Nej', role: 'cancel', handler: onDismissCancel },
-          { text: 'Ja', handler: onConfirmCancel }
-        ]"
-      />
-      </IonToolbar>
-    </IonFooter>
-  </IonPage>
-</template>
-
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -171,11 +70,9 @@ async function handleClaim() {
   router.back();
 }
 
-// --- Alert control ---
 const showCancelAlert = ref(false);
 
 function onConfirmCancel() {
-  // Actually cancel the task, then close the alert
   cancelTask(id)
     .catch(err => {
       console.error('Cancel failed:', err);
@@ -186,19 +83,120 @@ function onConfirmCancel() {
 }
 
 function onDismissCancel() {
-  // Just close the alert without doing anything
   showCancelAlert.value = false;
 }
 
 function toggleTask() {
   if (task.value.active) {
-    // Instead of calling cancelTask immediately, open the alert
     showCancelAlert.value = true;
   } else {
     startTask(id);
   }
 }
 </script>
+
+<template>
+  <IonPage>
+    <IonHeader>
+      <IonToolbar>
+        <IonButtons slot="start">
+          <IonBackButton default-href="/tabs/hjem" />
+        </IonButtons>
+        <IonTitle>{{ task.title }}</IonTitle>
+      </IonToolbar>
+    </IonHeader>
+
+    <IonContent class="no-pad">
+      <section v-if="task.image" class="image-section">
+        <img :src="task.image" alt="task-image" class="task-image" />
+      </section>
+      <div class="container">
+        <section class="title-section">
+          <h2>{{ task.title }}</h2>
+          <p class="description">{{ task.description }}</p>
+        </section>
+
+        <h3>Fremskridt</h3>
+          <section v-if="task.active || task.completed" class="progress">
+            <div class="progress-row">
+              <span class="progress-percent">{{ progressPercent }}%</span>
+              <div class="progress-bar">
+                <div class="progress-fill" :style="{ width: animatedPercent + '%' }"></div>
+              </div>
+            </div>
+          </section>
+
+        <section v-if="task.deadline" class="countdown">
+          <div class="count-coins">
+            <div class="timer">
+              <span>{{ timeLeft.days }}d</span>
+              <span>{{ timeLeft.hours }}h</span>
+              <span>{{ timeLeft.minutes }}m</span>
+              <span>{{ timeLeft.seconds }}s</span>
+            </div>
+            <div class="coins-container">
+              <img src="/public/icons/coins.png" alt="coins">
+            <p>+{{ task.points }} </p>
+          </div>
+          </div>
+        </section>
+
+        <section v-if="task.steps" class="steps">
+          <h3>Hvad skal du gøre?</h3>
+          <ul>
+            <li v-for="(step, i) in task.steps" :key="i">{{ step }}</li>
+          </ul>
+        </section>
+
+        <section v-if="task.active && !task.completed" class="verification">
+          <IonButton
+            class="verification-placeholder"
+            @click="handleVerify"
+          >
+            Løs opgave
+          </IonButton>
+        </section>
+
+      </div>
+    </IonContent>
+
+    <IonFooter>
+      <IonToolbar>
+        <IonButton
+          v-if="!task.completed"
+          expand="block"
+          class="footer-button"
+          :style="{ '--border-radius': '50px' }"
+          @click="toggleTask"
+          size="small"
+          :color="task.active ? 'danger' : 'primary'"
+        >
+          {{ task.active ? 'Afbryd opgave' : 'Start' }}
+        </IonButton>
+        <IonButton
+          v-else-if="task.completed && !task._claimed"
+          expand="block"
+          class="footer-button"
+          :style="{ '--border-radius': '50px' }"
+          @click="handleClaim"
+        >
+          Hent belønning
+        </IonButton>
+        <IonAlert
+        :is-open="showCancelAlert"
+        header="Bekræft annullering"
+        message="Er du sikker på, at du vil afbryde opgaven? Du skal starte forfra, hvis du begynder opgaven igen."
+        :buttons="[
+          { text: 'Nej', role: 'cancel', handler: onDismissCancel },
+          { text: 'Ja', handler: onConfirmCancel }
+        ]"
+      />
+      </IonToolbar>
+    </IonFooter>
+  </IonPage>
+</template>
+
+
 
 <style scoped> 
 
@@ -246,9 +244,9 @@ function toggleTask() {
 .coins-container {
   display: flex;
   flex-direction: row;
-  align-items: center;       /* vertically center text & icon */
-  justify-content: center;   /* horizontally center within the parent */
-  gap: 0.5rem;               /* spacing between text and image */
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   font-weight: 600;
   font-size: 25px;
   margin-bottom: 1rem;
@@ -256,17 +254,17 @@ function toggleTask() {
   padding: 1rem 2rem;  
 }
 .coins-container p {
-  margin: 0;                 /* remove default block margins */
+  margin: 0;
 }
 .coins-container img {
-  display: inline-block;     /* ensure it sits inline with the text */
-  height: 1em;               /* scale icon to match font size, if desired */
+  display: inline-block;
+  height: 1em;
 }
 .progress {
-  background-color: #eee;      /* samme lys grå baggrund */
-  border-radius: 15px;         /* afrundede hjørner */
-  padding: 20px;               /* indre luft omkring indholdet */
-  margin-bottom: 5px;         /* afstand til næste sektion */
+  background-color: #eee;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 5px;
 }
 .progress-row {
   display: flex;
@@ -319,7 +317,6 @@ h3 {
 }
 
 .verification-placeholder {
-  /* Remove Ionic’s built-in background and padding */
   --background: transparent;
   --background-hover: transparent;
   --padding-top: 0;
@@ -330,7 +327,6 @@ h3 {
   height: 150px;
   border: 2px dashed #ccc;
   border-radius: 12px;
-  /* Center the label text inside the box */
   display: flex;
   align-items: center;
   justify-content: center;

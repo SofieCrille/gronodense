@@ -1,3 +1,32 @@
+<script setup>
+import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useAuth } from '@/composables/useAuth';
+import { useChallenges } from '@/composables/useChallenges';
+import {
+  IonPage, IonHeader, IonToolbar, IonButtons, IonBackButton,
+  IonTitle, IonContent, IonFooter, IonButton
+} from '@ionic/vue';
+
+const route = useRoute();
+const router = useRouter();
+const { uid } = useAuth();
+const { challenges, startChallenge, cancelChallenge } = useChallenges(uid.value);
+
+const id = route.params.id;
+const challenge = computed(() => challenges.value.find(c => c.id === id) || {});
+
+function goBack() {
+  if (window.history.length > 1) router.back();
+  else router.replace({ name: 'UdfordringerView' });
+}
+
+function toggleChallenge() {
+  if (challenge.value.active) cancelChallenge(id);
+  else startChallenge(id);
+}
+</script>
+
 <template>
   <IonPage>
     <IonHeader>
@@ -46,34 +75,6 @@
   </IonPage>
 </template>
 
-<script setup>
-import { computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useAuth } from '@/composables/useAuth';
-import { useChallenges } from '@/composables/useChallenges';
-import {
-  IonPage, IonHeader, IonToolbar, IonButtons, IonBackButton,
-  IonTitle, IonContent, IonFooter, IonButton
-} from '@ionic/vue';
-
-const route = useRoute();
-const router = useRouter();
-const { uid } = useAuth();
-const { challenges, startChallenge, cancelChallenge } = useChallenges(uid.value);
-
-const id = route.params.id;
-const challenge = computed(() => challenges.value.find(c => c.id === id) || {});
-
-function goBack() {
-  if (window.history.length > 1) router.back();
-  else router.replace({ name: 'UdfordringerView' });
-}
-
-function toggleChallenge() {
-  if (challenge.value.active) cancelChallenge(id);
-  else startChallenge(id);
-}
-</script>
 
 <style scoped>
 .image-section {

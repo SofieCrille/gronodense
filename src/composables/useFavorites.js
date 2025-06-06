@@ -1,13 +1,11 @@
-// src/composables/useFavorites.js
+
 import { ref, onMounted } from 'vue';
 import { getFavorites, setFavorites } from '@/firebaseRest.js';
 
-// singleton state
 const favorites = ref([]);
 let initialized = false;
 
 export function useFavorites(uid) {
-  // load favorites once per session
   async function load() {
     if (!uid || initialized) return;
     initialized = true;

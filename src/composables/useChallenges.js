@@ -5,7 +5,6 @@ import {
     getActiveChallenges, setActiveChallenges
   } from '@/firebaseRest.js'
 
-// singleton state
 const challenges = ref(udfordringer.map(c => ({ ...c, active: false })));
 let initialized = false;
 

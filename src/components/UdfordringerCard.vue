@@ -1,10 +1,41 @@
+<script setup>
+import { IonCard, IonCardContent, IonButton } from '@ionic/vue';
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+
+const props = defineProps({
+  id: { type: String, required: true },
+  title: { type: String, required: true },
+  daysLeft: { type: Number, required: true },
+  points: { type: Number, required: true },
+  icon: { type: [String, Object], required: false },
+  bgColor: { type: String, default: '#fff' },
+  textColor: { type: String, default: '#000' },
+  active: { type: Boolean, default: false },
+  buttonText: { type: String, default: 'Start' },
+  progress: { type: Number, default: 0 },
+  bgImage: { type: String, default: '' }
+});
+
+const router = useRouter();
+function handleClick() {
+  router.push({ name: 'ChallengeDetails', params: { id: props.id } });
+}
+
+const cardStyles = computed(() => ({
+  backgroundColor: props.bgColor,
+  color: props.textColor,
+  borderRadius: '15px'
+}));
+</script>
+
 <template>
   <IonCard
     class="challenge-card"
     :style="cardStyles"
     @click="handleClick"
   >
-    <!-- Front image layer (semi-transparent) -->
+  
     <img
       v-if="bgImage"
       :src="bgImage"
@@ -47,37 +78,6 @@
     </IonCardContent>
   </IonCard>
 </template>
-
-<script setup>
-import { IonCard, IonCardContent, IonButton } from '@ionic/vue';
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-
-const props = defineProps({
-  id: { type: String, required: true },
-  title: { type: String, required: true },
-  daysLeft: { type: Number, required: true },
-  points: { type: Number, required: true },
-  icon: { type: [String, Object], required: false },
-  bgColor: { type: String, default: '#fff' },
-  textColor: { type: String, default: '#000' },
-  active: { type: Boolean, default: false },
-  buttonText: { type: String, default: 'Start' },
-  progress: { type: Number, default: 0 },
-  bgImage: { type: String, default: '' } // front image overlay
-});
-
-const router = useRouter();
-function handleClick() {
-  router.push({ name: 'ChallengeDetails', params: { id: props.id } });
-}
-
-const cardStyles = computed(() => ({
-  backgroundColor: props.bgColor,
-  color: props.textColor,
-  borderRadius: '15px'
-}));
-</script>
 
 <style scoped>
 .challenge-card {

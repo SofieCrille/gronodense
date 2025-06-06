@@ -1,3 +1,78 @@
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import {
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
+  IonButtons, IonButton, IonIcon
+} from '@ionic/vue';
+import { notificationsOutline, starOutline } from 'ionicons/icons';
+import * as icons from 'ionicons/icons';
+
+import OpgaverCard from '@/components/OpgaverCard.vue';
+import UdfordringerCard from '@/components/UdfordringerCard.vue';
+import BelønningerCard from '@/components/BelønningerCard.vue';
+import rewards from '@/data/belonninger.json';
+
+import { getBalance } from '@/firebaseRest.js';
+import { useFavorites } from '@/composables/useFavorites';
+import { useAuth } from '@/composables/useAuth';
+import { useTasks } from '@/composables/useTasks';
+import { useChallenges } from '@/composables/useChallenges';
+
+const router = useRouter();
+const { uid } = useAuth();
+const { activeChallenges, challenges, startChallenge, cancelChallenge } = useChallenges(uid.value);
+const ongoing = computed(() => activeChallenges.value);
+
+const balance = ref(0);
+onMounted(async () => {
+  balance.value = await getBalance(uid.value);
+});
+
+function goToNotifications() {
+  router.push({ name: 'Notifications' });
+}
+
+const { activeTasks, completedTasks, inactiveTasks, claimReward } = useTasks(uid.value);
+const activeAndCompleted = computed(() => [...activeTasks.value, ...completedTasks.value]);
+
+const inactiveGrid = ref(null);
+function onScrollInactive() {}
+const grid2 = ref(null);
+function onScroll2() {}
+
+async function onCardAction(task) {
+  if (task.completed) {
+    await claimReward(task.id);
+    balance.value += task.points;
+  } else {
+    router.push({ name: 'TaskDetails', params: { id: task.id } });
+  }
+}
+
+const { favorites, toggleFavorite } = useFavorites(uid.value);
+const favoriteItems = computed(() => rewards.filter(r => favorites.value.includes(r.id)));
+function goToFavoritesList() {
+  router.push({ name: 'CategoryList', params: { category: 'favorites' } });
+}
+function openDetail(id) {
+  router.push({ name: 'ProductDetail', params: { id } });
+}
+
+function toggleChallenge(id) {
+  const c = challenges.value.find(x => x.id === id);
+  if (c.active) cancelChallenge(id);
+  else startChallenge(id);
+}
+function goToChallengesList() {
+  router.push({ name: 'UdfordringerView' }); 
+}
+
+function viewDetails(id) {
+  router.push({ name: 'ChallengeDetails', params: { id } });
+}
+</script>
+
 <template>
   <IonPage>
     <IonHeader>
@@ -140,80 +215,6 @@
   </IonPage>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonButtons, IonButton, IonIcon
-} from '@ionic/vue';
-import { notificationsOutline, starOutline } from 'ionicons/icons';
-import * as icons from 'ionicons/icons';
-
-import OpgaverCard from '@/components/OpgaverCard.vue';
-import UdfordringerCard from '@/components/UdfordringerCard.vue';
-import BelønningerCard from '@/components/BelønningerCard.vue';
-import rewards from '@/data/belonninger.json';
-
-import { getBalance } from '@/firebaseRest.js';
-import { useFavorites } from '@/composables/useFavorites';
-import { useAuth } from '@/composables/useAuth';
-import { useTasks } from '@/composables/useTasks';
-import { useChallenges } from '@/composables/useChallenges';
-
-const router = useRouter();
-const { uid } = useAuth();
-const { activeChallenges, challenges, startChallenge, cancelChallenge } = useChallenges(uid.value);
-const ongoing = computed(() => activeChallenges.value);
-
-const balance = ref(0);
-onMounted(async () => {
-  balance.value = await getBalance(uid.value);
-});
-
-function goToNotifications() {
-  router.push({ name: 'Notifications' });
-}
-
-const { activeTasks, completedTasks, inactiveTasks, claimReward } = useTasks(uid.value);
-const activeAndCompleted = computed(() => [...activeTasks.value, ...completedTasks.value]);
-
-const inactiveGrid = ref(null);
-function onScrollInactive() {}
-const grid2 = ref(null);
-function onScroll2() {}
-
-async function onCardAction(task) {
-  if (task.completed) {
-    await claimReward(task.id);
-    balance.value += task.points;
-  } else {
-    router.push({ name: 'TaskDetails', params: { id: task.id } });
-  }
-}
-
-const { favorites, toggleFavorite } = useFavorites(uid.value);
-const favoriteItems = computed(() => rewards.filter(r => favorites.value.includes(r.id)));
-function goToFavoritesList() {
-  router.push({ name: 'CategoryList', params: { category: 'favorites' } });
-}
-function openDetail(id) {
-  router.push({ name: 'ProductDetail', params: { id } });
-}
-
-function toggleChallenge(id) {
-  const c = challenges.value.find(x => x.id === id);
-  if (c.active) cancelChallenge(id);
-  else startChallenge(id);
-}
-function goToChallengesList() {
-  router.push({ name: 'UdfordringerView' }); 
-}
-
-function viewDetails(id) {
-  router.push({ name: 'ChallengeDetails', params: { id } });
-}
-</script>
 
 <style scoped>
 .no-pad {

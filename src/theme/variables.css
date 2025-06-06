@@ -42,9 +42,8 @@ ion-header {
 }
 
 ion-page {
-  /* everything inside the page is now inset 20px */
   padding-inline-start: 20px;
-  padding-inline-end:   20px; /* if you like symmetric margins */
+  padding-inline-end:   20px;
 }
 
 ion-toolbar {
@@ -73,21 +72,16 @@ ion-button.flat {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   height: 5px;
   padding: 0 8px!important;
   border-radius: 16px;
   border: 1px solid #DDDBD7;
   text-transform: none;
-
   background: var(--ion-background-color, #fff);
   color: #02382C;
-
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
-
-  /* override Ionic defaults */
   margin: 0 !important;
   padding: 0 !important;  
   

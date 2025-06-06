@@ -1,3 +1,79 @@
+<script setup>
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonChip,
+  IonButton
+} from '@ionic/vue';
+import { useAuth } from '@/composables/useAuth';
+import { useFavorites } from '@/composables/useFavorites';
+import BelønningerCard from '@/components/BelønningerCard.vue';
+import rewards from '@/data/belonninger.json';
+
+const slideImages = ['/img/kon1.png', '/img/kon2.png', '/img/kon3.png'];
+const slideRefs = ref([]);
+const containerRef = ref(null);
+
+let autoScrollInterval = null;
+
+onMounted(() => {
+  startAutoScroll();
+});
+
+onBeforeUnmount(() => {
+  stopAutoScroll();
+});
+
+function startAutoScroll() {
+  let currentIndex = 0;
+
+  autoScrollInterval = setInterval(() => {
+    const container = containerRef.value;
+    const slides = slideRefs.value;
+
+    if (!container || slides.length === 0) return;
+
+    currentIndex = (currentIndex + 1) % slides.length;
+    const nextSlide = slides[currentIndex];
+
+    container.scrollTo({
+      left: nextSlide.offsetLeft,
+      behavior: 'smooth'
+    });
+  }, 4000);
+}
+
+function stopAutoScroll() {
+  if (autoScrollInterval) {
+    clearInterval(autoScrollInterval);
+    autoScrollInterval = null;
+  }
+}
+
+const categories = ['trending', 'skonhed', 'mad', 'oplevelser','transport', 'konkurrencer'];
+const categoryNames = { trending: 'Trending', skonhed: 'Skønhed & mode', mad: 'Mad & drikke', oplevelser: 'Oplevelser',transport: 'Transport', konkurrencer: 'Kunkurrencer'};
+const groupedRewards = computed(() =>
+  categories.map(cat => ({ category: cat, items: rewards.filter(r => r.category === cat) }))
+);
+
+const router = useRouter();
+const { uid } = useAuth();
+const { favorites, toggleFavorite } = useFavorites(uid.value);
+
+function goToCategory(cat) {
+  router.push({ name: 'CategoryList', params: { category: cat } });
+}
+
+function openItem(id) {
+  router.push({ name: 'ProductDetail', params: { id } });
+}
+</script>
+
 <template>
   <IonPage>
     <IonHeader>
@@ -8,7 +84,7 @@
 
     <IonContent fullscreen class="ion-padding no-pad">
 
-      <!-- 0) Scroll-snap carousel above chips bar -->
+      <!-- slideshow -->
       <div class="slideshow" ref="containerRef">
         <div class="slides-container">
           <div
@@ -22,7 +98,7 @@
         </div>
       </div>
 
-      <!-- 1) Chips bar -->
+      <!-- categories -->
       <div class="chips-bar">
         <IonChip
           v-for="cat in categories"
@@ -34,7 +110,7 @@
         </IonChip>
       </div>
 
-      <!-- 2) All categories sections -->
+      <!-- sections -->
       <div
         v-for="group in groupedRewards"
         :key="group.category"
@@ -73,84 +149,6 @@
   </IonPage>
 </template>
 
-<script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useRouter } from 'vue-router';
-import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonChip,
-  IonButton
-} from '@ionic/vue';
-import { useAuth } from '@/composables/useAuth';
-import { useFavorites } from '@/composables/useFavorites';
-import BelønningerCard from '@/components/BelønningerCard.vue';
-import rewards from '@/data/belonninger.json';
-
-const slideImages = ['/img/grey.png', '/img/grey.png', '/img/grey.png'];
-const slideRefs = ref([]);
-const containerRef = ref(null);
-
-let autoScrollInterval = null;
-
-onMounted(() => {
-  startAutoScroll();
-});
-
-onBeforeUnmount(() => {
-  stopAutoScroll();
-});
-
-function startAutoScroll() {
-  let currentIndex = 0;
-
-  autoScrollInterval = setInterval(() => {
-    const container = containerRef.value;
-    const slides = slideRefs.value;
-
-    if (!container || slides.length === 0) return;
-
-    currentIndex = (currentIndex + 1) % slides.length;
-    const nextSlide = slides[currentIndex];
-
-    container.scrollTo({
-      left: nextSlide.offsetLeft,
-      behavior: 'smooth'
-    });
-  }, 4000); // scroll every 4 seconds
-}
-
-function stopAutoScroll() {
-  if (autoScrollInterval) {
-    clearInterval(autoScrollInterval);
-    autoScrollInterval = null;
-  }
-}
-
-// categories and display names
-const categories = ['trending', 'skonhed', 'mad', 'oplevelser','transport', 'konkurrencer', 'favoritter'];
-const categoryNames = { trending: 'Trending', skonhed: 'Skønhed & mode', mad: 'Mad & drikke', oplevelser: 'Oplevelser',transport: 'Transport', konkurrencer: 'Kunkurrencer', favoritter: 'Favoritter' };
-const groupedRewards = computed(() =>
-  categories.map(cat => ({ category: cat, items: rewards.filter(r => r.category === cat) }))
-);
-
-// auth & favorites composable
-const router = useRouter();
-const { uid } = useAuth();
-const { favorites, toggleFavorite } = useFavorites(uid.value);
-
-function goToCategory(cat) {
-  router.push({ name: 'CategoryList', params: { category: cat } });
-}
-
-function openItem(id) {
-  router.push({ name: 'ProductDetail', params: { id } });
-}
-</script>
-
 <style scoped>
 .no-pad {
   --padding-start: 0;
@@ -165,10 +163,10 @@ function openItem(id) {
   padding: 0 20px;
   box-sizing: border-box;
   touch-action: pan-x;
-  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none;            /* hide scrollbar Firefox */
-  -ms-overflow-style: none;         /* hide scrollbar IE10+ */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   overflow-y: hidden;
 }
 .slideshow::-webkit-scrollbar {
@@ -195,7 +193,6 @@ function openItem(id) {
   border-radius: 15px;
 }
 
-/* Buffer after last slide */
 .slides-container::after {
   content: "";
   flex: 0 0 20px;
@@ -222,7 +219,7 @@ function openItem(id) {
 }
 .chips-bar ion-chip {
   --color: #02382C;
-  border: 1px solid #DDDBD7 !important; /* full border declaration */
+  border: 1px solid #DDDBD7 !important;
   font-weight: 600;
   font-size: 16px;
   height: 40px;
@@ -239,12 +236,12 @@ function openItem(id) {
 .cards-scroll {
   display: flex;
   overflow-x: auto;
-  overflow: visible;
-  gap: 1rem;
-  padding-right: 20px; /* right side spacing */
+  gap: 10px;
+  padding-right: 20px;
   scroll-snap-type: x mandatory;
   scroll-padding-left: 20px;
 }
+
 
 .cards-scroll > :first-child {
   scroll-margin-left: 20px;
@@ -274,7 +271,5 @@ function openItem(id) {
   margin-bottom: 1rem;
   justify-content: space-between;
 }
-
-
 
 </style>

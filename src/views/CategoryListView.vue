@@ -1,4 +1,62 @@
 
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import {
+  IonPage, IonHeader, IonToolbar, IonTitle,
+  IonButtons, IonBackButton, IonContent
+} from '@ionic/vue';
+import BelønningerCard from '@/components/BelønningerCard.vue';
+import rewards from '@/data/belonninger.json';
+import { getFavorites, setFavorites } from '@/firebaseRest';
+import { useAuth } from '@/composables/useAuth';
+
+const router = useRouter();
+const props = defineProps({
+  category: {
+    type: String,
+    required: true
+  }
+});
+const categoryParam = props.category;
+
+const categoryNames = {
+  trending:   'Trending',
+  skonhed:    'Skønhed & mode',
+  mad:        'Mad & drikke',
+  oplevelser: 'Oplevelser',
+  favorites:  'Favoritter'
+};
+
+const { uid } = useAuth();
+const favorites = ref([]);
+onMounted(async () => {
+  try {
+    favorites.value = await getFavorites(uid.value) || [];
+  } catch {
+    favorites.value = [];
+  }
+});
+async function toggleFavorite(id) {
+  const idx = favorites.value.indexOf(id);
+  if (idx >= 0) favorites.value.splice(idx, 1);
+  else favorites.value.push(id);
+  await setFavorites(uid.value, favorites.value);
+}
+
+const filteredRewards = computed(() => {
+  if (categoryParam === 'favorites') {
+    return rewards.filter(r => favorites.value.includes(r.id));
+  }
+  return rewards.filter(r => r.category === categoryParam);
+});
+
+const title = computed(() => categoryNames[categoryParam] || categoryParam);
+
+function openItem(id) {
+  router.push({ name: 'ProductDetail', params: { id } });
+}
+</script>
 <template>
   <IonPage>
     <IonHeader>
@@ -29,70 +87,6 @@
   </IonPage>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import {
-  IonPage, IonHeader, IonToolbar, IonTitle,
-  IonButtons, IonBackButton, IonContent
-} from '@ionic/vue';
-import BelønningerCard from '@/components/BelønningerCard.vue';
-import rewards from '@/data/belonninger.json';
-import { getFavorites, setFavorites } from '@/firebaseRest';
-import { useAuth } from '@/composables/useAuth';
-
-// route & router
-const router = useRouter();
-const props = defineProps({
-  category: {
-    type: String,
-    required: true
-  }
-});
-const categoryParam = props.category;
-
-// category display names
-const categoryNames = {
-  trending:   'Trending',
-  skonhed:    'Skønhed & mode',
-  mad:        'Mad & drikke',
-  oplevelser: 'Oplevelser',
-  favorites:  'Favoritter'
-};
-
-// auth & favorites
-const { uid } = useAuth();
-const favorites = ref([]);
-onMounted(async () => {
-  try {
-    favorites.value = await getFavorites(uid.value) || [];
-  } catch {
-    favorites.value = [];
-  }
-});
-async function toggleFavorite(id) {
-  const idx = favorites.value.indexOf(id);
-  if (idx >= 0) favorites.value.splice(idx, 1);
-  else favorites.value.push(id);
-  await setFavorites(uid.value, favorites.value);
-}
-
-// filtered list based on category or favorites
-const filteredRewards = computed(() => {
-  if (categoryParam === 'favorites') {
-    return rewards.filter(r => favorites.value.includes(r.id));
-  }
-  return rewards.filter(r => r.category === categoryParam);
-});
-
-// header title
-const title = computed(() => categoryNames[categoryParam] || categoryParam);
-
-// navigation to detail
-function openItem(id) {
-  router.push({ name: 'ProductDetail', params: { id } });
-}
-</script>
 
 <style scoped>
 .no-pad {
