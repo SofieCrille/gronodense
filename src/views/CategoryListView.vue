@@ -57,6 +57,7 @@ function openItem(id) {
   router.push({ name: 'ProductDetail', params: { id } });
 }
 </script>
+
 <template>
   <IonPage>
     <IonHeader>

@@ -9,7 +9,6 @@ import {
   addPoints
 } from '@/firebaseRest';
 
-// -- module-scoped, singleton state --
 const tasks = ref(
   opgaver.map(t => ({ ...t, active: false, completed: false, _claimed: false }))
 );
@@ -29,7 +28,6 @@ async function init(uid) {
   });
 }
 
-// -- persistence helpers --
 async function persistActive(uid) {
   const activeIds = tasks.value.filter(t => t.active).map(t => t.id);
   await setActiveTasks(uid, activeIds);
@@ -39,7 +37,6 @@ async function persistCompleted(uid) {
   await setCompletedTasks(uid, completedIds);
 }
 
-// -- actions --
 async function startTask(uid, id) {
   const t = tasks.value.find(t => t.id === id);
   if (!t) return;
@@ -71,14 +68,11 @@ async function claimReward(uid, id) {
   await addPoints(uid, t.points);
   t._claimed = true;
 
-  // **Here’s the key change**:
-  // Remove the completed flag so the task returns to inactive
+
   t.completed = false;
-  // Persist the updated completed list back to DB
   await persistCompleted(uid);
 }
 
-// -- public API --
 export function useTasks(uid) {
   init(uid);
   return {

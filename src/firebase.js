@@ -1,15 +1,11 @@
 // src/firebase.js
 
-// 1. Core SDK
 import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
-
-// 2. Auth SDK
 import {
   getAuth,
 } from 'firebase/auth';
 
-// Your Firebase config (copy-paste the “Config” snippet from Project Settings → General)
 const firebaseConfig = {
   apiKey: "AIzaSyDDKK9Ativa6doHFKv7fwDdcfGk70l5VeI",
   authDomain: "gronodense.firebaseapp.com",

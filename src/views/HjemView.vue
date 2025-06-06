@@ -90,7 +90,8 @@ function viewDetails(id) {
     </IonHeader>
 
     <IonContent class="no-pad" style="background-color: #C9E0DD;">
-      <!-- Active & Completed Tasks -->
+
+      <!-- Active and completed -->
       <template v-if="activeAndCompleted.length">
         <div class="section-header">
           <h3 class="section-title">Dine opgaver</h3>
@@ -116,7 +117,7 @@ function viewDetails(id) {
         </div>
       </template>
 
-      <!-- Inactive Tasks -->
+      <!-- Inactive -->
       <div class="section-header">
         <h3 class="section-title">Alle opgaver</h3>
         <span class="challenge-count">{{ inactiveTasks.length }} Opgaver</span>
@@ -139,7 +140,7 @@ function viewDetails(id) {
         />
       </div>
 
-      <!-- FAVORITTER carousel or empty state -->
+      <!-- Favorites hjem -->
       <div class="section-divider"></div>
       <div class="favorites-section">
         <div class="section-header">
@@ -178,7 +179,7 @@ function viewDetails(id) {
         </template>
       </div>
 
-      <!-- IGANGVÆRENDE UDFORDRINGER -->
+      <!-- Udfordringer hjem-->
       <template v-if="ongoing.length">
         <div class="section-divider"></div>
         <div class="section-header">

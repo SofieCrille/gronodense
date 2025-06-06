@@ -36,7 +36,7 @@ const routes = [
         component: PurchaseView,
         props: true
       },
-      // Category listing
+
       {
         path: 'shop/category/:category',
         name: 'CategoryList',
@@ -44,7 +44,6 @@ const routes = [
         props: true
       },
 
-      // Opgave detail
       {
         path: 'task/:id',
         name: 'TaskDetails',
@@ -52,7 +51,6 @@ const routes = [
         props: true
       },
 
-      // Udfordringer list & detail
       {
         path: 'udfordringer',
         name: 'UdfordringerView',
@@ -65,7 +63,6 @@ const routes = [
         props: true
       },
 
-      // Notifications, profile, settings
       {
         path: 'notifications',
         name: 'Notifications',

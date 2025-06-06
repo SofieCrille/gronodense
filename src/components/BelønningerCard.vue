@@ -1,3 +1,43 @@
+<script setup>
+import { IonCard, IonImg, IonButton, IonIcon } from '@ionic/vue';
+import { star, starOutline } from 'ionicons/icons';
+
+const props = defineProps({
+  title:      { type: String,  required: true },
+  vendor:     { type: String,  required: true },
+  points:     { type: Number,  required: true },
+  image:      { type: String,  required: true },
+  logo:       { type: String,  required: true },
+  isFavorite: { type: Boolean, default: false },
+  tags:       { type: Array,   default: () => [] }
+});
+
+
+const emit = defineEmits(['select', 'toggle-favorite']);
+
+function handleSelect() {
+  emit('select');
+}
+function handleToggleFavorite() {
+  emit('toggle-favorite');
+}
+
+function tagClass(tag) {
+  return {
+    ny:        'new',
+    trending:  'trending',
+    begrænset: 'limited'
+  }[tag] || tag;
+}
+function tagLabel(tag) {
+  return {
+    ny:        'Ny',
+    trending:  'Trending',
+    begrænset: 'Begrænset'
+  }[tag] || tag;
+}
+</script>
+
 <template>
   <IonCard @click="handleSelect" class="belonninger-card">
     <!-- Image -->
@@ -44,48 +84,6 @@
   </IonCard>
 </template>
 
-<script setup>
-import { IonCard, IonImg, IonButton, IonIcon } from '@ionic/vue';
-import { star, starOutline } from 'ionicons/icons';
-
-// 1. Runtime-only prop definitions (no TS)
-const props = defineProps({
-  title:      { type: String,  required: true },
-  vendor:     { type: String,  required: true },
-  points:     { type: Number,  required: true },
-  image:      { type: String,  required: true },
-  logo:       { type: String,  required: true },
-  isFavorite: { type: Boolean, default: false },
-  tags:       { type: Array,   default: () => [] }
-});
-
-// 2. Plain-JS emits
-const emit = defineEmits(['select', 'toggle-favorite']);
-
-function handleSelect() {
-  emit('select');
-}
-function handleToggleFavorite() {
-  emit('toggle-favorite');
-}
-
-function tagClass(tag) {
-  return {
-    ny:        'new',
-    trending:  'trending',
-    begrænset: 'limited'
-  }[tag] || tag;
-}
-function tagLabel(tag) {
-  return {
-    ny:        'Ny',
-    trending:  'Trending',
-    begrænset: 'Begrænset'
-  }[tag] || tag;
-}
-</script>
-
-
 <style scoped>
 .belonninger-card {
   position: relative;
@@ -111,7 +109,6 @@ function tagLabel(tag) {
   object-fit: cover;
 }
 
-/* TAG STYLES */
 .tag-container {
   position: absolute;
   top: 8px;
@@ -237,6 +234,5 @@ function tagLabel(tag) {
   animation: pop 0.4s ease-in-out;
   color: #ffcc00 !important;
 }
-
 
 </style>
